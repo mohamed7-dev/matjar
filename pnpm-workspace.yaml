@@ -1,0 +1,7 @@
+packages:
+  - ./packages/*
+  - ./apps/*
+allowBuilds:
+  '@apollo/protobufjs': true
+  '@nestjs/core': true
+  nx: true

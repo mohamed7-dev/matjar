@@ -1,0 +1,29 @@
+{
+	"name": "matjar",
+	"private": true,
+	"engines": {
+		"node": ">=24"
+	},
+	"packageManager": "pnpm@11.1.2",
+	"scripts": {
+		"watch": "lerna run watch",
+		"build": "",
+		"format": "",
+		"lint": ""
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^20.5.0",
+		"@commitlint/config-conventional": "^20.5.0",
+		"@biomejs/biome": "2.4.15",
+		"@types/node": "24.1.0",
+		"lerna": "^9.0.7",
+		"typescript": "5.9.3",
+		"vitest": "^4.1.7",
+		"husky": "8",
+		"lint-staged": "^16.4.0"
+	},
+	"workspaces": [
+		"./packages/*",
+		"./apps/*"
+	]
+}
