@@ -1,0 +1,21 @@
+{
+	"$schema": "https://www.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"declaration": true,
+		"declarationMap": true,
+		"incremental": true,
+		"strict": true,
+		"sourceMap": true,
+
+		"lib": [
+			"ES2020"
+		],
+		"skipLibCheck": true,
+		"newLine": "lf"
+	}
+}

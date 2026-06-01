@@ -1,0 +1,25 @@
+{
+	"name": "@matjar/common",
+	"private": true,
+	"type": "module",
+	"main": "index.js",
+	"exports": {
+		".": "./lib/index.js",
+		"./lib/*": "./lib/*.js"
+	},
+	"files": [
+		"lib/**/*"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"watch": "tsc --project tsconfig.build.json --watch",
+		"build": "tsc --project tsconfig.build.json",
+		"lint": "biome lint --write",
+		"format": "biome format --write"
+	},
+	"devDependencies": {
+		"typescript": "5.9.3"
+	}
+}
