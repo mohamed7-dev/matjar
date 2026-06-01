@@ -1,0 +1,10 @@
+{
+	"errors": {
+		"invalid_execution_context": "\"{type}\" is not a valid execution context",
+		"authentication_methods_not_loaded": "Authentication methods are not loaded",
+		"native_authentication_method_not_found": "Native authentication method is not found",
+		"missing_super_admin_role": "Missing super admin role",
+		"missing_customer_role": "Missing customer role",
+		"default_marketplace_region_not_found": "Default marketplace region not found"
+	}
+}

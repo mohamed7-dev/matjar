@@ -1,0 +1,61 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"extends": [
+		"../../biome.json"
+	],
+	"root": false,
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true,
+		"root": "../../"
+	},
+	"files": {
+		"includes": [
+			"**/*.{ts,mts,json,graphql}"
+		]
+	},
+	"linter": {
+		"rules": {
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			},
+			"style": {
+				"useImportType": "off"
+			},
+			"complexity": {
+				"noStaticOnlyClass": "off",
+				"noBannedTypes": "off",
+				"noUselessConstructor": "off"
+			},
+			"nursery": {
+				"useExplicitReturnType": "warn"
+			}
+		}
+	},
+	"assist": {
+		"actions": {
+			"recommended": true
+		}
+	},
+	"javascript": {
+		"parser": {
+			"jsxEverywhere": false,
+			"unsafeParameterDecoratorsEnabled": true
+		},
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	},
+	"json": {
+		"formatter": {
+			"enabled": true
+		}
+	},
+	"graphql": {
+		"formatter": {
+			"enabled": true
+		}
+	}
+}

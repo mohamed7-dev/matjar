@@ -1,0 +1,32 @@
+{
+	"$schema": "https://www.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"moduleDetection": "force",
+		"declaration": true,
+		"declarationMap": true,
+
+		"incremental": true,
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"sourceMap": true,
+		"removeComments": true,
+
+		"lib": [
+			"ES2020",
+			"DOM"
+		],
+		"types": [
+			"@types/node"
+		],
+		"skipLibCheck": true,
+
+		"newLine": "lf"
+	}
+}
