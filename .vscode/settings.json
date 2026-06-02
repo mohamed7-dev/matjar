@@ -9,5 +9,8 @@
 		"server",
 		"common",
 		"repo"
+	],
+	"cSpell.words": [
+		"codegen"
 	]
 }
