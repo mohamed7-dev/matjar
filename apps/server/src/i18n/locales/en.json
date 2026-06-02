@@ -5,6 +5,7 @@
 		"native_authentication_method_not_found": "Native authentication method is not found",
 		"missing_super_admin_role": "Missing super admin role",
 		"missing_customer_role": "Missing customer role",
+		"missing_company_admin_role": "Missing company admin role",
 		"default_marketplace_region_not_found": "Default marketplace region not found"
 	}
 }

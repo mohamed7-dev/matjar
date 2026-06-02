@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PartialAppConfig, RuntimeAppConfig } from './config/types/app-config.interface';
 import { AppConfigUtils } from './config/utils/config-utils';
+import { entitiesMap } from './entities/entities-map';
 import { Logger } from './logger/logger';
 
 export async function bootstrap(userConfig?: PartialAppConfig): Promise<NestExpressApplication> {
@@ -31,5 +32,10 @@ export async function bootstrap(userConfig?: PartialAppConfig): Promise<NestExpr
 function runPreConfig(userConfig?: PartialAppConfig): RuntimeAppConfig {
 	AppConfigUtils.setConfig(userConfig);
 
+	AppConfigUtils.setConfig({
+		database: {
+			entities: Object.values(entitiesMap),
+		},
+	});
 	return AppConfigUtils.getConfig();
 }

@@ -6,8 +6,6 @@ import {
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
 import { InternalServerError } from '../../common/errors/errors';
-import { Company } from '../../entities/company/company.entity';
-import { CompanyRole } from '../../entities/role/company-role.entity';
 import { PlatformRole } from '../../entities/role/platform-role.entity';
 import { Role } from '../../entities/role/role.entity';
 import { OrmService } from '../../orm/orm.service';
@@ -28,6 +26,7 @@ export class RoleService {
 	public async initRoles(): Promise<void> {
 		await this.initializeSuperAdminRole();
 		await this.initializeCustomerRole();
+		await this.initializeCompanyAdminRole();
 	}
 
 	public async getSuperAdminRole(ctx?: RequestContext): Promise<PlatformRole> {
@@ -76,19 +75,27 @@ export class RoleService {
 		return customerRole;
 	}
 
-	public async createCompanyAdminRole(ctx: RequestContext, company: Company): Promise<CompanyRole> {
-		const companyAdminDefinition =
-			this.defaultRolesBuilder.getDefaultRoleDefinitionByCode(COMPANY_ADMIN_ROLE_CODE);
-		const role = new CompanyRole({
-			code: companyAdminDefinition?.code,
-			description: companyAdminDefinition?.description,
-			permissions: [
-				...(companyAdminDefinition?.permissions ?? []),
-			],
-			company,
-		});
-		role.marketplaceRegions = []; // TODO: assign to ctx.marketplaceRegion
-		return await this.ormService.dataSource.getRepository(CompanyRole).save(role);
+	public async getCompanyAdminRole(ctx?: RequestContext): Promise<PlatformRole> {
+		let companyAdminRole: Role | null;
+		if (ctx) {
+			companyAdminRole = await this.ormService.getRepository(ctx, PlatformRole).findOne({
+				where: {
+					code: COMPANY_ADMIN_ROLE_CODE,
+				},
+			});
+		} else {
+			companyAdminRole = await this.ormService.dataSource.getRepository(PlatformRole).findOne({
+				where: {
+					code: COMPANY_ADMIN_ROLE_CODE,
+				},
+			});
+		}
+
+		if (!companyAdminRole) {
+			throw new InternalServerError('errors.missing_company_admin_role');
+		}
+
+		return companyAdminRole;
 	}
 
 	private async initializeSuperAdminRole(): Promise<void> {
@@ -132,6 +139,33 @@ export class RoleService {
 				description: customerRoleDefinition?.description,
 				permissions: [
 					...(customerRoleDefinition?.permissions ?? []),
+				],
+			});
+			role.marketplaceRegions = [
+				defaultMarketplaceRegion,
+			];
+			await this.ormService.dataSource.getRepository(PlatformRole).save(role);
+		}
+	}
+
+	private async initializeCompanyAdminRole(): Promise<void> {
+		const companyAdminRoleDefinition =
+			this.defaultRolesBuilder.getDefaultRoleDefinitionByCode(COMPANY_ADMIN_ROLE_CODE);
+
+		try {
+			const companyAdminRole = await this.getCompanyAdminRole();
+			companyAdminRole.permissions = [
+				...(companyAdminRoleDefinition?.permissions ?? []),
+			];
+			await this.ormService.dataSource.getRepository(PlatformRole).save(companyAdminRole);
+		} catch {
+			const defaultMarketplaceRegion =
+				await this.marketplaceRegionService.getDefaultMarketplaceRegion();
+			const role = new PlatformRole({
+				code: companyAdminRoleDefinition?.code,
+				description: companyAdminRoleDefinition?.description,
+				permissions: [
+					...(companyAdminRoleDefinition?.permissions ?? []),
 				],
 			});
 			role.marketplaceRegions = [

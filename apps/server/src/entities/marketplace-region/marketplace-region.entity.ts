@@ -1,3 +1,4 @@
+import { CurrencyCode, LanguageCode } from '@matjar/common/lib/generated-types';
 import { Column, Entity, ManyToMany } from 'typeorm';
 import { AppEntity } from '../../common/helpers/app-entity';
 import { DeepPartial } from '../../common/types/deep-partial';
@@ -32,20 +33,20 @@ export class MarketplaceRegion extends AppEntity {
 	code: string;
 
 	@Column()
-	primaryLanguageCode: string; // TODO: change to LanguageCode enum
+	primaryLanguageCode: LanguageCode;
 
 	@Column({
 		type: 'simple-array',
 	})
-	availableLanguageCodes: string[]; // TODO: change to LanguageCode enum
+	availableLanguageCodes: LanguageCode[];
 
 	@Column()
-	primaryCurrencyCode: string; // TODO: change to CurrencyCode enum
+	primaryCurrencyCode: CurrencyCode;
 
 	@Column({
 		type: 'simple-array',
 	})
-	availableCurrencyCodes: string[]; // TODO: change to CurrencyCode enum
+	availableCurrencyCodes: CurrencyCode[];
 
 	@ManyToMany(
 		() => Role,

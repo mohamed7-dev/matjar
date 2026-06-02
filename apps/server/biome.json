@@ -31,6 +31,9 @@
 			},
 			"nursery": {
 				"useExplicitReturnType": "warn"
+			},
+			"performance": {
+				"noAccumulatingSpread": "off"
 			}
 		}
 	},

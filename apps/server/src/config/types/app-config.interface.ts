@@ -1,3 +1,4 @@
+import { LanguageCode } from '@matjar/common/lib/generated-types';
 import { DataSourceOptions } from 'typeorm';
 import { DeepPartial } from '../../common/types/deep-partial';
 import { CacheStrategy } from '../strategies/cache/cache-strategy.interface';
@@ -39,7 +40,7 @@ export interface AuthConfigOptions {
 }
 
 export interface AppConfig {
-	defaultLanguageCode?: string;
+	defaultLanguageCode?: LanguageCode;
 	defaultMarketplaceRegionToken?: string;
 	system?: SystemConfigOptions;
 	api?: ApiConfigOptions;

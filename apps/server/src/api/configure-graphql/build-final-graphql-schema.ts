@@ -1,6 +1,7 @@
 import { GraphQLTypesLoader } from '@nestjs/graphql';
 import { buildSchema, GraphQLSchema, printSchema } from 'graphql';
 import { ApiType } from '../utils/get-api-type';
+import { generatePermissionEnum } from './generate-permission-enum';
 
 interface BuildFinalGraphqlSchemaOptions {
 	typesPaths: string[];
@@ -25,7 +26,8 @@ export async function buildFinalGraphqlSchema(
 ): Promise<GraphQLSchema | string> {
 	const typeDefs = await options.typesLoader.mergeTypesByPaths(options.typesPaths);
 
-	const schema = buildSchema(typeDefs);
+	let schema = buildSchema(typeDefs);
+	schema = generatePermissionEnum(schema);
 
 	if (options.outputAs === 'sdl') {
 		return printSchema(schema);

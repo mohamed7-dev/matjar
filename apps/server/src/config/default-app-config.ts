@@ -1,3 +1,4 @@
+import { LanguageCode } from '@matjar/common/lib/generated-types';
 import {
 	ADMIN_API_PATH,
 	DEFAULT_MARKETPLACE_REGION_IDENTIFIER,
@@ -11,7 +12,7 @@ import { StdoutLoggerStrategy } from './strategies/logger/stdout-logger.strategy
 import { RuntimeAppConfig } from './types/app-config.interface';
 
 export const appConfig: RuntimeAppConfig = {
-	defaultLanguageCode: 'en',
+	defaultLanguageCode: LanguageCode.en,
 	defaultMarketplaceRegionToken: DEFAULT_MARKETPLACE_REGION_TOKEN,
 	system: {
 		loggerStrategy: new StdoutLoggerStrategy(),

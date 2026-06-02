@@ -1,3 +1,4 @@
+import { Permission } from '@matjar/common/lib/generated-types';
 import {
 	COMPANY_ADMIN_ROLE_CODE,
 	COMPANY_ADMIN_ROLE_DESCRIPTION,
@@ -11,14 +12,10 @@ import {
 	getNormalizedCompanyAppPermissions,
 	getNormalizedPlatformAppPermissions,
 } from '../../api/common/default-permissions';
-
-enum RoleScope {
-	PLATFORM = 'PLATFORM',
-	COMPANY = 'COMPANY',
-}
+import { RoleScope } from '../../common/helpers/permissions-factory';
 
 interface RoleDefinition {
-	permissions: string[]; // TODO: change permissions to enum type
+	permissions: Permission[];
 	description: string;
 	code: string;
 }
@@ -40,7 +37,6 @@ export class DefaultRolesBuilderService {
 		}
 
 		this.buildPlatformRoles();
-		this.buildCompanyRoles();
 
 		return this.defaultRolesDefinitions;
 	}
@@ -57,12 +53,10 @@ export class DefaultRolesBuilderService {
 			permissions: [],
 			description: CUSTOMER_ROLE_DESCRIPTION,
 		});
-	}
 
-	private buildCompanyRoles(): void {
 		this.defaultRolesDefinitions.get(RoleScope.COMPANY)?.set(COMPANY_ADMIN_ROLE_CODE, {
 			code: COMPANY_ADMIN_ROLE_CODE,
-			permissions: this.getAssignableOrgOwnerPermissions(),
+			permissions: this.getAssignableCompanyOwnerPermissions(),
 			description: COMPANY_ADMIN_ROLE_DESCRIPTION,
 		});
 	}
@@ -89,12 +83,12 @@ export class DefaultRolesBuilderService {
 		return this.getAllDefaultRolesFlattened().find((item) => item.code === code);
 	}
 
-	private getAssignablePlatformSuperAdminPermissions(): string[] {
+	private getAssignablePlatformSuperAdminPermissions(): Permission[] {
 		const allPermissions = getNormalizedPlatformAppPermissions();
 		return allPermissions.filter((p) => p.assignable && p.scope === RoleScope.PLATFORM).map((p) => p.key);
 	}
 
-	private getAssignableOrgOwnerPermissions(): string[] {
+	private getAssignableCompanyOwnerPermissions(): Permission[] {
 		const allPermissions = getNormalizedCompanyAppPermissions();
 		return allPermissions.filter((p) => p.assignable && p.scope === RoleScope.COMPANY).map((p) => p.key);
 	}

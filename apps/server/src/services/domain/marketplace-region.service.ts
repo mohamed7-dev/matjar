@@ -1,3 +1,4 @@
+import { CurrencyCode } from '@matjar/common/lib/generated-types';
 import { DEFAULT_MARKETPLACE_REGION_CODE } from '@matjar/common/lib/shared-constants';
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
@@ -61,9 +62,9 @@ export class MarketplaceRegionService {
 			defaultMarketplaceRegion = new MarketplaceRegion({
 				code: DEFAULT_MARKETPLACE_REGION_CODE,
 				token: defaultMarketplaceRegionToken,
-				primaryCurrencyCode: 'USD', // TODO: change
+				primaryCurrencyCode: CurrencyCode.USD,
 				availableCurrencyCodes: [
-					'USD',
+					CurrencyCode.USD,
 				],
 				primaryLanguageCode: this.configService.defaultLanguageCode,
 				availableLanguageCodes: [

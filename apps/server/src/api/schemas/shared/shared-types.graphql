@@ -1,7 +1,10 @@
 type Query {
-    me: Boolean!
+	me: Boolean!
 }
 
 type Mutation {
-    login(username:String): Boolean!
+	login(username: String): Boolean!
 }
+
+# Populated at runtime
+enum Permission

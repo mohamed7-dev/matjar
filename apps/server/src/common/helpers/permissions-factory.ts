@@ -1,3 +1,5 @@
+import { Permission } from '@matjar/common/lib/generated-types';
+
 export enum RoleScope {
 	PLATFORM = 'PLATFORM',
 	COMPANY = 'COMPANY',
@@ -27,7 +29,7 @@ interface AppPermissionPayload {
 }
 
 export type NormalizedPermission = {
-	key: string;
+	key: Permission;
 	scope: RoleScope;
 	resource: string;
 	action?: string;
@@ -55,7 +57,7 @@ export class AppPermission {
 		const key = this.buildKey();
 		return [
 			{
-				key: key,
+				key: key as Permission,
 				scope: this.config.scope,
 				resource: this.config.resource,
 				action: this.config.action,
@@ -66,8 +68,8 @@ export class AppPermission {
 		];
 	}
 
-	get permissionKey(): string {
-		return this.buildKey();
+	get permissionKey(): Permission {
+		return this.buildKey() as Permission;
 	}
 }
 
@@ -98,7 +100,7 @@ export class CrudPermission extends AppPermission {
 			const key = `${this.scope.toLowerCase()}_${this.config.resource.toLocaleLowerCase()}_${operation.toLowerCase()}`;
 
 			return {
-				key: key,
+				key: key as Permission,
 				scope: this.scope,
 				resource: this.config.resource,
 				action: operation,
@@ -111,20 +113,20 @@ export class CrudPermission extends AppPermission {
 		});
 	}
 
-	get Create(): string {
-		return `${this.scope}_${this.config.resource}_create`;
+	get Create(): Permission {
+		return `${this.scope}_${this.config.resource}_create` as Permission;
 	}
 
-	get Read(): string {
-		return `${this.scope}_${this.config.resource}_read`;
+	get Read(): Permission {
+		return `${this.scope}_${this.config.resource}_read` as Permission;
 	}
 
-	get Update(): string {
-		return `${this.scope}_${this.config.resource}_update`;
+	get Update(): Permission {
+		return `${this.scope}_${this.config.resource}_update` as Permission;
 	}
 
-	get Delete(): string {
-		return `${this.scope}_${this.config.resource}_delete`;
+	get Delete(): Permission {
+		return `${this.scope}_${this.config.resource}_delete` as Permission;
 	}
 }
 
@@ -143,7 +145,7 @@ export class ResourcePermission extends AppPermission {
 
 	normalizePermission(): NormalizedPermission[] {
 		return this.actions.map((action) => ({
-			key: `${this.scope.toLocaleLowerCase()}_${this.resource.toLowerCase()}_${action.toLowerCase()}`,
+			key: `${this.scope.toLocaleLowerCase()}_${this.resource.toLowerCase()}_${action.toLowerCase()}` as Permission,
 			scope: this.scope,
 			resource: this.resource,
 			action,

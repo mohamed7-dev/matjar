@@ -1,11 +1,8 @@
-import path from 'node:path';
 import { LogLevel } from './config/strategies/logger/logger-strategy.interface';
 import { StdoutLoggerStrategy } from './config/strategies/logger/stdout-logger.strategy';
 import { AppConfig } from './config/types/app-config.interface';
 
 const env = typeof process !== 'undefined' ? process.env : {};
-
-const entitiesPath = path.resolve(path.join(__dirname, 'entities/**/*.entity.{ts,js}'));
 
 export const appConfig: AppConfig = {
 	database: {
@@ -19,9 +16,6 @@ export const appConfig: AppConfig = {
 		password: env.DB_PASSWORD,
 		database: env.DB_NAME,
 		schema: env.DB_SCHEMA,
-		entities: [
-			entitiesPath,
-		],
 	},
 	api: {
 		enableIntrospection: true,
