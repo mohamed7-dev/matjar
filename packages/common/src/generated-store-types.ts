@@ -7,7 +7,7 @@ export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> =
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 
             // biome-ignore-all lint: generated-content
-            // biome-ignore-all lint: generated-content
+            // biome-ignore-all format: generated-content
         
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -16,6 +16,22 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+};
+
+export type ApiError = {
+  code: ErrorCode;
+  message: Scalars['String']['output'];
+};
+
+export type AuthenticatedUser = {
+  __typename?: 'AuthenticatedUser';
+  id: Scalars['ID']['output'];
+  identifier: Scalars['String']['output'];
+  permissionsIndex: Array<PermissionsIndex>;
+};
+
+export type AuthenticationInput = {
+  native?: InputMaybe<NativeAuthInput>;
 };
 
 export enum CurrencyCode {
@@ -334,6 +350,18 @@ export enum CurrencyCode {
   /** Zimbabwean dollar */
   ZWL = 'ZWL'
 }
+
+export enum ErrorCode {
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR'
+}
+
+/** Returned if the credentials provided by the user are not valid */
+export type InvalidCredentialsError = ApiError & {
+  __typename?: 'InvalidCredentialsError';
+  authenticationError: Scalars['String']['output'];
+  code: ErrorCode;
+  message: Scalars['String']['output'];
+};
 
 export enum LanguageCode {
   /** Afrikaans */
@@ -662,6 +690,11 @@ export type MutationLoginArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type NativeAuthInput = {
+  identifier: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 /**
  *
  * Defines the set of access rules recognized by the system.
@@ -717,7 +750,28 @@ export enum Permission {
   platform_role_update = 'platform_role_update'
 }
 
+export enum PermissionIndexItemType {
+  COMPANY = 'COMPANY',
+  PLATFORM = 'PLATFORM'
+}
+
+export type PermissionsIndex = {
+  __typename?: 'PermissionsIndex';
+  companyCode?: Maybe<Scalars['String']['output']>;
+  companyToken?: Maybe<Scalars['String']['output']>;
+  marketplaceCode: Scalars['String']['output'];
+  marketplaceToken: Scalars['String']['output'];
+  permissions: Array<Permission>;
+  type: PermissionIndexItemType;
+};
+
 export type Query = {
   __typename?: 'Query';
-  me: Scalars['Boolean']['output'];
+  me2: Scalars['Boolean']['output'];
+};
+
+/** Indicates that an operation was done successfully */
+export type Success = {
+  __typename?: 'Success';
+  success: Scalars['Boolean']['output'];
 };

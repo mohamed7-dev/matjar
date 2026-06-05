@@ -3,7 +3,8 @@ export const CURRENCY_CODE_QUERY_NAME = 'currencyCode';
 export const ADMIN_API_PATH = 'admin-api';
 export const STORE_API_PATH = 'store-api';
 export const DEFAULT_SERVER_PORT = 3000;
-export const DEFAULT_MARKETPLACE_REGION_IDENTIFIER = 'x-marketplace-region';
+export const DEFAULT_MARKETPLACE_REGION_IDENTIFIER = 'x-marketplace-region-token';
+export const DEFAULT_COMPANY_IDENTIFIER = 'x-company-token';
 export const DEFAULT_MARKETPLACE_REGION_CODE = 'Default Marketplace Region';
 export const DEFAULT_MARKETPLACE_REGION_TOKEN = '__default-marketplace-region__';
 
