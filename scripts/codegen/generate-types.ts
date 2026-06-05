@@ -18,6 +18,7 @@ async function main() {
 			Logger.info("Attempting to generate types from existing schema json files", CODEGEN_LOG_CONTEXT);
 
 			const biomeDisablePlugin = path.join(__dirname, "./biome-disable-plugin");
+			const graphQlErrorsPlugin = path.join(__dirname, "./error-plugin");
 
 			const commonPlugins = [
 				biomeDisablePlugin,
@@ -63,6 +64,30 @@ async function main() {
 							},
 						},
 						plugins: commonPlugins,
+					},
+					[path.join(
+						__dirname,
+						"../../apps/server/src/common/errors/generated-graphql-admin-errors.ts",
+					)]: {
+						schema: [
+							ADMIN_SCHEMA_OUTPUT_FILE,
+						],
+						plugins: [
+							biomeDisablePlugin,
+							graphQlErrorsPlugin,
+						],
+					},
+					[path.join(
+						__dirname,
+						"../../apps/server/src/common/errors/generated-graphql-store-errors.ts",
+					)]: {
+						schema: [
+							STORE_SCHEMA_OUTPUT_FILE,
+						],
+						plugins: [
+							biomeDisablePlugin,
+							graphQlErrorsPlugin,
+						],
 					},
 				},
 			};

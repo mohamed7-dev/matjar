@@ -4,7 +4,7 @@ export const plugin: PluginFunction = () => {
 	return {
 		content: `
             // biome-ignore-all lint: generated-content
-            // biome-ignore-all lint: generated-content
+            // biome-ignore-all format: generated-content
         `,
 	};
 };
