@@ -2,7 +2,7 @@ import { CurrencyCode } from '@matjar/common/lib/generated-types';
 import { DEFAULT_MARKETPLACE_REGION_CODE } from '@matjar/common/lib/shared-constants';
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
-import { InternalServerError } from '../../common/errors/errors';
+import { InternalServerError, MarketplaceRegionNotFoundError } from '../../common/errors/errors';
 import { ConfigService } from '../../config/config.service';
 import { MarketplaceRegion } from '../../entities/marketplace-region/marketplace-region.entity';
 import { OrmService } from '../../orm/orm.service';
@@ -43,6 +43,50 @@ export class MarketplaceRegionService {
 			throw new InternalServerError('errors.default_marketplace_region_not_found');
 		}
 		return defaultMarketplaceRegion;
+	}
+
+	/**
+	 * @description
+	 * Retrieves marketplace region by the given token.
+	 *
+	 * :::warning
+	 * throws {@link MarketplaceRegionNotFoundError} error if marketplace region isn't found
+	 * :::
+	 */
+	async getMarketplaceRegionByToken(token: string): Promise<MarketplaceRegion>;
+	async getMarketplaceRegionByToken(ctx: RequestContext, token: string): Promise<MarketplaceRegion>;
+	public async getMarketplaceRegionByToken(
+		ctxOrToken: RequestContext | string,
+		maybeToken?: string,
+	): Promise<MarketplaceRegion> {
+		const token = !(ctxOrToken instanceof RequestContext) ? ctxOrToken : maybeToken;
+		const ctx = ctxOrToken instanceof RequestContext ? ctxOrToken : undefined;
+
+		if (!token) {
+			return await this.getDefaultMarketplaceRegion(ctx);
+		}
+
+		let marketplaceRegion: MarketplaceRegion | null;
+
+		if (!ctx) {
+			marketplaceRegion = await this.ormService.dataSource.getRepository(MarketplaceRegion).findOne({
+				where: {
+					token: token,
+				},
+			});
+		} else {
+			marketplaceRegion = await this.ormService.getRepository(ctx, MarketplaceRegion).findOne({
+				where: {
+					token: token,
+				},
+			});
+		}
+
+		if (!marketplaceRegion) {
+			throw new MarketplaceRegionNotFoundError(token);
+		}
+
+		return marketplaceRegion;
 	}
 
 	private async initializeDefaultMarketplaceRegion(): Promise<void> {

@@ -6,6 +6,10 @@
 		"missing_super_admin_role": "Missing super admin role",
 		"missing_customer_role": "Missing customer role",
 		"missing_company_admin_role": "Missing company admin role",
-		"default_marketplace_region_not_found": "Default marketplace region not found"
+		"default_marketplace_region_not_found": "Default marketplace region not found",
+		"currency_not_available_in_marketplace_region": "\"{currencyCode}\" is not available in your current marketplace region",
+		"marketplace_region_not_found": "Marketplace region with the token \"{token}\" is not found",
+		"auth_strategy_not_found": "Authentication strategy with the name \"{name}\" is not found",
+		"forbidden": "You are not allowed to access resource"
 	}
 }

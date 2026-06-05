@@ -1,0 +1,6 @@
+# Populated at runtime
+enum Permission
+
+enum ErrorCode {
+	UNKNOWN_ERROR
+}

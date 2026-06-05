@@ -1,0 +1,28 @@
+# Third-party custom scalars
+scalar JSON
+scalar DateTime
+
+# Gets extended by any entity in the app
+interface Node {
+	id: ID!
+}
+
+type Query {
+	me2: Boolean!
+}
+
+type Mutation {
+	login(username: String): Boolean!
+}
+
+interface ApiError {
+	code: ErrorCode!
+	message: String!
+}
+
+"""
+Indicates that an operation was done successfully
+"""
+type Success {
+	success: Boolean!
+}

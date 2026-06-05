@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { IsNull } from 'typeorm';
 import { RequestContext } from '../../api/request-context/request-context';
 import { assertPromise } from '../../common/utils/assert-promise';
 import { normalizeInput } from '../../common/utils/normalize-input';
@@ -47,6 +48,30 @@ export class AdministratorService {
 		return admin ?? undefined;
 	}
 
+	public async getOneByUserId(
+		ctx: RequestContext,
+		userId: string,
+		relations?: any,
+	): Promise<Administrator | undefined> {
+		return (
+			(await this.ormService.getRepository(ctx, Administrator).findOne({
+				relations: relations
+					? relations
+					: {
+							user: {
+								roles: true,
+							},
+						},
+				where: {
+					user: {
+						id: userId,
+					},
+					deletedAt: IsNull(),
+				},
+			})) ?? undefined
+		);
+	}
+
 	public async initializeSuperAdmin(): Promise<void> {
 		const { superAdminCredentials } = this.configService.auth;
 		const foundSuperAdminUser = await this.ormService.dataSource.getRepository(User).findOne({
@@ -81,7 +106,7 @@ export class AdministratorService {
 				await this.ormService.dataSource.getRepository(User).save(foundSuperAdminUser);
 			}
 		} else {
-			const ctx = this.requestContextService.create({
+			const ctx = await this.requestContextService.create({
 				apiType: 'admin',
 			});
 			const superAdminRole = await this.roleService.getSuperAdminRole();

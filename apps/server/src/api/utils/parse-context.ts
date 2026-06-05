@@ -1,4 +1,4 @@
-import { ExecutionContext } from '@nestjs/common';
+import { ArgumentsHost, ExecutionContext } from '@nestjs/common';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { Request, Response } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
@@ -19,7 +19,7 @@ interface GraphQLContext {
  * It accounts for Graphql only
  * :::
  */
-export function parseContext(executionContext: ExecutionContext): GraphQLContext {
+export function parseContext(executionContext: ExecutionContext | ArgumentsHost): GraphQLContext {
 	if (executionContext.getType<GqlContextType>() === 'graphql') {
 		const gqlContext = GqlExecutionContext.create(executionContext as ExecutionContext);
 		return {

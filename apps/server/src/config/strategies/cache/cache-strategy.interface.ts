@@ -1,11 +1,12 @@
 import { JSONCompatible } from '../../../common/types/json-compatible';
+import { LifecycleStrategy } from '../../../common/types/lifecycle-strategy';
 
 export interface CacheEntryOptions {
 	ttlInMs?: number;
 	tags?: string[];
 }
 
-export interface CacheStrategy {
+export interface CacheStrategy extends LifecycleStrategy {
 	store<Value extends JSONCompatible<Value>>(
 		key: string,
 		value: Value,

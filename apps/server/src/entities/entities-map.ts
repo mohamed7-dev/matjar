@@ -7,11 +7,13 @@ export const entitiesMap = {
 		.AuthenticationMethod,
 	NativeAuthenticationMethod: require('./authentication-method/native-authentication-method.entity')
 		.NativeAuthenticationMethod,
+	ExternalAuthenticationMethod: require('./authentication-method/external-authentication-method.entity')
+		.ExternalAuthenticationMethod,
 
 	Administrator: require('./administrator/administrator.entity').Administrator,
 
 	Session: require('./session/session.entity').Session,
-	RefreshToken: require('./refresh-token/refresh-token.entity').RefreshToken,
+	// RefreshToken: require('./refresh-token/refresh-token.entity').RefreshToken,
 
 	Company: require('./company/company.entity').Company,
 

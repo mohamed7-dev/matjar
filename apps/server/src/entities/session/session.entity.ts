@@ -1,8 +1,10 @@
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { AppEntity } from '../../common/helpers/app-entity';
 import { DeepPartial } from '../../common/types/deep-partial';
-import { RefreshToken } from '../refresh-token/refresh-token.entity';
+import { MarketplaceRegion } from '../marketplace-region/marketplace-region.entity';
 import { User } from '../user/user.entity';
+
+// TODO: don't forget to add the active order
 
 @Entity()
 export class Session extends AppEntity {
@@ -14,10 +16,24 @@ export class Session extends AppEntity {
 	 * @description
 	 * Unique public facing identifier
 	 */
-	@Column({
+	@Index({
 		unique: true,
 	})
+	@Column()
 	token: string;
+
+	@Column()
+	expiresAt: Date;
+
+	@Column()
+	revoked: boolean;
+
+	/**
+	 * @description
+	 * The authentication strategy used to create this session (e.g., 'native', 'oauth', 'saml').
+	 */
+	@Column()
+	authenticationStrategy: string;
 
 	@Index()
 	@ManyToOne(
@@ -26,46 +42,7 @@ export class Session extends AppEntity {
 	)
 	user: User;
 
-	@Column()
-	deviceFingerprint: string;
-
-	@Column()
-	ipAddress: string;
-
-	@Column({
-		default: false,
-	})
-	revoked: boolean;
-
-	/**
-	 * @description
-	 * Updated each time the session reaches half of its expiration duration
-	 */
-	@Column()
-	expiresAt: Date;
-
-	/**
-	 * @description
-	 * The maximum duration of the session at which the session is considered expired
-	 * even if the `expiresAt` field is still early in time.
-	 *
-	 * :::info
-	 * Specified when the session gets created and then it becomes immutable.
-	 * :::
-	 */
-	@Column()
-	absoluteExpiresAt: Date;
-
-	/**
-	 * @description
-	 * The authentication strategy used to create this session (e.g., 'credentials', 'oauth', 'saml').
-	 */
-	@Column()
-	authenticationStrategy: string;
-
-	@OneToMany(
-		() => RefreshToken,
-		(token) => token.session,
-	)
-	refreshTokens: RefreshToken[];
+	@Index()
+	@ManyToOne(() => MarketplaceRegion)
+	activeMarketplaceRegion: MarketplaceRegion | null;
 }

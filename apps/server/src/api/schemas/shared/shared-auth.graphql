@@ -1,0 +1,22 @@
+# Populated at runtime
+input AuthenticationInput
+
+type AuthenticatedUser {
+	id: ID!
+	identifier: String!
+	permissionsIndex: [PermissionsIndex!]!
+}
+
+enum PermissionIndexItemType {
+	PLATFORM
+	COMPANY
+}
+
+type PermissionsIndex {
+	type: PermissionIndexItemType!
+	marketplaceToken: String!
+	marketplaceCode: String!
+	companyToken: String
+	companyCode: String
+	permissions: [Permission!]!
+}

@@ -1,0 +1,16 @@
+type Query {
+	me: AuthenticatedUser
+}
+
+type Mutation {
+	"""
+	Authenticates an admin user using the provided authentication strategy name and data
+	"""
+	authenticateAdminUser(input: AuthenticationInput!, rememberMe: Boolean): AuthenticateAdminUserResult!
+	"""
+	Terminates the current admin user session
+	"""
+	logoutAdminUser: Success!
+}
+
+union AuthenticateAdminUserResult = AuthenticatedUser | InvalidCredentialsError

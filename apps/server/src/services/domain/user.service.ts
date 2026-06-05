@@ -1,13 +1,52 @@
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
-import { normalizeInput } from '../../common/utils/normalize-input';
+import { isEmailAddressLike, normalizeInput } from '../../common/utils/normalize-input';
 import { NativeAuthenticationMethod } from '../../entities/authentication-method/native-authentication-method.entity';
 import { User } from '../../entities/user/user.entity';
 import { OrmService } from '../../orm/orm.service';
+import { PasswordHashingService } from '../helpers/password-hashing.service';
 
 @Injectable()
 export class UserService {
-	constructor(private readonly ormService: OrmService) {}
+	constructor(
+		private readonly ormService: OrmService,
+		private readonly passwordHashingService: PasswordHashingService,
+	) {}
+
+	public async getUserByIdentifier(ctx: RequestContext, identifier: string): Promise<User | undefined> {
+		const isEmailIdentifier = isEmailAddressLike(identifier);
+		const user = await this.ormService
+			.getRepository(ctx, User)
+			.createQueryBuilder('user')
+			.leftJoinAndSelect('user.authenticationMethods', 'authMethods')
+			.leftJoinAndSelect('user.roles', 'roles')
+			.where('user.deletedAt IS NULL')
+			.andWhere(
+				isEmailIdentifier ? 'LOWER(user.identifier) = :identifier' : 'user.identifier = :identifier',
+				{
+					identifier: isEmailIdentifier ? normalizeInput(identifier) : identifier,
+				},
+			)
+			.getOne();
+
+		return user ?? undefined;
+	}
+
+	public async getUserById(ctx: RequestContext, id: string): Promise<User | undefined> {
+		const user = await this.ormService
+			.getRepository(ctx, User)
+			.createQueryBuilder('user')
+			.leftJoinAndSelect('user.authenticationMethods', 'authMethods')
+			.leftJoinAndSelect('user.roles', 'roles')
+			.leftJoinAndSelect('roles.marketplaceRegions', 'mpr')
+			.where('user.deletedAt IS NULL')
+			.andWhere('user.id = :id', {
+				id: id,
+			})
+			.getOne();
+
+		return user ?? undefined;
+	}
 
 	public async createAdministratorUser(
 		ctx: RequestContext,
@@ -24,8 +63,7 @@ export class UserService {
 
 		const nativeAuthMethod = new NativeAuthenticationMethod({
 			identifier: normalizedIdentifier,
-			// password: await this.passwordHashingService.hash(credentials.password),
-			password: credentials.password, // TODO: hash password before storing it
+			password: await this.passwordHashingService.hash(credentials.password),
 		});
 
 		const createdAuthMethod = await this.ormService

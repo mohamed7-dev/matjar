@@ -5,7 +5,11 @@ import { ConfigService } from '../config/config.service';
 import { OrmService } from './orm.service';
 import { TransactionManagerService } from './transaction-manager.service';
 
+let defaultTypeOrmModule: DynamicModule;
 @Module({
+	imports: [
+		ConfigModule,
+	],
 	providers: [
 		OrmService,
 		TransactionManagerService,
@@ -15,18 +19,39 @@ import { TransactionManagerService } from './transaction-manager.service';
 		TransactionManagerService,
 	],
 })
+export class ConnectionCoreModule {}
+
+@Module({
+	imports: [
+		ConnectionCoreModule,
+	],
+	exports: [
+		ConnectionCoreModule,
+	],
+})
 export class OrmModule {
 	public static forRoot(): DynamicModule {
-		return TypeOrmModule.forRootAsync({
-			useFactory: (configService: ConfigService) => {
-				return configService.database;
-			},
+		if (!defaultTypeOrmModule) {
+			defaultTypeOrmModule = TypeOrmModule.forRootAsync({
+				imports: [
+					ConfigModule,
+				],
+				useFactory: (configService: ConfigService) => {
+					const { database } = configService;
+					return {
+						...database,
+					};
+				},
+				inject: [
+					ConfigService,
+				],
+			});
+		}
+		return {
+			module: OrmModule,
 			imports: [
-				ConfigModule,
+				defaultTypeOrmModule,
 			],
-			inject: [
-				ConfigService,
-			],
-		});
+		};
 	}
 }

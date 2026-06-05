@@ -9,8 +9,15 @@ export class Company extends AppEntity {
 		super(input);
 	}
 
-	@Column()
-	name: string;
+	@Column({
+		unique: true,
+	})
+	code: string;
+
+	@Column({
+		unique: true,
+	})
+	token: string;
 
 	@OneToMany(
 		() => CompanyRole,

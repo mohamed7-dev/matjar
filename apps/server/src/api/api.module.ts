@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { I18nModule } from '../i18n/i18n.module';
@@ -8,19 +8,43 @@ import { OrmModule } from '../orm/orm.module';
 import { ServiceModule } from '../services/service.module';
 import { ADMIN_TYPES_PATHS, STORE_TYPES_PATHS } from './common/types-paths';
 import { initGraphqlModule } from './configure-graphql/init-graphql-module';
+import { I18nExceptionLoggerFilter } from './filter/i18n-exception-logger.filter';
 import { AuthenticationGuard } from './guards/authentication.guard';
+import { AuthorizationGuard } from './guards/authorization.guard';
+import { ApiErrorTranslationInterceptor } from './interceptors/api-error-translation.interceptor';
+import { AdminAuthResolver } from './resolvers/admin/admin-auth.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 
 @Module({
 	imports: [
 		ServiceModule,
-		OrmModule,
+		OrmModule.forRoot(),
+		I18nModule,
+		ConfigModule,
 	],
 	providers: [
 		{
 			provide: APP_GUARD,
 			useClass: AuthenticationGuard,
 		},
+		{
+			provide: APP_GUARD,
+			useClass: AuthorizationGuard,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: ApiErrorTranslationInterceptor,
+		},
+		{
+			provide: APP_FILTER,
+			useClass: I18nExceptionLoggerFilter,
+		},
+	],
+	exports: [
+		ServiceModule,
+		OrmModule.forRoot(),
+		I18nModule,
+		ConfigModule,
 	],
 })
 class SharedApiModule {}
@@ -31,6 +55,7 @@ class SharedApiModule {}
 	],
 	providers: [
 		GlobalSettingsResolver,
+		AdminAuthResolver,
 	],
 })
 class AdminApiModule {}

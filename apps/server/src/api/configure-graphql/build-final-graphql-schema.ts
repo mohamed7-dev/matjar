@@ -1,12 +1,15 @@
 import { GraphQLTypesLoader } from '@nestjs/graphql';
 import { buildSchema, GraphQLSchema, printSchema } from 'graphql';
+import { ConfigService } from '../../config/config.service';
 import { ApiType } from '../utils/get-api-type';
+import { generateAuthInputType } from './generate-auth-input-type';
 import { generatePermissionEnum } from './generate-permission-enum';
 
 interface BuildFinalGraphqlSchemaOptions {
 	typesPaths: string[];
 	typesLoader: GraphQLTypesLoader;
 	apiType: ApiType;
+	configService: ConfigService;
 }
 
 export async function buildFinalGraphqlSchema(
@@ -28,6 +31,12 @@ export async function buildFinalGraphqlSchema(
 
 	let schema = buildSchema(typeDefs);
 	schema = generatePermissionEnum(schema);
+	schema = generateAuthInputType(
+		schema,
+		options.apiType === 'admin'
+			? options.configService.auth.adminAuthenticationStrategies
+			: options.configService.auth.storeAuthenticationStrategies,
+	);
 
 	if (options.outputAs === 'sdl') {
 		return printSchema(schema);

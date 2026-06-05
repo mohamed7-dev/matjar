@@ -1,6 +1,9 @@
 import { LanguageCode } from '@matjar/common/lib/generated-types';
 import { DataSourceOptions } from 'typeorm';
 import { DeepPartial } from '../../common/types/deep-partial';
+import { AuthenticationStrategy } from '../strategies/auth/authentication-strategy.interface';
+import { PasswordHashingStrategy } from '../strategies/auth/password-hashing-strategy.interface';
+import { SessionCacheStrategy } from '../strategies/auth/session-cache-strategy.interface';
 import { CacheStrategy } from '../strategies/cache/cache-strategy.interface';
 import { LoggerStrategy } from '../strategies/logger/logger-strategy.interface';
 
@@ -26,6 +29,11 @@ interface ApiConfigOptions {
 	 * The property name that identifies the marketplace region in the header object
 	 */
 	marketplaceRegionIdentifier?: string;
+	/**
+	 * @description
+	 * The property name that identifies the company in the header object
+	 */
+	companyIdentifier?: string;
 }
 
 type DatabaseConfigOptions = DataSourceOptions;
@@ -36,7 +44,15 @@ export interface SuperAdminCredentials {
 }
 
 export interface AuthConfigOptions {
+	sessionDuration?: string | number;
+	sessionCacheTTL?: number | string;
+	requireVerification?: boolean;
+	authTokenHeader?: string;
 	superAdminCredentials?: Partial<SuperAdminCredentials>;
+	passwordHashingStrategy?: PasswordHashingStrategy;
+	adminAuthenticationStrategies?: Array<AuthenticationStrategy>;
+	storeAuthenticationStrategies?: Array<AuthenticationStrategy>;
+	sessionCacheStrategy?: SessionCacheStrategy;
 }
 
 export interface AppConfig {

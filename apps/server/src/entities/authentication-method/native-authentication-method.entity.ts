@@ -11,7 +11,9 @@ export class NativeAuthenticationMethod extends AuthenticationMethod {
 	@Column()
 	identifier: string;
 
-	@Column()
+	@Column({
+		select: false,
+	})
 	password: string;
 
 	@Column({

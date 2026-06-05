@@ -50,9 +50,9 @@ export class User extends AppEntity implements SoftDeletable {
 	@JoinTable()
 	roles: Role[];
 
-	public nativeAuthenticationMethod(): NativeAuthenticationMethod;
-	public nativeAuthenticationMethod(throwError?: boolean): NativeAuthenticationMethod | undefined;
-	public nativeAuthenticationMethod(throwError?: boolean): NativeAuthenticationMethod | undefined {
+	public getNativeAuthenticationMethod(): NativeAuthenticationMethod;
+	public getNativeAuthenticationMethod(throwError?: boolean): NativeAuthenticationMethod | undefined;
+	public getNativeAuthenticationMethod(throwError?: boolean): NativeAuthenticationMethod | undefined {
 		if (!this.authenticationMethods.length) {
 			throw new InternalServerError('errors.authentication_methods_not_loaded');
 		}

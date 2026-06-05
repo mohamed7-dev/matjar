@@ -1,3 +1,7 @@
 type Mutation {
-	updateGlobalSettings: Boolean
+	updateGlobalSettings(input: UpdateGlobalSettingsInput!): Boolean
+}
+
+input UpdateGlobalSettingsInput {
+	name: String
 }
