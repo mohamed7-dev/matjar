@@ -3,8 +3,13 @@ import { DEFAULT_MARKETPLACE_REGION_CODE } from '@matjar/common/lib/shared-const
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
 import { InternalServerError, MarketplaceRegionNotFoundError } from '../../common/errors/errors';
+import { AppEntity } from '../../common/helpers/app-entity';
+import { MarketplaceRegionAware } from '../../common/types/marketplace-region-aware';
+import { filterUnique } from '../../common/utils/filter-unique';
 import { ConfigService } from '../../config/config.service';
 import { MarketplaceRegion } from '../../entities/marketplace-region/marketplace-region.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { ChangeMarketplaceRegionEvent } from '../../event-bus/events/change-marketplace-region-event';
 import { OrmService } from '../../orm/orm.service';
 
 @Injectable()
@@ -12,6 +17,7 @@ export class MarketplaceRegionService {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly ormService: OrmService,
+		private readonly eventBus: EventBus,
 	) {}
 
 	/**@internal */
@@ -87,6 +93,32 @@ export class MarketplaceRegionService {
 		}
 
 		return marketplaceRegion;
+	}
+
+	public async assignToActiveMarketplaceRegion<Entity extends AppEntity & MarketplaceRegionAware>(
+		ctx: RequestContext,
+		entity: Entity,
+	): Promise<Entity> {
+		const defaultMarketplaceRegion = await this.getDefaultMarketplaceRegion(ctx);
+
+		const marketplaceRegionsIds = filterUnique([
+			defaultMarketplaceRegion.id,
+			ctx.marketplaceRegionId,
+		]);
+		entity.marketplaceRegions = marketplaceRegionsIds.map((id) => ({
+			id,
+		})) as any;
+		await this.eventBus.publish(
+			new ChangeMarketplaceRegionEvent(
+				ctx,
+				entity,
+				[
+					ctx.marketplaceRegionId,
+				],
+				'assigned',
+			),
+		);
+		return entity;
 	}
 
 	private async initializeDefaultMarketplaceRegion(): Promise<void> {

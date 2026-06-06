@@ -34,7 +34,7 @@ async function buildGraphqlModuleOptionsForApi(
 		configService,
 	});
 
-	const resolvers = generateResolvers(apiOptions.apiType, schema);
+	const resolvers = await generateResolvers(apiOptions.apiType, schema);
 	const plugins = [
 		new TranslateErrorsPLugin(i18nService),
 	];

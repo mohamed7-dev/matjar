@@ -8,6 +8,9 @@ import {
 	DEFAULT_SUPER_ADMIN_PASSWORD,
 	STORE_API_PATH,
 } from '@matjar/common/lib/shared-constants';
+import { DefaultAssetNamingStrategy } from './strategies/asset/default-asset-naming.strategy';
+import { LocalAssetPreviewStrategy } from './strategies/asset/local-asset-preview.strategy';
+import { LocalAssetStorageStrategy } from './strategies/asset/local-asset-storage.strategy';
 import { BcryptPasswordHashingStrategy } from './strategies/auth/bcrypt-password-hashing.strategy';
 import { DefaultSessionCacheStrategy } from './strategies/auth/default-session-cache.strategy';
 import { NativeAuthStrategy } from './strategies/auth/native-auth.strategy';
@@ -60,5 +63,17 @@ export const appConfig: RuntimeAppConfig = {
 			new NativeAuthStrategy(),
 		],
 		sessionCacheStrategy: new DefaultSessionCacheStrategy(),
+	},
+	asset: {
+		maxUploadSizeInBytes: 20971520,
+		allowedFileTypes: [
+			'image/*',
+			'video/*',
+			'audio/*',
+			'.pdf',
+		],
+		assetStorageStrategy: new LocalAssetStorageStrategy(),
+		assetNamingStrategy: new DefaultAssetNamingStrategy(),
+		assetPreviewStrategy: new LocalAssetPreviewStrategy(),
 	},
 };

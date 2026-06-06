@@ -10,6 +10,9 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  DateTime: any;
+  JSON: any;
+  Upload: any;
 };
 
 export class ApiError {
@@ -31,8 +34,23 @@ export class InvalidCredentialsError extends ApiError {
   }
 }
 
+export class InvalidMimetypeError extends ApiError {
+  readonly __typename = 'InvalidMimetypeError';
+  readonly code = 'INVALID_MIMETYPE_ERROR' as any;
+  readonly message = 'INVALID_MIMETYPE_ERROR';
+  readonly fileName: Scalars['String'];
+  readonly mimeType: Scalars['String'];
+  constructor(
+    input: { fileName: Scalars['String'], mimeType: Scalars['String'] }
+  ) {
+    super();
+    this.fileName = input.fileName
+    this.mimeType = input.mimeType
+  }
+}
 
-const errorTypeNames = new Set<string>(['InvalidCredentialsError']);
+
+const errorTypeNames = new Set<string>(['InvalidCredentialsError', 'InvalidMimetypeError']);
 function isGraphQLApiError(input: any): input is import('@matjar/common/lib/generated-types').ApiError {
   return input instanceof ApiError || errorTypeNames.has(input.__typename);
 }
@@ -41,6 +59,11 @@ export const adminErrorOperationTypeResolvers = {
   AuthenticateAdminUserResult: {
     __resolveType(value: any) {
       return isGraphQLApiError(value) ? (value as any).__typename : 'AuthenticatedUser';
+    },
+  },
+  CreateAssetsResult: {
+    __resolveType(value: any) {
+      return isGraphQLApiError(value) ? (value as any).__typename : 'Asset';
     },
   },
 };

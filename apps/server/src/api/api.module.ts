@@ -12,6 +12,7 @@ import { I18nExceptionLoggerFilter } from './filter/i18n-exception-logger.filter
 import { AuthenticationGuard } from './guards/authentication.guard';
 import { AuthorizationGuard } from './guards/authorization.guard';
 import { ApiErrorTranslationInterceptor } from './interceptors/api-error-translation.interceptor';
+import { AdminAssetResolver } from './resolvers/admin/admin-asset.resolver';
 import { AdminAuthResolver } from './resolvers/admin/admin-auth.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 
@@ -56,6 +57,7 @@ class SharedApiModule {}
 	providers: [
 		GlobalSettingsResolver,
 		AdminAuthResolver,
+		AdminAssetResolver,
 	],
 })
 class AdminApiModule {}
@@ -102,8 +104,17 @@ export class ApiModule implements NestModule {
 		private readonly i18nService: I18nService,
 	) {}
 
-	configure(consumer: MiddlewareConsumer): void {
+	async configure(consumer: MiddlewareConsumer): Promise<void> {
 		const { admin, store } = this.configService.api;
+		const { default: graphqlUploadExpress } = await import('graphql-upload/graphqlUploadExpress.mjs');
+
+		consumer
+			.apply(
+				graphqlUploadExpress({
+					maxFileSize: this.configService.asset.maxUploadSizeInBytes,
+				}),
+			)
+			.forRoutes(admin.path, store.path);
 		consumer.apply(this.i18nService.setupMiddleware()).forRoutes(admin.path, store.path);
 	}
 }

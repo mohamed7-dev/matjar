@@ -1,4 +1,9 @@
-import { Permission, PermissionIndexItemType } from '@matjar/common/lib/generated-types';
+import {
+	CurrencyCode,
+	LanguageCode,
+	Permission,
+	PermissionIndexItemType,
+} from '@matjar/common/lib/generated-types';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
 import { PermissionsIndex } from '../../common/helpers/permission-index';
@@ -9,8 +14,8 @@ import { ApiType } from '../utils/get-api-type';
 
 interface RequestContextOptions {
 	apiType: ApiType;
-	languageCode?: string;
-	currencyCode?: string;
+	languageCode?: LanguageCode;
+	currencyCode?: CurrencyCode;
 	req?: Request;
 	tFunction?: TFunction;
 	marketplaceRegion: MarketplaceRegion;
@@ -19,8 +24,8 @@ interface RequestContextOptions {
 }
 export class RequestContext {
 	private _apiType: ApiType;
-	private _languageCode: string;
-	private _currencyCode: string;
+	private _languageCode: LanguageCode;
+	private _currencyCode: CurrencyCode;
 	private _req?: Request;
 	private _t: TFunction;
 	private _marketplaceRegion: MarketplaceRegion;
@@ -42,11 +47,11 @@ export class RequestContext {
 		return this._apiType;
 	}
 
-	get languageCode(): string {
+	get languageCode(): LanguageCode {
 		return this._languageCode;
 	}
 
-	get currencyCode(): string {
+	get currencyCode(): CurrencyCode {
 		return this._currencyCode;
 	}
 

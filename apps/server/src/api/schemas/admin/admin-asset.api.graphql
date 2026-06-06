@@ -1,0 +1,26 @@
+type Mutation {
+	"""
+	Create new assets
+	"""
+	createAssets(input: [CreateAssetsInput!]!): [CreateAssetsResult!]!
+}
+
+input CreateAssetsInput {
+	file: Upload!
+	translations: [AssetTranslationInput!]
+}
+
+input AssetTranslationInput {
+	id: ID
+	languageCode: LanguageCode!
+	name: String
+}
+
+type InvalidMimetypeError implements ApiError {
+	code: ErrorCode!
+	message: String!
+	fileName: String!
+	mimeType: String!
+}
+
+union CreateAssetsResult = Asset | InvalidMimetypeError

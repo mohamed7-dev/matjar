@@ -1,6 +1,7 @@
 # Third-party custom scalars
 scalar JSON
 scalar DateTime
+scalar Upload
 
 # Gets extended by any entity in the app
 interface Node {

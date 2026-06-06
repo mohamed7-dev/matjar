@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '../config/config.module';
 import { OrmModule } from '../orm/orm.module';
 import { AdministratorService } from './domain/administrator.service';
+import { AssetService } from './domain/asset.service';
 import { AuthService } from './domain/auth.service';
 import { CompanyService } from './domain/company.service';
 import { MarketplaceRegionService } from './domain/marketplace-region.service';
@@ -12,11 +13,13 @@ import { DefaultRolesBuilderService } from './helpers/default-roles-builder.serv
 import { InitializerService } from './helpers/initializer.service';
 import { PasswordHashingService } from './helpers/password-hashing.service';
 import { RequestContextService } from './helpers/request-context.service';
+import { TranslatorService } from './helpers/translator.service';
 
 const helperServices = [
 	RequestContextService,
 	DefaultRolesBuilderService,
 	PasswordHashingService,
+	TranslatorService,
 ];
 
 const domainsServices = [
@@ -27,6 +30,7 @@ const domainsServices = [
 	AuthService,
 	SessionService,
 	CompanyService,
+	AssetService,
 ];
 
 @Module({

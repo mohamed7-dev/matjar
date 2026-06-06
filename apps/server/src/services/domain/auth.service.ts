@@ -4,9 +4,14 @@ import { InternalServerError } from '../../common/errors/errors';
 import { InvalidCredentialsError } from '../../common/errors/generated-graphql-admin-errors';
 import { ConfigService } from '../../config/config.service';
 import { AuthenticationStrategy } from '../../config/strategies/auth/authentication-strategy.interface';
+import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/strategies/auth/native-auth.strategy';
 import { ExternalAuthenticationMethod } from '../../entities/authentication-method/external-authentication-method.entity';
 import { Session } from '../../entities/session/session.entity';
 import { User } from '../../entities/user/user.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { LoginAttemptEvent } from '../../event-bus/events/login-attempt-event';
+import { LoginEvent } from '../../event-bus/events/login-event';
+import { LogoutEvent } from '../../event-bus/events/logout-event';
 import { OrmService } from '../../orm/orm.service';
 import { SessionService } from './session.service';
 
@@ -16,6 +21,7 @@ export class AuthService {
 		private readonly configService: ConfigService,
 		private readonly ormService: OrmService,
 		private readonly sessionService: SessionService,
+		private readonly eventBus: EventBus,
 	) {}
 
 	public async authenticate(
@@ -23,7 +29,13 @@ export class AuthService {
 		authStrategyName: string,
 		authData: any,
 	): Promise<Session | InvalidCredentialsError> {
-		// TODO: publish LoginAttemptEvent
+		await this.eventBus.publish(
+			new LoginAttemptEvent(
+				ctx,
+				authStrategyName,
+				authStrategyName === NATIVE_AUTH_STRATEGY_NAME ? authData.identifier : undefined,
+			),
+		);
 		const authStrategy = this.getAuthStrategyByName(ctx, authStrategyName);
 
 		const authResult = await authStrategy.authenticate(ctx, authData);
@@ -62,7 +74,7 @@ export class AuthService {
 		await this.ormService.getRepository(ctx, User).save(user);
 
 		const session = await this.sessionService.createSession(ctx, user, authStrategyName);
-		// TODO: publish LoginEvent
+		await this.eventBus.publish(new LoginEvent(ctx, user));
 		return session;
 	}
 
@@ -88,7 +100,7 @@ export class AuthService {
 				await authenticationStrategy.onLogout(ctx, session.user);
 			}
 
-			// TODO: publish LogoutEvent
+			await this.eventBus.publish(new LogoutEvent(ctx));
 			await this.sessionService.deleteUserSessions(ctx, session.user);
 		}
 	}

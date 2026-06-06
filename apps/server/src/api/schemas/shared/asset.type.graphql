@@ -1,0 +1,35 @@
+type Asset implements Node {
+	id: ID!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	mimetype: String!
+	width: Int!
+	height: Int!
+	fileSize: Int!
+	type: AssetType!
+	sourceIdentifier: String!
+	previewIdentifier: String!
+	focalPoint: Coordinate
+	languageCode: LanguageCode!
+	name: String!
+	translations: [AssetTranslation!]!
+}
+
+type AssetTranslation {
+	id: ID!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	languageCode: LanguageCode!
+	name: String!
+}
+
+enum AssetType {
+	IMAGE
+	VIDEO
+	BINARY
+}
+
+type Coordinate {
+	x: Float!
+	y: Float!
+}

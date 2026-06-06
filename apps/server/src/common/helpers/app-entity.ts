@@ -17,5 +17,5 @@ export abstract class AppEntity {
 	createdAt: Date;
 
 	@UpdateDateColumn()
-	updateAt: Date;
+	updatedAt: Date;
 }

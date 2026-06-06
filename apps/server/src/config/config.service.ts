@@ -25,6 +25,10 @@ export class ConfigService {
 		return this.appConfig.auth;
 	}
 
+	get asset(): RuntimeAppConfig['asset'] {
+		return this.appConfig.asset;
+	}
+
 	get defaultLanguageCode(): RuntimeAppConfig['defaultLanguageCode'] {
 		return this.appConfig.defaultLanguageCode;
 	}

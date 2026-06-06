@@ -1,6 +1,9 @@
 import { LanguageCode } from '@matjar/common/lib/generated-types';
 import { DataSourceOptions } from 'typeorm';
 import { DeepPartial } from '../../common/types/deep-partial';
+import { AssetNamingStrategy } from '../strategies/asset/asset-naming-strategy.interface';
+import { AssetPreviewStrategy } from '../strategies/asset/asset-preview-strategy.interface';
+import { AssetStorageStrategy } from '../strategies/asset/asset-storage-strategy.interface';
 import { AuthenticationStrategy } from '../strategies/auth/authentication-strategy.interface';
 import { PasswordHashingStrategy } from '../strategies/auth/password-hashing-strategy.interface';
 import { SessionCacheStrategy } from '../strategies/auth/session-cache-strategy.interface';
@@ -55,6 +58,22 @@ export interface AuthConfigOptions {
 	sessionCacheStrategy?: SessionCacheStrategy;
 }
 
+export interface AssetConfigOptions {
+	/**
+	 * @default 20 mb
+	 */
+	maxUploadSizeInBytes?: number;
+	/**
+	 * @description
+	 * This should be in the form of either a file extension (".png") or a mime type ("image/*")
+	 * @default image, audio, video, PDF MIME types
+	 */
+	allowedFileTypes?: string[];
+	assetStorageStrategy?: AssetStorageStrategy;
+	assetPreviewStrategy?: AssetPreviewStrategy;
+	assetNamingStrategy?: AssetNamingStrategy;
+}
+
 export interface AppConfig {
 	defaultLanguageCode?: LanguageCode;
 	defaultMarketplaceRegionToken?: string;
@@ -62,6 +81,7 @@ export interface AppConfig {
 	api?: ApiConfigOptions;
 	database?: DatabaseConfigOptions;
 	auth?: AuthConfigOptions;
+	asset?: AssetConfigOptions;
 }
 
 export interface RuntimeAppConfig extends Required<AppConfig> {
@@ -73,6 +93,7 @@ export interface RuntimeAppConfig extends Required<AppConfig> {
 	auth: Required<AuthConfigOptions> & {
 		superAdminCredentials: Required<SuperAdminCredentials>;
 	};
+	asset: Required<AssetConfigOptions>;
 }
 
 export type PartialAppConfig = DeepPartial<AppConfig>;

@@ -22,4 +22,7 @@ export const entitiesMap = {
 	Role: require('./role/role.entity').Role,
 	CompanyRole: require('./role/company-role.entity').CompanyRole,
 	PlatformRole: require('./role/platform-role.entity').PlatformRole,
+
+	Asset: require('./asset/asset.entity').Asset,
+	AssetTranslation: require('./asset/asset-translation.entity').AssetTranslation,
 };
