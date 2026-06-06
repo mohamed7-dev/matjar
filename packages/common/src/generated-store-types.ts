@@ -16,12 +16,48 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
+  JSON: { input: any; output: any; }
+  Upload: { input: any; output: any; }
 };
 
 export type ApiError = {
   code: ErrorCode;
   message: Scalars['String']['output'];
 };
+
+export type Asset = Node & {
+  __typename?: 'Asset';
+  createdAt: Scalars['DateTime']['output'];
+  fileSize: Scalars['Int']['output'];
+  focalPoint?: Maybe<Coordinate>;
+  height: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  languageCode: LanguageCode;
+  mimetype: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  previewIdentifier: Scalars['String']['output'];
+  sourceIdentifier: Scalars['String']['output'];
+  translations: Array<AssetTranslation>;
+  type: AssetType;
+  updatedAt: Scalars['DateTime']['output'];
+  width: Scalars['Int']['output'];
+};
+
+export type AssetTranslation = {
+  __typename?: 'AssetTranslation';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  languageCode: LanguageCode;
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum AssetType {
+  BINARY = 'BINARY',
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO'
+}
 
 export type AuthenticatedUser = {
   __typename?: 'AuthenticatedUser';
@@ -32,6 +68,12 @@ export type AuthenticatedUser = {
 
 export type AuthenticationInput = {
   native?: InputMaybe<NativeAuthInput>;
+};
+
+export type Coordinate = {
+  __typename?: 'Coordinate';
+  x: Scalars['Float']['output'];
+  y: Scalars['Float']['output'];
 };
 
 export enum CurrencyCode {
@@ -695,6 +737,10 @@ export type NativeAuthInput = {
   password: Scalars['String']['input'];
 };
 
+export type Node = {
+  id: Scalars['ID']['output'];
+};
+
 /**
  *
  * Defines the set of access rules recognized by the system.
@@ -724,6 +770,22 @@ export enum Permission {
   platform_administrator_read = 'platform_administrator_read',
   /** Grants permission to update Administrator */
   platform_administrator_update = 'platform_administrator_update',
+  /** Grants permission to create Asset */
+  platform_asset_create = 'platform_asset_create',
+  /** Grants permission to delete Asset */
+  platform_asset_delete = 'platform_asset_delete',
+  /** Grants permission to read Asset */
+  platform_asset_read = 'platform_asset_read',
+  /** Grants permission to update Asset */
+  platform_asset_update = 'platform_asset_update',
+  /** Grants permission to create Catalog */
+  platform_catalog_create = 'platform_catalog_create',
+  /** Grants permission to delete Catalog */
+  platform_catalog_delete = 'platform_catalog_delete',
+  /** Grants permission to read Catalog */
+  platform_catalog_read = 'platform_catalog_read',
+  /** Grants permission to update Catalog */
+  platform_catalog_update = 'platform_catalog_update',
   /** Grants permission to create Company */
   platform_company_create = 'platform_company_create',
   /** Grants permission to delete Company */
