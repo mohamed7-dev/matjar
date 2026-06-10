@@ -1,0 +1,73 @@
+{
+	"$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
+	"extends": [
+		"../../biome.json"
+	],
+	"root": false,
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false,
+		"root": "../../"
+	},
+	"files": {
+		"ignoreUnknown": true,
+		"includes": [
+			"**/*.{ts,tsx,json,css,html}",
+			"!**/routeTree.gen.ts",
+			"!**/graphql-env.d.ts"
+		]
+	},
+	"assist": {
+		"actions": {
+			"recommended": true
+		}
+	},
+	"linter": {
+		"rules": {
+			"recommended": true,
+			"correctness": {
+				"noChildrenProp": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
+			}
+		}
+	},
+	"javascript": {
+		"parser": {
+			"jsxEverywhere": false
+		},
+		"formatter": {
+			"quoteStyle": "single",
+			"jsxQuoteStyle": "single",
+			"bracketSameLine": false,
+			"bracketSpacing": true,
+			"attributePosition": "multiline"
+		},
+		"jsxRuntime": "transparent"
+	},
+	"json": {
+		"parser": {
+			"allowTrailingCommas": true
+		},
+		"formatter": {
+			"enabled": true
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		},
+		"formatter": {
+			"enabled": true
+		}
+	},
+	"html": {
+		"formatter": {
+			"enabled": true,
+			"whitespaceSensitivity": "ignore",
+			"selfCloseVoidElements": "always"
+		}
+	}
+}

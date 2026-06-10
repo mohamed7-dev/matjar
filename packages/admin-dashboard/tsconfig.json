@@ -1,0 +1,21 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		},
+		"types": [
+			"vite/client"
+		],
+		"plugins": [
+			{
+				"name": "gql.tada/ts-plugin",
+				"schema": "http://localhost:3000/admin-api",
+				"tadaOutputLocation": "./src/infra/graphql/graphql-env.d.ts"
+			}
+		]
+	}
+}

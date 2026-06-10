@@ -1,0 +1,37 @@
+@import "@fontsource-variable/hanken-grotesk";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/jetbrains-mono";
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * It injects :root and .dark CSS custom properties
+ */
+@import "virtual:admin-dashboard-theme";
+
+/*
+ * Tailwind @theme inline block generated at build time
+ */
+@import "virtual:admin-dashboard-theme-inline";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+
+	body {
+		@apply bg-background text-foreground;
+		font-family: var(--font-body);
+	}
+
+	#app {
+		isolation: isolate;
+	}
+}
+
+html[dir="rtl"] * {
+	direction: rtl;
+}
