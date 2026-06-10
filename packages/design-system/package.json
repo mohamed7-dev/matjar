@@ -1,0 +1,22 @@
+{
+	"name": "@matjar/design-system",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/theme-tokens/index.d.ts",
+			"default": "./dist/theme-tokens/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "rimraf dist && tsc --project ./tsconfig.build.json",
+		"lint": "biome check src/ --write",
+		"check-types": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"rimraf": "^6.1.3"
+	}
+}
