@@ -8,6 +8,8 @@
 	"conventionalCommits.scopes": [
 		"server",
 		"common",
+		"dashboard",
+		"design",
 		"repo"
 	],
 	"cSpell.words": [

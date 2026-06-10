@@ -5,4 +5,5 @@ allowBuilds:
   '@apollo/protobufjs': true
   '@nestjs/core': true
   esbuild: true
+  msw: true
   nx: true

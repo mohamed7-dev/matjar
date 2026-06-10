@@ -1,0 +1,15 @@
+projects:
+  admin:
+    schema: ./schema-admin.json
+    documents:
+      - "packages/**/graphql/admin-definitions.ts"
+      - "packages/**/graphql/shared-definitions.ts"
+      - "packages/**/graphql/fragments-admin.ts"
+      - "apps/**/graphql/admin-definitions.ts"
+      - "apps/**/graphql/shared-definitions.ts"
+      - "apps/**/graphql/fragments-admin.ts"
+  customer:
+    schema: ./schema-store.json
+    documents:
+      - "packages/**/graphql/store-definitions.ts"
+      - "apps/**/graphql/store-definitions.ts"
