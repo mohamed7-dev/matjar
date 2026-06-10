@@ -1,7 +1,12 @@
-import { Permission, PermissionIndexItemType } from '@matjar/common/lib/generated-types';
+import { Permission } from '@matjar/common/lib/generated-types';
 import { CompanyRole } from '../../entities/role/company-role.entity';
 import { PlatformRole } from '../../entities/role/platform-role.entity';
 import { User } from '../../entities/user/user.entity';
+
+export enum PermissionIndexItemType {
+	PLATFORM = 'PLATFORM',
+	COMPANY = 'COMPANY',
+}
 
 type AccessContextKey =
 	| `platform:${string}` // marketplace only
@@ -9,6 +14,7 @@ type AccessContextKey =
 
 interface PermissionIndexMapItem {
 	type: PermissionIndexItemType;
+	id: string;
 	marketplaceToken: string;
 	marketplaceCode: string;
 	companyToken?: string;
@@ -18,6 +24,7 @@ interface PermissionIndexMapItem {
 
 interface NormalizedPermissionIndexItem {
 	type: PermissionIndexItemType;
+	id: string;
 	marketplaceToken: string;
 	marketplaceCode: string;
 	companyToken?: string;
@@ -58,6 +65,7 @@ export class PermissionsIndex {
 					const foundIndexItem = index.get(key);
 					if (foundIndexItem) {
 						foundIndexItem.type = PermissionIndexItemType.PLATFORM;
+						foundIndexItem.id = marketplace.id;
 						foundIndexItem.marketplaceToken = marketplace.token;
 						foundIndexItem.marketplaceCode = marketplace.code;
 						foundIndexItem.permissions = new Set([
@@ -83,6 +91,7 @@ export class PermissionsIndex {
 					const foundIndexItem = index.get(key);
 					if (foundIndexItem) {
 						foundIndexItem.type === PermissionIndexItemType.COMPANY;
+						foundIndexItem.id = marketplace.id;
 						foundIndexItem.marketplaceToken = marketplace.token;
 						foundIndexItem.marketplaceCode = marketplace.code;
 						foundIndexItem.companyCode = role.company.code;

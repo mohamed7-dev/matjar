@@ -1,0 +1,10 @@
+type User implements Node {
+	id: ID!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	identifier: String!
+	isVerified: Boolean!
+	lastAuthenticatedAt: DateTime
+	# roles: [Role!]!
+	# authenticationMethods: [AuthenticationMethod!]!
+}

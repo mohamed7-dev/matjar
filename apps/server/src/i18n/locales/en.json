@@ -10,6 +10,8 @@
 		"currency_not_available_in_marketplace_region": "\"{currencyCode}\" is not available in your current marketplace region",
 		"marketplace_region_not_found": "Marketplace region with the token \"{token}\" is not found",
 		"auth_strategy_not_found": "Authentication strategy with the name \"{name}\" is not found",
-		"forbidden": "You are not allowed to access resource"
+		"forbidden": "You are not allowed to access resource",
+		"list_query_limit_exceeded": "Query limit exceeded, the maximum number of items allowed is \"{limit}\"",
+		"invalid_sort_field": "The sort field \"{ fieldName }\" is invalid. Valid fields are: { validFields }"
 	}
 }

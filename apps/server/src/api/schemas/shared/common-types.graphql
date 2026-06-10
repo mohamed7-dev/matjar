@@ -21,9 +21,275 @@ interface ApiError {
 	message: String!
 }
 
-"""
-Indicates that an operation was done successfully
-"""
+# Indicates that an operation was done successfully
 type Success {
 	success: Boolean!
+}
+
+# implemented by any query result that supports pagination
+interface PaginatedList {
+	items: [Node!]!
+	totalItemsCount: Int!
+}
+
+"""
+Controls how multiple filter groups are combined together.
+"""
+enum FilterGroupOperator {
+	AND
+	OR
+}
+
+"""
+Controls the ordering direction for sorted results.
+"""
+enum SortDirection {
+	ASC
+	DESC
+}
+
+"""
+Represents a numeric range with inclusive boundaries.
+"""
+input NumericRangeInput {
+	"""
+	Minimum allowed value (inclusive).
+	"""
+	min: Float!
+
+	"""
+	Maximum allowed value (inclusive).
+	"""
+	max: Float!
+}
+
+"""
+Filtering operations available for numeric fields.
+Supports integers, floats, decimal, and money-like values.
+"""
+input NumericFilterInput {
+	"""
+	Matches values exactly.
+	"""
+	equals: Float
+
+	"""
+	Matches values strictly less than the provided value.
+	"""
+	lessThan: Float
+
+	"""
+	Matches values less than or equal to the provided value.
+	"""
+	lessThanOrEqual: Float
+
+	"""
+	Matches values strictly greater than the provided value.
+	"""
+	greaterThan: Float
+
+	"""
+	Matches values greater than or equal to the provided value.
+	"""
+	greaterThanOrEqual: Float
+
+	"""
+	Matches values within the provided inclusive range.
+	"""
+	withinRange: NumericRangeInput
+
+	"""
+	Filters values based on whether the field is null.
+	"""
+	isNull: Boolean
+}
+
+"""
+Represents a date/time range with inclusive boundaries.
+"""
+input DateTimeRangeInput {
+	"""
+	Earliest allowed date/time (inclusive).
+	"""
+	from: DateTime!
+
+	"""
+	Latest allowed date/time (inclusive).
+	"""
+	to: DateTime!
+}
+
+"""
+Filtering operations available for date/time fields.
+"""
+input DateTimeFilterInput {
+	"""
+	Matches the exact date/time value.
+	"""
+	equals: DateTime
+
+	"""
+	Matches values occurring before the provided date/time.
+	"""
+	before: DateTime
+
+	"""
+	Matches values occurring after the provided date/time.
+	"""
+	after: DateTime
+
+	"""
+	Matches values within the provided inclusive date/time range.
+	"""
+	withinRange: DateTimeRangeInput
+
+	"""
+	Filters values based on whether the field is null.
+	"""
+	isNull: Boolean
+}
+
+"""
+Filtering operations available for text-based fields.
+"""
+input TextFilterInput {
+	"""
+	Matches values exactly.
+	"""
+	equals: String
+
+	"""
+	Excludes values that match exactly.
+	"""
+	notEquals: String
+
+	"""
+	Matches values containing the provided substring.
+	"""
+	contains: String
+
+	"""
+	Excludes values containing the provided substring.
+	"""
+	doesNotContain: String
+
+	"""
+	Matches any value from the provided list.
+	"""
+	includedIn: [String!]
+
+	"""
+	Excludes any value from the provided list.
+	"""
+	excludedFrom: [String!]
+
+	"""
+	Matches values using a regular expression pattern.
+	"""
+	matchesRegex: String
+
+	"""
+	Filters values based on whether the field is null.
+	"""
+	isNull: Boolean
+}
+
+"""
+Filtering operations available for identifier fields.
+"""
+input IdentifierFilterInput {
+	"""
+	Matches identifiers exactly.
+	"""
+	equals: String
+
+	"""
+	Excludes identifiers that match exactly.
+	"""
+	notEquals: String
+
+	"""
+	Matches any identifier from the provided list.
+	"""
+	includedIn: [String!]
+
+	"""
+	Excludes any identifier from the provided list.
+	"""
+	excludedFrom: [String!]
+
+	"""
+	Filters values based on whether the field is null.
+	"""
+	isNull: Boolean
+}
+
+"""
+Filtering operations available for boolean fields.
+"""
+input BooleanFilterInput {
+	"""
+	Matches the exact boolean value.
+	"""
+	equals: Boolean
+
+	"""
+	Filters values based on whether the field is null.
+	"""
+	isNull: Boolean
+}
+
+"""
+Filtering operations for fields containing a list of text values.
+Checks whether the provided value exists inside the stored list.
+"""
+input TextListFilterInput {
+	"""
+	Returns records where the list contains the specified text value.
+	"""
+	inList: String!
+}
+
+"""
+Filtering operations for fields containing a list of numeric values.
+Checks whether the provided number exists inside the stored list.
+"""
+input NumericListFilterInput {
+	"""
+	Returns records where the list contains the specified numeric value.
+	"""
+	inList: Float!
+}
+
+"""
+Filtering operations for fields containing a list of boolean values.
+Checks whether the provided boolean value exists inside the stored list.
+"""
+input BooleanListFilterInput {
+	"""
+	Returns records where the list contains the specified boolean value.
+	"""
+	inList: Boolean!
+}
+
+"""
+Filtering operations for fields containing a list of identifier values.
+Checks whether the provided identifier exists inside the stored list.
+"""
+input IdentifierListFilterInput {
+	"""
+	Returns records where the list contains the specified identifier.
+	"""
+	inList: ID!
+}
+
+"""
+Filtering operations for fields containing a list of date/time values.
+Checks whether the provided date exists inside the stored list.
+"""
+input DateListFilterInput {
+	"""
+	Returns records where the list contains the specified date/time value.
+	"""
+	inList: DateTime!
 }

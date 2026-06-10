@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '../config/config.module';
+import { EventBus } from '../event-bus/event-bus';
+import { EventBusModule } from '../event-bus/event-bus.module';
 import { OrmModule } from '../orm/orm.module';
 import { AdministratorService } from './domain/administrator.service';
 import { AssetService } from './domain/asset.service';
@@ -11,6 +13,7 @@ import { SessionService } from './domain/session.service';
 import { UserService } from './domain/user.service';
 import { DefaultRolesBuilderService } from './helpers/default-roles-builder.service';
 import { InitializerService } from './helpers/initializer.service';
+import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder.service';
 import { PasswordHashingService } from './helpers/password-hashing.service';
 import { RequestContextService } from './helpers/request-context.service';
 import { TranslatorService } from './helpers/translator.service';
@@ -20,6 +23,7 @@ const helperServices = [
 	DefaultRolesBuilderService,
 	PasswordHashingService,
 	TranslatorService,
+	ListQueryBuilder,
 ];
 
 const domainsServices = [
@@ -37,6 +41,7 @@ const domainsServices = [
 	imports: [
 		ConfigModule,
 		OrmModule,
+		EventBusModule,
 	],
 	providers: [
 		...domainsServices,

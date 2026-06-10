@@ -1,0 +1,11 @@
+type MarketplaceRegion implements Node {
+	id: ID!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	code: String!
+	token: String!
+	primaryLanguageCode: LanguageCode!
+	availableLanguageCodes: [LanguageCode!]
+	primaryCurrencyCode: CurrencyCode!
+	availableCurrencyCodes: [CurrencyCode!]!
+}

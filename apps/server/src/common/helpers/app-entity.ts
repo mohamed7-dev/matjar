@@ -10,7 +10,7 @@ export abstract class AppEntity {
 		}
 	}
 
-	@PrimaryGeneratedColumn()
+	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
 	@CreateDateColumn()

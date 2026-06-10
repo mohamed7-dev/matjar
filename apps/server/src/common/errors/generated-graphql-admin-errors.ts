@@ -58,7 +58,7 @@ function isGraphQLApiError(input: any): input is import('@matjar/common/lib/gene
 export const adminErrorOperationTypeResolvers = {
   AuthenticateAdminUserResult: {
     __resolveType(value: any) {
-      return isGraphQLApiError(value) ? (value as any).__typename : 'AuthenticatedUser';
+      return isGraphQLApiError(value) ? (value as any).__typename : 'AuthenticatedAdminUser';
     },
   },
   CreateAssetsResult: {

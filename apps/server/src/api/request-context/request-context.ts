@@ -1,12 +1,7 @@
-import {
-	CurrencyCode,
-	LanguageCode,
-	Permission,
-	PermissionIndexItemType,
-} from '@matjar/common/lib/generated-types';
+import { CurrencyCode, LanguageCode, Permission } from '@matjar/common/lib/generated-types';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
-import { PermissionsIndex } from '../../common/helpers/permission-index';
+import { PermissionIndexItemType, PermissionsIndex } from '../../common/helpers/permission-index';
 import { SessionCacheEntry } from '../../config/strategies/auth/session-cache-strategy.interface';
 import { Company } from '../../entities/company/company.entity';
 import { MarketplaceRegion } from '../../entities/marketplace-region/marketplace-region.entity';

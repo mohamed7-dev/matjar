@@ -1,4 +1,5 @@
 import { LanguageCode } from '@matjar/common/lib/generated-types';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { DataSourceOptions } from 'typeorm';
 import { DeepPartial } from '../../common/types/deep-partial';
 import { AssetNamingStrategy } from '../strategies/asset/asset-naming-strategy.interface';
@@ -19,6 +20,7 @@ interface ApiActorOptions {
 	path?: string;
 	enableDebugging?: boolean;
 	enablePlayground?: boolean;
+	listQueryLimit?: number;
 }
 
 interface ApiConfigOptions {
@@ -37,6 +39,7 @@ interface ApiConfigOptions {
 	 * The property name that identifies the company in the header object
 	 */
 	companyIdentifier?: string;
+	cors?: CorsOptions;
 }
 
 type DatabaseConfigOptions = DataSourceOptions;

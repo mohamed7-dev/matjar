@@ -31,7 +31,7 @@ async function buildGraphqlModuleOptionsForApi(
 		typesPaths: apiOptions.apiTypesPaths,
 		typesLoader: typesLoader,
 		outputAs: 'graphql-schema',
-		configService,
+		config: configService,
 	});
 
 	const resolvers = await generateResolvers(apiOptions.apiType, schema);

@@ -4,13 +4,16 @@ import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
 import { InternalServerError, MarketplaceRegionNotFoundError } from '../../common/errors/errors';
 import { AppEntity } from '../../common/helpers/app-entity';
+import { ListQueryOptions } from '../../common/types/list-query-options';
 import { MarketplaceRegionAware } from '../../common/types/marketplace-region-aware';
+import { PaginatedList } from '../../common/types/paginated-list';
 import { filterUnique } from '../../common/utils/filter-unique';
 import { ConfigService } from '../../config/config.service';
 import { MarketplaceRegion } from '../../entities/marketplace-region/marketplace-region.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ChangeMarketplaceRegionEvent } from '../../event-bus/events/change-marketplace-region-event';
 import { OrmService } from '../../orm/orm.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder.service';
 
 @Injectable()
 export class MarketplaceRegionService {
@@ -18,11 +21,27 @@ export class MarketplaceRegionService {
 		private readonly configService: ConfigService,
 		private readonly ormService: OrmService,
 		private readonly eventBus: EventBus,
+		private readonly listQueryBuilder: ListQueryBuilder,
 	) {}
 
 	/**@internal */
 	public async initMarketplaceRegions(): Promise<void> {
 		await this.initializeDefaultMarketplaceRegion();
+	}
+
+	public async findAll(
+		ctx: RequestContext,
+		input: ListQueryOptions<MarketplaceRegion>,
+	): Promise<PaginatedList<MarketplaceRegion>> {
+		return await this.listQueryBuilder
+			.build(MarketplaceRegion, input, {
+				ctx,
+			})
+			.getManyAndCount()
+			.then(([items, totalItems]) => ({
+				items,
+				totalItemsCount: totalItems,
+			}));
 	}
 
 	public async getDefaultMarketplaceRegion(ctx?: RequestContext): Promise<MarketplaceRegion> {

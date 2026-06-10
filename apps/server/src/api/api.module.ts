@@ -12,8 +12,10 @@ import { I18nExceptionLoggerFilter } from './filter/i18n-exception-logger.filter
 import { AuthenticationGuard } from './guards/authentication.guard';
 import { AuthorizationGuard } from './guards/authorization.guard';
 import { ApiErrorTranslationInterceptor } from './interceptors/api-error-translation.interceptor';
+import { AdminAdministratorResolver } from './resolvers/admin/admin-administrator.resolver';
 import { AdminAssetResolver } from './resolvers/admin/admin-asset.resolver';
 import { AdminAuthResolver } from './resolvers/admin/admin-auth.resolver';
+import { AdminMarketplaceRegionResolver } from './resolvers/admin/admin-marketplace-region.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 
 @Module({
@@ -58,6 +60,8 @@ class SharedApiModule {}
 		GlobalSettingsResolver,
 		AdminAuthResolver,
 		AdminAssetResolver,
+		AdminAdministratorResolver,
+		AdminMarketplaceRegionResolver,
 	],
 })
 class AdminApiModule {}

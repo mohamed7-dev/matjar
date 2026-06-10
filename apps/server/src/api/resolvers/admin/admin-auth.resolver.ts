@@ -1,5 +1,6 @@
 import {
 	AuthenticateAdminUserResult,
+	AuthenticatedAdminUser,
 	AuthenticatedUser,
 	MutationAuthenticateAdminUserArgs,
 	Success,
@@ -115,12 +116,17 @@ export class AdminAuthResolver {
 		return user ? this.clientSafeUser(user) : null;
 	}
 
-	protected clientSafeUser(user: User): AuthenticatedUser {
+	protected clientSafeUser(user: User): AuthenticatedAdminUser {
 		const permissionIndex = PermissionsIndex.build(user);
 		return {
 			id: user.id,
 			identifier: user.identifier,
-			permissionsIndex: PermissionsIndex.normalizeMap(permissionIndex),
+			marketplaceRegions: PermissionsIndex.normalizeMap(permissionIndex).map((mp) => ({
+				id: mp.id,
+				token: mp.marketplaceToken,
+				code: mp.marketplaceCode,
+				permissions: mp.permissions,
+			})),
 		};
 	}
 }

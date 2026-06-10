@@ -1,6 +1,7 @@
 import { LanguageCode } from '@matjar/common/lib/generated-types';
 import {
 	ADMIN_API_PATH,
+	DEFAULT_AUTH_TOKEN_HEADER_KEY,
 	DEFAULT_COMPANY_IDENTIFIER,
 	DEFAULT_MARKETPLACE_REGION_IDENTIFIER,
 	DEFAULT_MARKETPLACE_REGION_TOKEN,
@@ -33,14 +34,20 @@ export const appConfig: RuntimeAppConfig = {
 			path: ADMIN_API_PATH,
 			enableDebugging: true,
 			enablePlayground: true,
+			listQueryLimit: 1000,
 		},
 		store: {
 			path: STORE_API_PATH,
 			enableDebugging: true,
 			enablePlayground: true,
+			listQueryLimit: 1000,
 		},
 		marketplaceRegionIdentifier: DEFAULT_MARKETPLACE_REGION_IDENTIFIER,
 		companyIdentifier: DEFAULT_COMPANY_IDENTIFIER,
+		cors: {
+			credentials: true,
+			origin: true,
+		},
 	},
 	database: {
 		type: 'postgres',
@@ -48,7 +55,7 @@ export const appConfig: RuntimeAppConfig = {
 	},
 	auth: {
 		requireVerification: true,
-		authTokenHeader: 'x-session-token',
+		authTokenHeader: DEFAULT_AUTH_TOKEN_HEADER_KEY,
 		sessionDuration: '1y',
 		sessionCacheTTL: 300,
 		superAdminCredentials: {

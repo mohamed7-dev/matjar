@@ -1,0 +1,12 @@
+type Query {
+	marketplaceRegions(options: MarketplaceRegionListOptions): MarketplaceRegionList!
+	activeMarketplaceRegion: MarketplaceRegion!
+}
+
+type MarketplaceRegionList implements PaginatedList {
+	items: [MarketplaceRegion!]!
+	totalItemsCount: Int!
+}
+
+# Generated at runtime
+input MarketplaceRegionListOptions

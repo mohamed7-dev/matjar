@@ -11,12 +11,13 @@ export async function bootstrap(userConfig?: PartialAppConfig): Promise<NestExpr
 	Logger.setLoggerStrategy(appConfig.system.loggerStrategy);
 
 	const {
-		api: { port, host },
+		api: { port, host, cors },
 	} = appConfig;
 	const app = await NestFactory.create<NestExpressApplication>(
 		await import('./app.module.js').then((mod) => mod.AppModule),
 		{
 			logger: new Logger(),
+			cors,
 		},
 	);
 
@@ -37,5 +38,36 @@ function runPreConfig(userConfig?: PartialAppConfig): RuntimeAppConfig {
 			entities: Object.values(entitiesMap),
 		},
 	});
+
+	exposeHeaders(AppConfigUtils.getConfig());
 	return AppConfigUtils.getConfig();
+}
+
+function exposeHeaders(config: Readonly<RuntimeAppConfig>): void {
+	const { authTokenHeader } = config.auth;
+	const corsOptions = config.api.cors;
+	if (typeof corsOptions === 'boolean') {
+		return;
+	}
+
+	const { exposedHeaders: corsExposedHeaders } = corsOptions;
+	let exposedHeaders: string[];
+
+	if (!corsExposedHeaders) {
+		exposedHeaders = [
+			authTokenHeader,
+		];
+	} else if (typeof corsExposedHeaders === 'string') {
+		exposedHeaders = [
+			...corsExposedHeaders.split(',').map((header) => header.trim()),
+			authTokenHeader,
+		];
+	} else {
+		exposedHeaders = [
+			...corsExposedHeaders,
+			authTokenHeader,
+		];
+	}
+
+	corsOptions.exposedHeaders = exposedHeaders;
 }
