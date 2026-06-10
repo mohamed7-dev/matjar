@@ -21,6 +21,25 @@ export type Scalars = {
   Upload: { input: any; output: any; }
 };
 
+export type AdminUserMarketplaceRegion = {
+  __typename?: 'AdminUserMarketplaceRegion';
+  code: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  permissions: Array<Permission>;
+  token: Scalars['String']['output'];
+};
+
+export type Administrator = Node & {
+  __typename?: 'Administrator';
+  createdAt: Scalars['DateTime']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  identifier: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+};
+
 export type ApiError = {
   code: ErrorCode;
   message: Scalars['String']['output'];
@@ -65,17 +84,39 @@ export enum AssetType {
   VIDEO = 'VIDEO'
 }
 
-export type AuthenticateAdminUserResult = AuthenticatedUser | InvalidCredentialsError;
+export type AuthenticateAdminUserResult = AuthenticatedAdminUser | InvalidCredentialsError;
 
-export type AuthenticatedUser = {
-  __typename?: 'AuthenticatedUser';
+export type AuthenticatedAdminUser = AuthenticatedUser & {
+  __typename?: 'AuthenticatedAdminUser';
   id: Scalars['ID']['output'];
   identifier: Scalars['String']['output'];
-  permissionsIndex: Array<PermissionsIndex>;
+  marketplaceRegions: Array<AdminUserMarketplaceRegion>;
+};
+
+export type AuthenticatedUser = {
+  id: Scalars['ID']['output'];
+  identifier: Scalars['String']['output'];
 };
 
 export type AuthenticationInput = {
   native?: InputMaybe<NativeAuthInput>;
+};
+
+/** Filtering operations available for boolean fields. */
+export type BooleanFilterInput = {
+  /** Matches the exact boolean value. */
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Filters values based on whether the field is null. */
+  isNull?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/**
+ * Filtering operations for fields containing a list of boolean values.
+ * Checks whether the provided boolean value exists inside the stored list.
+ */
+export type BooleanListFilterInput = {
+  /** Returns records where the list contains the specified boolean value. */
+  inList: Scalars['Boolean']['input'];
 };
 
 export type Coordinate = {
@@ -408,9 +449,69 @@ export enum CurrencyCode {
   ZWL = 'ZWL'
 }
 
+/**
+ * Filtering operations for fields containing a list of date/time values.
+ * Checks whether the provided date exists inside the stored list.
+ */
+export type DateListFilterInput = {
+  /** Returns records where the list contains the specified date/time value. */
+  inList: Scalars['DateTime']['input'];
+};
+
+/** Filtering operations available for date/time fields. */
+export type DateTimeFilterInput = {
+  /** Matches values occurring after the provided date/time. */
+  after?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Matches values occurring before the provided date/time. */
+  before?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Matches the exact date/time value. */
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filters values based on whether the field is null. */
+  isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Matches values within the provided inclusive date/time range. */
+  withinRange?: InputMaybe<DateTimeRangeInput>;
+};
+
+/** Represents a date/time range with inclusive boundaries. */
+export type DateTimeRangeInput = {
+  /** Earliest allowed date/time (inclusive). */
+  from: Scalars['DateTime']['input'];
+  /** Latest allowed date/time (inclusive). */
+  to: Scalars['DateTime']['input'];
+};
+
 export enum ErrorCode {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR'
 }
+
+/** Controls how multiple filter groups are combined together. */
+export enum FilterGroupOperator {
+  AND = 'AND',
+  OR = 'OR'
+}
+
+/** Filtering operations available for identifier fields. */
+export type IdentifierFilterInput = {
+  /** Matches identifiers exactly. */
+  equals?: InputMaybe<Scalars['String']['input']>;
+  /** Excludes any identifier from the provided list. */
+  excludedFrom?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Matches any identifier from the provided list. */
+  includedIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Filters values based on whether the field is null. */
+  isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Excludes identifiers that match exactly. */
+  notEquals?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * Filtering operations for fields containing a list of identifier values.
+ * Checks whether the provided identifier exists inside the stored list.
+ */
+export type IdentifierListFilterInput = {
+  /** Returns records where the list contains the specified identifier. */
+  inList: Scalars['ID']['input'];
+};
 
 /** Returned if the credentials provided by the user are not valid */
 export type InvalidCredentialsError = ApiError & {
@@ -745,6 +846,56 @@ export enum LanguageCode {
   zu = 'zu'
 }
 
+export type MarketplaceRegion = Node & {
+  __typename?: 'MarketplaceRegion';
+  availableCurrencyCodes: Array<CurrencyCode>;
+  availableLanguageCodes?: Maybe<Array<LanguageCode>>;
+  code: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  primaryCurrencyCode: CurrencyCode;
+  primaryLanguageCode: LanguageCode;
+  token: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type MarketplaceRegionFilterParameter = {
+  code?: InputMaybe<TextFilterInput>;
+  createdAt?: InputMaybe<DateTimeFilterInput>;
+  id?: InputMaybe<IdentifierFilterInput>;
+  primaryCurrencyCode?: InputMaybe<TextFilterInput>;
+  primaryLanguageCode?: InputMaybe<TextFilterInput>;
+  token?: InputMaybe<TextFilterInput>;
+  updatedAt?: InputMaybe<DateTimeFilterInput>;
+};
+
+export type MarketplaceRegionList = PaginatedList & {
+  __typename?: 'MarketplaceRegionList';
+  items: Array<MarketplaceRegion>;
+  totalItemsCount: Scalars['Int']['output'];
+};
+
+export type MarketplaceRegionListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<MarketplaceRegionFilterParameter>;
+  /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<FilterGroupOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<MarketplaceRegionSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type MarketplaceRegionSortParameter = {
+  code?: InputMaybe<SortDirection>;
+  createdAt?: InputMaybe<SortDirection>;
+  id?: InputMaybe<SortDirection>;
+  token?: InputMaybe<SortDirection>;
+  updatedAt?: InputMaybe<SortDirection>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Authenticates an admin user using the provided authentication strategy name and data */
@@ -785,6 +936,49 @@ export type NativeAuthInput = {
 
 export type Node = {
   id: Scalars['ID']['output'];
+};
+
+/**
+ * Filtering operations available for numeric fields.
+ * Supports integers, floats, decimal, and money-like values.
+ */
+export type NumericFilterInput = {
+  /** Matches values exactly. */
+  equals?: InputMaybe<Scalars['Float']['input']>;
+  /** Matches values strictly greater than the provided value. */
+  greaterThan?: InputMaybe<Scalars['Float']['input']>;
+  /** Matches values greater than or equal to the provided value. */
+  greaterThanOrEqual?: InputMaybe<Scalars['Float']['input']>;
+  /** Filters values based on whether the field is null. */
+  isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Matches values strictly less than the provided value. */
+  lessThan?: InputMaybe<Scalars['Float']['input']>;
+  /** Matches values less than or equal to the provided value. */
+  lessThanOrEqual?: InputMaybe<Scalars['Float']['input']>;
+  /** Matches values within the provided inclusive range. */
+  withinRange?: InputMaybe<NumericRangeInput>;
+};
+
+/**
+ * Filtering operations for fields containing a list of numeric values.
+ * Checks whether the provided number exists inside the stored list.
+ */
+export type NumericListFilterInput = {
+  /** Returns records where the list contains the specified numeric value. */
+  inList: Scalars['Float']['input'];
+};
+
+/** Represents a numeric range with inclusive boundaries. */
+export type NumericRangeInput = {
+  /** Maximum allowed value (inclusive). */
+  max: Scalars['Float']['input'];
+  /** Minimum allowed value (inclusive). */
+  min: Scalars['Float']['input'];
+};
+
+export type PaginatedList = {
+  items: Array<Node>;
+  totalItemsCount: Scalars['Int']['output'];
 };
 
 /**
@@ -858,33 +1052,70 @@ export enum Permission {
   platform_role_update = 'platform_role_update'
 }
 
-export enum PermissionIndexItemType {
-  COMPANY = 'COMPANY',
-  PLATFORM = 'PLATFORM'
-}
-
-export type PermissionsIndex = {
-  __typename?: 'PermissionsIndex';
-  companyCode?: Maybe<Scalars['String']['output']>;
-  companyToken?: Maybe<Scalars['String']['output']>;
-  marketplaceCode: Scalars['String']['output'];
-  marketplaceToken: Scalars['String']['output'];
-  permissions: Array<Permission>;
-  type: PermissionIndexItemType;
-};
-
 export type Query = {
   __typename?: 'Query';
-  me?: Maybe<AuthenticatedUser>;
+  activeAdministrator?: Maybe<Administrator>;
+  activeMarketplaceRegion: MarketplaceRegion;
+  marketplaceRegions: MarketplaceRegionList;
+  me?: Maybe<AuthenticatedAdminUser>;
   me2: Scalars['Boolean']['output'];
 };
 
-/** Indicates that an operation was done successfully */
+
+export type QueryMarketplaceRegionsArgs = {
+  options?: InputMaybe<MarketplaceRegionListOptions>;
+};
+
+/** Controls the ordering direction for sorted results. */
+export enum SortDirection {
+  ASC = 'ASC',
+  DESC = 'DESC'
+}
+
 export type Success = {
   __typename?: 'Success';
   success: Scalars['Boolean']['output'];
 };
 
+/** Filtering operations available for text-based fields. */
+export type TextFilterInput = {
+  /** Matches values containing the provided substring. */
+  contains?: InputMaybe<Scalars['String']['input']>;
+  /** Excludes values containing the provided substring. */
+  doesNotContain?: InputMaybe<Scalars['String']['input']>;
+  /** Matches values exactly. */
+  equals?: InputMaybe<Scalars['String']['input']>;
+  /** Excludes any value from the provided list. */
+  excludedFrom?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Matches any value from the provided list. */
+  includedIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Filters values based on whether the field is null. */
+  isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Matches values using a regular expression pattern. */
+  matchesRegex?: InputMaybe<Scalars['String']['input']>;
+  /** Excludes values that match exactly. */
+  notEquals?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * Filtering operations for fields containing a list of text values.
+ * Checks whether the provided value exists inside the stored list.
+ */
+export type TextListFilterInput = {
+  /** Returns records where the list contains the specified text value. */
+  inList: Scalars['String']['input'];
+};
+
 export type UpdateGlobalSettingsInput = {
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type User = Node & {
+  __typename?: 'User';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  identifier: Scalars['String']['output'];
+  isVerified: Scalars['Boolean']['output'];
+  lastAuthenticatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
 };

@@ -19,3 +19,5 @@ export const COMPANY_ADMIN_ROLE_DESCRIPTION = 'Company Admin';
 
 export const DEFAULT_SUPER_ADMIN_IDENTIFIER = 'admin';
 export const DEFAULT_SUPER_ADMIN_PASSWORD = 'admin';
+
+export const DEFAULT_AUTH_TOKEN_HEADER_KEY = 'matjar-session-token';
