@@ -1,0 +1,23 @@
+{
+	"$schema": "https://ui.shadcn.com/schema.json",
+	"style": "radix-sera",
+	"rsc": false,
+	"tsx": true,
+	"tailwind": {
+		"config": "",
+		"css": "",
+		"baseColor": "neutral",
+		"cssVariables": true
+	},
+	"iconLibrary": "lucide",
+	"aliases": {
+		"components": "@matjar/design-system/components",
+		"utils": "@matjar/design-system/lib/utils",
+		"hooks": "@matjar/design-system/hooks",
+		"lib": "@matjar/design-system/lib",
+		"ui": "@matjar/design-system/components"
+	},
+	"rtl": false,
+	"menuColor": "default",
+	"menuAccent": "subtle"
+}
