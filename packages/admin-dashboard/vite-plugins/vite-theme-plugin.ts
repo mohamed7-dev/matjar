@@ -1,36 +1,7 @@
-import {
-	darkTheme as darkTokens,
-	fontFamily as fonts,
-	lightTheme as lightTokens,
-	brand as palette,
-	borderRadii as radii,
-	lightShadows as shadows,
-} from '@matjar/design-system';
+import { borderRadii, fontWeight, lightTheme as lightTokens, shadows } from '@matjar/design-system';
 import type { PluginOption } from 'vite';
 
 type TokenMap = Record<string, string | undefined>;
-
-const baseLight: TokenMap = {
-	...lightTokens,
-	brand: palette[500],
-	'brand-lighter': palette[300],
-	'brand-darker': palette[700],
-	'font-sans': fonts.sans,
-	'font-heading': fonts.heading,
-	'font-body': fonts.body,
-	'font-mono': fonts.mono,
-};
-
-const baseDark: TokenMap = {
-	...darkTokens,
-	brand: palette[500],
-	'brand-lighter': palette[50],
-	'brand-darker': palette[700],
-	'font-sans': fonts.sans,
-	'font-heading': fonts.heading,
-	'font-body': fonts.body,
-	'font-mono': fonts.mono,
-};
 
 export function viteThemePlugin(): PluginOption {
 	return {
@@ -92,30 +63,36 @@ function cssVars(selector: string, vars: TokenMap) {
 
 function buildThemeSheet() {
 	return [
-		cssVars(':root', baseLight),
-		cssVars('.dark', baseDark),
+		cssVars(':root', {
+			...lightTokens.colors,
+			...lightTokens.font,
+			...lightTokens.spacing,
+		}),
+		// cssVars('.dark', baseDark),
 	].join('\n\n');
 }
 
 function createInlineTheme() {
-	const colorAliases = Object.keys(lightTokens)
-		.filter((k) => k !== 'radius' && !k.includes('shadow'))
-		.map((k) => `--color-${k}: var(--${k});`);
-	const radiusVars = Object.entries(radii).map(([k, v]) => `--radius-${k}: ${v};`);
+	const { colors, spacing, font } = lightTokens;
+	const colorVars = Object.entries(colors).map(([k]) => `--color-${k}: var(--${k});`);
+	const fontVars = Object.entries(font).map(([k]) => `--font-${k}: var(--${k});`);
+	const spacingVars = Object.entries(spacing).map(([k]) => `--spacing-${k}: var(--${k});`);
+	const fontWeightVars = Object.entries(fontWeight).map(([k, v]) => `--font-weight-${k}: ${v};`);
+	const radiusVars = Object.entries(borderRadii).map(([k, v]) => `--radius-${k}: ${v};`);
 	const shadowVars = Object.entries(shadows).map(([k, v]) => `--shadow-${k}: ${v};`);
-	const fontVars = Object.keys(fonts).map((k) => `--font-${k}: var(--font-${k});`);
-	const dashboardExtras = [
-		'--color-brand: var(--brand);',
-		'--color-brand-lighter: var(--brand-lighter);',
-		'--color-brand-darker: var(--brand-darker);',
+
+	const dashboardExtensions = [
+		'   --shadow-nav: 4px 4px 0px 0px var(--border);',
 	];
 
 	const lines = [
-		...colorAliases,
-		...radiusVars,
+		...colorVars,
 		...shadowVars,
 		...fontVars,
-		...dashboardExtras,
+		...fontWeightVars,
+		...spacingVars,
+		...radiusVars,
+		...dashboardExtensions,
 	]
 		.map((l) => `    ${l}`)
 		.join('\n');

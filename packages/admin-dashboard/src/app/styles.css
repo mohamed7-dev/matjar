@@ -16,6 +16,7 @@
 @import "virtual:admin-dashboard-theme-inline";
 
 @custom-variant dark (&:is(.dark *));
+@source "../../../design-system/**/*.{ts,tsx}";
 
 @layer base {
 	* {

@@ -101,8 +101,9 @@ export function MarketplaceRegionProvider({ children }: MarketplaceRegionProvide
 	});
 
 	const marketplaceRegions: MarketplaceRegion[] = React.useMemo(() => {
-		// sales channels which has the current user as a member
+		// marketplace regions in which the current user has roles in
 		// takes priority over marketplaceRegionsData
+		// but we need to enrich them with data from the API query (marketplaceRegionsData)
 		if (userMarketplaceRegions?.length && userMarketplaceRegions?.length > 0) {
 			return userMarketplaceRegions.map((mp) => {
 				const marketplaceRegionData = marketplaceRegionsData?.marketplaceRegions.items.find(
@@ -171,17 +172,31 @@ export function MarketplaceRegionProvider({ children }: MarketplaceRegionProvide
 			validMarketplaces.length &&
 			!validMarketplaces.includes(selectedMarketplaceRegionId)
 		) {
+			// if the selected marketplace became invalid (e.g. deleted)
+			// when we refresh, the validMarketplaces will not include it
+			// so when this effect runs it will reset the setSelectedMarketplaceRegionId
+			// which then triggers a re-render
 			setSelectedMarketplaceRegionId(undefined);
 		} else if (selectedMarketplaceRegionId && marketplaceRegions.length > 0) {
-			// TODO: understand this block
-			// Ensure marketplace token in localStorage stays in sync with selected marketplace.
-			// This handles the case where activeMarketplaceId persists but the token was cleared (e.g., after logout).
+			// when the marketplace exists, but token is missing/wrong
+			// scenario A: user logged out
+			// --- before log out, the data we have looks like this:
+			// ---- selectedMarketplaceRegionId = egypt
+			// ---- localStorage token = token-eg
+			// --- logout clears localstorage, but the state is not cleared
+			// --- So the effect runs to synchronize the marketplace id in state
+			// with the localstorage token
+			// scenario B: token belongs to wrong marketplace
+			// --- the state contains selectedMarketplaceRegionId = "egypt"
+			// --- while localstorage contains token = token-sa
+			// --- So the effect runs to synchronize them
 			const selectedMarketplace = marketplaceRegions.find((m) => m.id === selectedMarketplaceRegionId);
 			if (selectedMarketplace) {
-				const currentToken = getMarketplaceRegionTokenFromLocalStorage();
-				if (currentToken !== selectedMarketplace.token) {
+				const tokenFromLS = getMarketplaceRegionTokenFromLocalStorage();
+				const tokenInState = selectedMarketplace.token;
+				if (tokenFromLS !== tokenInState) {
 					setMarketplaceRegionTokenInLocalStorage(selectedMarketplace.token);
-					// Invalidate queries to refetch with the corrected token
+					// Invalidate queries to correct requests made by the old token
 					queryClient.invalidateQueries({
 						queryKey: [
 							'activeMarketplaceRegion',
@@ -191,19 +206,26 @@ export function MarketplaceRegionProvider({ children }: MarketplaceRegionProvide
 				}
 			}
 		} else if (marketplaceRegions.length > 0) {
-			// when user settings doesn't have active marketplace
-			// and UI doesn't have selected marketplace
-			// -- In other words when this run for the first time
-			// in this case set the first marketplace in the list as the active one
+			// when the user opens the app for the first time
+			// the application state look like this:
+			//--- selectedMarketplaceRegionId = undefined
+			//--- marketplaceRegions
+			// ├ egypt
+			// ├ saudi
+			// └ uae
+			// And localstorage looks like this:
+			//--- localStorage -> empty
+			// No active marketplace yet.
+			// So we pick the first marketplace in the list
 			const defaultMarketplace = marketplaceRegions[0];
-			setMarketplaceRegionTokenInLocalStorage(defaultMarketplace.token);
-			setSelectedMarketplaceRegionId(defaultMarketplace.id);
+			setSelectedMarketplace(defaultMarketplace.id);
 		}
 	}, [
 		marketplaceRegions,
 		selectedMarketplaceRegionId,
 		isAuthenticated,
 		queryClient,
+		setSelectedMarketplace,
 	]);
 
 	const isQueryActive = isActiveMarketplaceRegionLoading;

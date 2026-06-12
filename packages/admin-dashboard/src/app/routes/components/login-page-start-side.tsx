@@ -1,15 +1,8 @@
 import { ShoppingBagIcon } from 'lucide-react';
-import React from 'react';
 
 export function LoginPageStartSide() {
 	return (
-		<div
-			className='hidden lg:flex flex-col justify-between w-1/2 h-screen p-12'
-			style={{
-				backgroundColor: '#0A0A0A',
-				borderRight: '4px solid #000',
-			}}
-		>
+		<div className='hidden lg:flex flex-col justify-between w-1/2 h-screen p-12 bg-secondary-background border-r-2 border-border'>
 			<div className='flex items-center gap-3'>
 				<div className='w-10 h-10 flex items-center justify-center bg-primary border-2 border-primary'>
 					<ShoppingBagIcon

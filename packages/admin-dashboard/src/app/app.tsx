@@ -1,3 +1,4 @@
+import { TooltipProvider } from '@matjar/design-system/components/tooltip';
 import { createRouter as createTanStackRouter, RouterProvider } from '@tanstack/react-router';
 import { queryClient } from '@/infra/query/query-client.js';
 import { AuthProvider, useAuth } from '@/providers/auth-provider.js';
@@ -47,7 +48,9 @@ function Providers({ children }: { children: React.ReactNode }) {
 			<UserSettingsProvider>
 				<ThemeProvider defaultTheme='light'>
 					<AuthProvider>
-						<MarketplaceRegionProvider>{children}</MarketplaceRegionProvider>
+						<MarketplaceRegionProvider>
+							<TooltipProvider>{children}</TooltipProvider>
+						</MarketplaceRegionProvider>
 					</AuthProvider>
 				</ThemeProvider>
 			</UserSettingsProvider>

@@ -1,11 +1,11 @@
+import { Button } from '@matjar/design-system/components/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@matjar/design-system/components/card';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@matjar/design-system/components/field';
+import { Input } from '@matjar/design-system/components/input';
 import { useForm } from '@tanstack/react-form';
 import { GlobeIcon, Loader2Icon } from 'lucide-react';
 import React, { type SubmitEvent } from 'react';
 import { type LoginFormSchema, loginFormSchema } from '@/models/auth.schema.js';
-import { Button } from '../ui/button.js';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card.js';
-import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field.js';
-import { Input } from '../ui/input.js';
 
 type LoginFormProps = {
 	isVerifying?: boolean;
@@ -59,7 +59,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 				</span>
 			</div> */}
 
-			<CardHeader className='border-b-0'>
+			<CardHeader>
 				<CardTitle>
 					<div className='flex items-center gap-2'>
 						<GlobeIcon />
@@ -82,12 +82,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 								const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 								return (
 									<Field data-invalid={isInvalid}>
-										<FieldLabel
-											htmlFor={field.name}
-											className='font-bold'
-										>
-											User Name
-										</FieldLabel>
+										<FieldLabel htmlFor={field.name}>User Name</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -98,19 +93,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 											// placeholder="Login button not working on mobile"
 											autoComplete='off'
 										/>
-										{isInvalid && (
-											<FieldError
-												style={{
-													padding: '10px 14px',
-													backgroundColor: '#FF6B6B',
-													border: '3px solid #000',
-													color: '#000',
-													fontSize: '13px',
-													fontWeight: 700,
-												}}
-												errors={field.state.meta.errors}
-											/>
-										)}
+										{isInvalid && <FieldError errors={field.state.meta.errors} />}
 									</Field>
 								);
 							}}
@@ -121,12 +104,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 								const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 								return (
 									<Field data-invalid={isInvalid}>
-										<FieldLabel
-											htmlFor={field.name}
-											className='font-bold'
-										>
-											Password
-										</FieldLabel>
+										<FieldLabel htmlFor={field.name}>Password</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -138,19 +116,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 											// placeholder="Login button not working on mobile"
 											autoComplete='off'
 										/>
-										{isInvalid && (
-											<FieldError
-												style={{
-													padding: '10px 14px',
-													backgroundColor: '#FF6B6B',
-													border: '3px solid #000',
-													color: '#000',
-													fontSize: '13px',
-													fontWeight: 700,
-												}}
-												errors={field.state.meta.errors}
-											/>
-										)}
+										{isInvalid && <FieldError errors={field.state.meta.errors} />}
 									</Field>
 								);
 							}}
@@ -158,7 +124,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 					</FieldGroup>
 				</form>
 			</CardContent>
-			<CardFooter className='border-t-0'>
+			<CardFooter>
 				<Field orientation={'horizontal'}>
 					<Button
 						type='submit'

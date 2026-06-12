@@ -5,13 +5,21 @@ import { useUserSettings } from './user-settings-provider.js';
 export type Theme = 'dark' | 'light' | 'system';
 
 interface ThemeContext {
-	theme: Theme;
-	setTheme: (theme: Theme) => void;
+	state: {
+		theme: Theme;
+	};
+	actions: {
+		setTheme: (theme: Theme) => void;
+	};
 }
 
 const [ThemeContextProvider, useTheme] = createContext<ThemeContext>('ThemeContext', {
-	theme: 'system',
-	setTheme: () => null,
+	state: {
+		theme: 'system',
+	},
+	actions: {
+		setTheme: () => null,
+	},
 });
 
 interface ThemeProviderProps {
@@ -51,9 +59,13 @@ export function ThemeProvider(props: ThemeProviderProps) {
 
 	const contextValue = React.useMemo(() => {
 		return {
-			theme: settings.theme,
-			setTheme: setTheme,
-		};
+			state: {
+				theme: settings.theme,
+			},
+			actions: {
+				setTheme: setTheme,
+			},
+		} satisfies ThemeContext;
 	}, [
 		setTheme,
 		settings.theme,

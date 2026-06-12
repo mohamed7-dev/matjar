@@ -24,34 +24,14 @@ type Credentials = {
 
 export interface AuthContext {
 	isAuthenticated: boolean;
-	/**
-	 * @description
-	 * The status of the authentication.
-	 */
-	authStatus: 'initial' | 'authenticated' | 'verifying' | 'unauthenticated';
-	/**
-	 * @description
-	 * The error message if the authentication fails.
-	 */
-	authError?: string;
-	/**
-	 * @description
-	 * The function to login the user.
-	 */
+	status: 'initial' | 'authenticated' | 'verifying' | 'unauthenticated';
+	errorMessage?: string;
 	login: (credentials: Credentials, onSuccess?: () => void) => void;
-	/**
-	 * @description
-	 * The function to logout the user.
-	 */
 	logout: (onSuccess?: () => void) => Promise<void>;
-	/**
-	 * @description
-	 * The function to refresh the current user.
-	 */
 	refreshActiveUser: () => void;
 	/**
 	 * @description
-	 * The user object.
+	 * The admin user info.
 	 */
 	user: ResultOf<typeof ActiveUserQueryDocument>['activeAdministrator'] | undefined;
 	/**
@@ -74,7 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		state: { settings },
 		actions: { setActiveMarketplaceRegionId },
 	} = useUserSettings('AuthProvider');
-	const [authStatus, setAuthStatus] = React.useState<AuthContext['authStatus']>('initial');
+	const [authStatus, setAuthStatus] = React.useState<AuthContext['status']>('initial');
 	const [authError, setAuthError] = React.useState<string | undefined>();
 	const [isActiveAuthMutationInProgress, setIsActiveAuthMutationInProgress] = React.useState(false);
 
@@ -196,8 +176,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		return {
 			login,
 			logout,
-			authError,
-			authStatus,
+			errorMessage: authError,
+			status: authStatus,
 			isAuthenticated,
 			refreshActiveUser: invalidateActiveUser,
 			marketplaceRegions: activeUserData?.me?.marketplaceRegions,
