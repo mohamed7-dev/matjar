@@ -8,6 +8,7 @@ import { viteAppConfigLoaderPlugin } from './vite-app-config-loader-plugin.js';
 import { viteBasePathHtmlPlugin } from './vite-base-path-html-plugin.js';
 import { viteConfigPlugin } from './vite-config-plugin.js';
 import { viteGqlTadaPlugin } from './vite-gql-tada-plugin.js';
+import { linguiMacroPlugin } from './vite-lingui-macro-plugin.js';
 import { viteThemePlugin } from './vite-theme-plugin.js';
 import { type UiConfigPluginOptions, viteUiConfigPlugin } from './vite-ui-config-plugin.js';
 
@@ -43,6 +44,7 @@ export function viteMatjarPLugin(options: ViteMatjarPLuginOptions): PluginOption
 			routesDirectory: path.join(packageRoot, './src/app/routes'),
 			generatedRouteTree: path.join(packageRoot, './src/app/routeTree.gen.ts'),
 		}),
+		linguiMacroPlugin(),
 		viteReact(),
 		viteThemePlugin(),
 		tailwindcss(),

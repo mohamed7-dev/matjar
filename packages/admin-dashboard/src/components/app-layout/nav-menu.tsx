@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react';
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -26,6 +27,7 @@ function escapeRegexChars(str: string): string {
 }
 
 export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | SidebarNavMenuItem> }) {
+	const { i18n } = useLingui();
 	const router = useRouter();
 	const routerState = useRouterState();
 
@@ -74,6 +76,11 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 			const cleanPath = normalizedCurrentPath.startsWith('/')
 				? normalizedCurrentPath
 				: `/${normalizedCurrentPath}`;
+
+			console.log({
+				cleanPath,
+				itemUrl,
+			});
 
 			// Special handling for root path
 			if (itemUrl === '/') {
@@ -144,6 +151,7 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 			getSortedSections,
 		],
 	);
+
 	return (
 		<React.Fragment>
 			<SidebarGroup>
@@ -151,10 +159,11 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 					{topSections.map((item) =>
 						renderNavMenuSection(
 							item,
-							'path' in item ? isPathActive(item.path) : false,
+							isPathActive,
 							isSidebarCollapsed,
 							openTopSectionIds.has(item.id),
 							handleTopSectionToggle,
+							i18n,
 						),
 					)}
 				</SidebarMenu>
@@ -166,10 +175,11 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 						{bottomSections.map((section) =>
 							renderNavMenuSection(
 								section,
-								'path' in section ? isPathActive(section.path) : false,
+								isPathActive,
 								isSidebarCollapsed,
 								openBottomSectionId === section.id,
 								handleBottomSectionToggle,
+								i18n,
 							),
 						)}
 					</SidebarMenu>

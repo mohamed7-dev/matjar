@@ -1,7 +1,10 @@
 import { TooltipProvider } from '@matjar/design-system/components/tooltip';
 import { createRouter as createTanStackRouter, RouterProvider } from '@tanstack/react-router';
+import React from 'react';
 import { queryClient } from '@/infra/query/query-client.js';
+import { defaultLocale, dynamicActivate } from '@/lib/i18n.js';
 import { AuthProvider, useAuth } from '@/providers/auth-provider.js';
+import { I18nProvider } from '@/providers/i18n-provider.js';
 import { MarketplaceRegionProvider } from '@/providers/marketplace-region-provider.js';
 import { QueryClientProvider } from '@/providers/query-client-provider.js';
 import { ThemeProvider } from '@/providers/theme-provider.js';
@@ -35,27 +38,29 @@ const router = createTanStackRouter({
 });
 
 function Providers({ children }: { children: React.ReactNode }) {
-	// const [i18nLoaded, setI18nLoaded] = React.useState(false);
-	// React.useEffect(() => {
-	// 	// With this method we dynamically load the catalogs
-	// 	void dynamicActivate(defaultLocale, () => {
-	// 		setI18nLoaded(true);
-	// 	});
-	// }, []);
+	const [i18nLoaded, setI18nLoaded] = React.useState(false);
+	React.useEffect(() => {
+		// With this method we dynamically load the catalogs
+		void dynamicActivate(defaultLocale, () => {
+			setI18nLoaded(true);
+		});
+	}, []);
 	return (
-		// i18nLoaded && (
-		<QueryClientProvider>
-			<UserSettingsProvider>
-				<ThemeProvider defaultTheme='light'>
-					<AuthProvider>
-						<MarketplaceRegionProvider>
-							<TooltipProvider>{children}</TooltipProvider>
-						</MarketplaceRegionProvider>
-					</AuthProvider>
-				</ThemeProvider>
-			</UserSettingsProvider>
-		</QueryClientProvider>
-		// )
+		i18nLoaded && (
+			<I18nProvider>
+				<QueryClientProvider>
+					<UserSettingsProvider>
+						<ThemeProvider defaultTheme='light'>
+							<AuthProvider>
+								<MarketplaceRegionProvider>
+									<TooltipProvider>{children}</TooltipProvider>
+								</MarketplaceRegionProvider>
+							</AuthProvider>
+						</ThemeProvider>
+					</UserSettingsProvider>
+				</QueryClientProvider>
+			</I18nProvider>
+		)
 	);
 }
 

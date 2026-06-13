@@ -1,3 +1,4 @@
+import type { I18n } from '@lingui/core';
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -17,23 +18,24 @@ import { CollapsedNavMenuSection } from './collapsed-nav-menu-section.js';
 
 export function renderNavMenuSection(
 	item: SidebarNavMenuItem | SidebarNavMenuSection,
-	isPathActive: boolean,
+	isPathActive: (path: string) => boolean,
 	isSidebarCollapsed: boolean,
 	isOpen: boolean,
 	onToggle: (id: string, isOpen: boolean) => void,
+	i18n: I18n,
 ) {
 	if ('path' in item) {
 		return (
 			<SidebarMenuItem key={item.id}>
 				<SidebarMenuButton
-					tooltip={item.title}
+					tooltip={i18n.t(item.title)}
 					// render={<Link to={item.url} />}
-					isActive={isPathActive}
+					isActive={isPathActive(item.path)}
 					asChild
 				>
 					<Link to={item.path}>
 						{item.icon && <item.icon />}
-						<span>{item.title}</span>
+						<span>{i18n.t(item.title)}</span>
 					</Link>
 				</SidebarMenuButton>
 			</SidebarMenuItem>
@@ -60,9 +62,9 @@ export function renderNavMenuSection(
 		>
 			<SidebarMenuItem>
 				<CollapsibleTrigger asChild>
-					<SidebarMenuButton tooltip={item.title}>
+					<SidebarMenuButton tooltip={i18n.t(item.title)}>
 						{item.icon && <item.icon />}
-						<span>{item.title}</span>
+						<span>{i18n.t(item.title)}</span>
 						<ChevronRightIcon className='ms-auto transition-transform duration-200 rtl:rotate-180 group-data-open/collapsible:rotate-90' />
 					</SidebarMenuButton>
 				</CollapsibleTrigger>
@@ -72,11 +74,11 @@ export function renderNavMenuSection(
 							<SidebarMenuSubItem key={subItem.id}>
 								<SidebarMenuSubButton
 									// render={<Link to={subItem.url} />}
-									isActive={isPathActive}
+									isActive={isPathActive(subItem.path)}
 									asChild
 								>
 									<Link to={subItem.path}>
-										<span>{subItem.title}</span>
+										<span>{i18n.t(subItem.title)}</span>
 									</Link>
 								</SidebarMenuSubButton>
 							</SidebarMenuSubItem>

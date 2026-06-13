@@ -1,11 +1,13 @@
+import { Trans, useLingui } from '@lingui/react/macro';
 import { Button } from '@matjar/design-system/components/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@matjar/design-system/components/card';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@matjar/design-system/components/field';
 import { Input } from '@matjar/design-system/components/input';
 import { useForm } from '@tanstack/react-form';
 import { GlobeIcon, Loader2Icon } from 'lucide-react';
-import React, { type SubmitEvent } from 'react';
+import type { SubmitEvent } from 'react';
 import { type LoginFormSchema, loginFormSchema } from '@/models/auth.schema.js';
+import { Logo } from '../shared/logo.js';
 
 type LoginFormProps = {
 	isVerifying?: boolean;
@@ -14,6 +16,7 @@ type LoginFormProps = {
 };
 
 export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
+	const { t } = useLingui();
 	const form = useForm({
 		defaultValues: {
 			username: '',
@@ -33,39 +36,21 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 	};
 	return (
 		<Card>
-			{/* Mobile logo */}
-			{/* <div className='flex lg:hidden items-center gap-3 mb-8'>
-				<div
-					className='w-9 h-9 flex items-center justify-center'
-					style={{
-						backgroundColor: '#FFE500',
-						border: '3px solid #000',
-					}}
-				>
-					<ShoppingBag
-						size={18}
-						color='#000'
-						strokeWidth={2.5}
-					/>
-				</div>
-				<span
-					style={{
-						fontSize: '18px',
-						fontWeight: 900,
-						letterSpacing: '-0.5px',
-					}}
-				>
-					NEXUS COMMERCE
-				</span>
-			</div> */}
-
 			<CardHeader>
-				<CardTitle>
+				<CardTitle className='space-y-6'>
+					<Logo />
 					<div className='flex items-center gap-2'>
-						<GlobeIcon />
-						<span>ADMIN PORTAL</span>
+						<div className='flex items-center gap-2'>
+							<GlobeIcon />
+							<span>
+								<Trans>ADMIN PORTAL</Trans>
+							</span>
+						</div>
+						<span>/</span>
+						<h2 className='font-lg font-bold leading-1'>
+							<Trans>SIGN IN</Trans>
+						</h2>
 					</div>
-					<h2 className='mt-4 font-lg font-bold leading-1'>SIGN IN</h2>
 				</CardTitle>
 			</CardHeader>
 
@@ -73,7 +58,6 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 				<form
 					id='login-form'
 					onSubmit={onSubmit}
-					// className='space-y-5'
 				>
 					<FieldGroup>
 						<form.Field
@@ -82,7 +66,9 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 								const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 								return (
 									<Field data-invalid={isInvalid}>
-										<FieldLabel htmlFor={field.name}>User Name</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											<Trans>User Name</Trans>
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -90,7 +76,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 											onBlur={field.handleBlur}
 											onChange={(e) => field.handleChange(e.target.value)}
 											aria-invalid={isInvalid}
-											// placeholder="Login button not working on mobile"
+											placeholder={t`User name`}
 											autoComplete='off'
 										/>
 										{isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -104,7 +90,9 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 								const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 								return (
 									<Field data-invalid={isInvalid}>
-										<FieldLabel htmlFor={field.name}>Password</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											<Trans>Password</Trans>
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -113,7 +101,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 											onBlur={field.handleBlur}
 											onChange={(e) => field.handleChange(e.target.value)}
 											aria-invalid={isInvalid}
-											// placeholder="Login button not working on mobile"
+											placeholder={t`Password`}
 											autoComplete='off'
 										/>
 										{isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -139,33 +127,10 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 								Please wait
 							</>
 						)}
-						{!isVerifying &&
-							// <Trans>Sign in</Trans>
-							'Sign in'}
+						{!isVerifying && <Trans>Sign in</Trans>}
 					</Button>
 				</Field>
 			</CardFooter>
-
-			{/* <div className='mt-4 flex gap-3'>
-				{[
-					'EG-Store',
-					'KSA-Store',
-				].map((region) => (
-					<div
-						key={region}
-						style={{
-							padding: '6px 12px',
-							backgroundColor: '#fff',
-							border: '2px solid #000',
-							fontSize: '11px',
-							fontWeight: 800,
-							letterSpacing: '0.5px',
-						}}
-					>
-						{region}
-					</div>
-				))}
-			</div> */}
 		</Card>
 	);
 }

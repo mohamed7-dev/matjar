@@ -30,11 +30,18 @@
 		"lint:fix": "biome lint --write"
 	},
 	"dependencies": {
+		"@babel/core": "^7.23.0",
+		"@babel/preset-typescript": "^7.23.0",
 		"@fontsource-variable/hanken-grotesk": "^5.2.8",
 		"@fontsource-variable/jetbrains-mono": "^5.2.8",
 		"@fontsource-variable/space-grotesk": "^5.2.10",
 		"@gql.tada/cli-utils": "^1.6.5",
 		"@graphql-typed-document-node/core": "^3.2.0",
+		"@lingui/babel-plugin-lingui-macro": "^6.1.0",
+		"@lingui/cli": "^6.1.0",
+		"@lingui/core": "^6.1.0",
+		"@lingui/react": "^6.1.0",
+		"@lingui/vite-plugin": "^6.1.0",
 		"@matjar/design-system": "workspace:*",
 		"@nestjs/graphql": "^13.4.2",
 		"@tailwindcss/vite": "^4.2.2",
@@ -68,7 +75,8 @@
 	},
 	"devDependencies": {
 		"@matjar/common": "workspace:*",
-		"@matjar/server": "workspace:*"
+		"@matjar/server": "workspace:*",
+		"@types/babel__core": "^7.20.5"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [

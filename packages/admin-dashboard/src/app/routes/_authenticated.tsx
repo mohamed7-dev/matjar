@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { AuthenticatedLayout as BaseAuthenticatedLayout } from '@/components/layout/authenticated-layout.js';
+import { AuthenticatedLayout as BaseAuthenticatedLayout } from '@/components/app-layout/authenticated-layout.js';
 import { useAuth } from '@/providers/auth-provider.js';
 
 export const Route = createFileRoute('/_authenticated')({

@@ -3,7 +3,6 @@ import z from 'zod';
 import { LoginForm } from '@/components/login-form/login-form.js';
 import type { LoginFormSchema } from '@/models/auth.schema.js';
 import { useAuth } from '@/providers/auth-provider.js';
-import { LoginPageStartSide } from './components/login-page-start-side.js';
 
 const fallback = '/' as const;
 
@@ -47,19 +46,16 @@ function LoginPage() {
 		return <Navigate to={search.redirect || fallback} />;
 	}
 
-	const isVerifying = isLoading || auth.authStatus === 'verifying';
+	const isVerifying = isLoading || auth.status === 'verifying';
 
 	return (
-		<main className='w-full flex bg-background'>
-			<LoginPageStartSide />
-			<div className='flex-1 w-full flex items-center justify-center'>
-				<div className='w-full max-w-[420px]'>
-					<LoginForm
-						onFormSubmit={onFormSubmit}
-						isVerifying={isVerifying}
-						loginErrorMessage={auth.authError}
-					/>
-				</div>
+		<main className='h-screen w-full flex items-center justify-center bg-secondary-background'>
+			<div className='w-full max-w-[420px]'>
+				<LoginForm
+					onFormSubmit={onFormSubmit}
+					isVerifying={isVerifying}
+					loginErrorMessage={auth.errorMessage}
+				/>
 			</div>
 		</main>
 	);

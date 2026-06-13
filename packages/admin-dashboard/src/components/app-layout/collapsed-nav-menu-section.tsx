@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@matjar/design-system/components/hover-card';
 import { Separator } from '@matjar/design-system/components/separator';
 import { SidebarMenuButton } from '@matjar/design-system/components/sidebar';
@@ -10,14 +11,15 @@ export function CollapsedNavMenuSection({
 	isPathActive,
 }: Readonly<{
 	item: SidebarNavMenuSection;
-	isPathActive: boolean;
+	isPathActive: (path: string) => boolean;
 }>) {
+	const { i18n } = useLingui();
 	return (
 		<HoverCard>
 			<HoverCardTrigger asChild>
-				<SidebarMenuButton isActive={isPathActive}>
+				<SidebarMenuButton isActive={item.children?.some((subItem) => isPathActive(subItem.path))}>
 					{item.icon && <item.icon />}
-					<span>{item.title}</span>
+					<span>{i18n.t(item.title)}</span>
 				</SidebarMenuButton>
 			</HoverCardTrigger>
 			<HoverCardContent
@@ -30,7 +32,7 @@ export function CollapsedNavMenuSection({
 					className='px-2 py-1.5 text-sm font-bold'
 					data-testid='sidebar-hover-title'
 				>
-					{item.title}
+					{i18n.t(item.title)}
 				</p>
 				<Separator />
 				{item.children?.map((subItem) => (
@@ -39,10 +41,10 @@ export function CollapsedNavMenuSection({
 						to={subItem.path}
 						className={cn(
 							'flex items-center rounded-sm px-2 py-1.5 text-sm border-transparent border-2 hover:border-border focus-visible:ring-2 focus-visible:ring-ring',
-							isPathActive && 'border-border',
+							isPathActive(subItem.path) && 'border-border',
 						)}
 					>
-						{subItem.title}
+						{i18n.t(subItem.title)}
 					</Link>
 				))}
 			</HoverCardContent>
