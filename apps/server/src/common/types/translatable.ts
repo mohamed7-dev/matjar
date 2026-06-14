@@ -28,3 +28,20 @@ export interface Translatable {
 export type Translated<Entity> = Entity & {
 	languageCode: LanguageCode;
 };
+
+/**
+ * @description
+ * This type represents the input provided to create or update operations when these operations expect translations
+ */
+export type TranslationInput<T> = { [K in TranslatableKeys<T>]?: string | null } & {
+	id?: string | null;
+	languageCode: LanguageCode | `${LanguageCode}`;
+};
+
+/**
+ * @description
+ * This interface defines the shape of the dto passed to create or update operations then these operations expect translations
+ */
+export interface TranslatedInput<Entity> {
+	translations?: Array<TranslationInput<Entity>>;
+}

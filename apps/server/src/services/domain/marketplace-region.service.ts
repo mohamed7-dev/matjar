@@ -1,9 +1,11 @@
 import { CurrencyCode } from '@matjar/common/lib/generated-types';
 import { DEFAULT_MARKETPLACE_REGION_CODE } from '@matjar/common/lib/shared-constants';
 import { Injectable } from '@nestjs/common';
+import { FindOptionsWhere } from 'typeorm';
 import { RequestContext } from '../../api/request-context/request-context';
 import { InternalServerError, MarketplaceRegionNotFoundError } from '../../common/errors/errors';
 import { AppEntity } from '../../common/helpers/app-entity';
+import { ClassType } from '../../common/types/class-type';
 import { ListQueryOptions } from '../../common/types/list-query-options';
 import { MarketplaceRegionAware } from '../../common/types/marketplace-region-aware';
 import { PaginatedList } from '../../common/types/paginated-list';
@@ -138,6 +140,113 @@ export class MarketplaceRegionService {
 			),
 		);
 		return entity;
+	}
+
+	public async assignToMarketplaceRegions<Entity extends AppEntity & MarketplaceRegionAware>(
+		ctx: RequestContext,
+		entityType: ClassType<Entity>,
+		entityId: string,
+		marketplaceIds: string[],
+	): Promise<Entity> {
+		const entity = await this.ormService.getEntityOrThrow(ctx, entityType, entityId, {
+			loadEagerRelations: false,
+			relationLoadStrategy: 'query',
+			where: {
+				id: entityId,
+			} as FindOptionsWhere<Entity>,
+		});
+		const entityMarketplaces = await this.getAssignedEntityMarketplaceRegions(ctx, entityType, entityId);
+		const entityMarketplacesToAssign = marketplaceIds.filter(
+			(id) => !entityMarketplaces.find((mp) => mp.marketplaceRegionId === id),
+		);
+		if (!entityMarketplacesToAssign.length) return entity;
+		await this.ormService
+			.getRepository(ctx, entityType)
+			.createQueryBuilder()
+			.relation('marketplaceRegions')
+			.of(entity.id)
+			.add(entityMarketplacesToAssign);
+
+		await this.eventBus.publish(
+			new ChangeMarketplaceRegionEvent(ctx, entity, entityMarketplacesToAssign, 'assigned', entityType),
+		);
+		return entity;
+	}
+
+	public async UnAssignFromMarketplaceRegion<Entity extends AppEntity & MarketplaceRegionAware>(
+		ctx: RequestContext,
+		entityType: ClassType<Entity>,
+		id: string,
+		marketplaceIds: string[],
+	): Promise<Entity | undefined> {
+		const entity = await this.ormService.getRepository(ctx, entityType).findOne({
+			loadEagerRelations: false,
+			relationLoadStrategy: 'query',
+			where: {
+				id: id,
+			} as FindOptionsWhere<Entity>,
+		});
+		if (!entity) return undefined;
+		const entityMarketplaces = await this.getAssignedEntityMarketplaceRegions(ctx, entityType, id);
+
+		const entityMarketplacesToUnAssign = marketplaceIds.filter(
+			(id) => !!entityMarketplaces.find((mp) => mp.marketplaceRegionId === id),
+		);
+		if (!entityMarketplacesToUnAssign.length) return undefined;
+		await this.ormService
+			.getRepository(ctx, entityType)
+			.createQueryBuilder()
+			.relation('marketplaceRegions')
+			.of(entity.id)
+			.remove(entityMarketplacesToUnAssign);
+		await this.eventBus.publish(
+			new ChangeMarketplaceRegionEvent(
+				ctx,
+				entity,
+				entityMarketplacesToUnAssign,
+				'removed',
+				entityType,
+			),
+		);
+		return entity;
+	}
+
+	private async getAssignedEntityMarketplaceRegions<Entity extends AppEntity & MarketplaceRegionAware>(
+		ctx: RequestContext,
+		entityType: ClassType<Entity>,
+		entityId: string,
+	): Promise<
+		Array<{
+			marketplaceRegionId: string;
+		}>
+	> {
+		const repo = this.ormService.getRepository(ctx, entityType);
+		const metadata = repo.metadata;
+		const marketplaceRegionsRelation = metadata.findRelationWithPropertyPath('marketplaceRegions');
+		if (!marketplaceRegionsRelation) {
+			throw new InternalServerError(
+				`Could not find the marketplaceRegions relation for entity ${metadata.name}`,
+			);
+		}
+		const junctionTableName = marketplaceRegionsRelation.junctionEntityMetadata?.tableName;
+		const junctionColumnName = marketplaceRegionsRelation.junctionEntityMetadata?.columns[0].databaseName;
+		const inverseJunctionColumnName =
+			marketplaceRegionsRelation.junctionEntityMetadata?.inverseColumns[0].databaseName;
+
+		if (!junctionTableName || !junctionColumnName || !inverseJunctionColumnName) {
+			throw new InternalServerError(
+				`Could not find necessary join table information for the marketplaceRegions relation of entity ${metadata.name}`,
+			);
+		}
+		return await this.ormService
+			.getRepository(ctx, entityType)
+			.manager.createQueryBuilder()
+			.select(`junctionTable.${inverseJunctionColumnName}`, 'marketplaceRegionId')
+			.from(junctionTableName, 'junctionTable')
+			.where(`junctionTable.${junctionColumnName} = :entityId`, {
+				entityId,
+			})
+			.execute();
 	}
 
 	private async initializeDefaultMarketplaceRegion(): Promise<void> {

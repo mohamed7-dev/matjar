@@ -4,3 +4,10 @@ enum Permission
 enum ErrorCode {
 	UNKNOWN_ERROR
 }
+
+enum DeletionResult {
+	"Indicates that an entity was deleted successfully"
+	DELETED
+	"Indicates that an entity wasn't deleted successfully and the reason is given in the message"
+	NOT_DELETED
+}

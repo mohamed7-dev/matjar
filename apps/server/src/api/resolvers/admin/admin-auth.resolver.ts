@@ -116,7 +116,7 @@ export class AdminAuthResolver {
 		return user ? this.clientSafeUser(user) : null;
 	}
 
-	protected clientSafeUser(user: User): AuthenticatedAdminUser {
+	private clientSafeUser(user: User): AuthenticatedAdminUser {
 		const permissionIndex = PermissionsIndex.build(user);
 		return {
 			id: user.id,

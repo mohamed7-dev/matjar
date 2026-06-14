@@ -1,4 +1,5 @@
 import { LogLevel } from '../../config/strategies/logger/logger-strategy.interface';
+import { entitiesMap } from '../../entities/entities-map';
 import { I18nError } from '../../i18n/i18n-error';
 
 export class InternalServerError extends I18nError {
@@ -42,6 +43,27 @@ export class MarketplaceRegionNotFoundError extends I18nError {
 			},
 			'MARKETPLACE_REGION_NOT_FOUND_ERROR',
 			LogLevel.Info,
+		);
+	}
+}
+
+/**
+ * @description
+ * Represents an error caused by an entity not being found in the database.
+ */
+export class EntityNotFoundError extends I18nError {
+	constructor(
+		variables: {
+			entityName: keyof typeof entitiesMap;
+			entityId: string;
+		},
+		logLevel?: LogLevel,
+	) {
+		super(
+			'errors.entity_with_id_not_found',
+			variables,
+			'ENTITY_NOT_FOUND_ERROR',
+			logLevel ?? LogLevel.Warn,
 		);
 	}
 }

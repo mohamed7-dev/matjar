@@ -293,3 +293,11 @@ input DateListFilterInput {
 	"""
 	inList: DateTime!
 }
+
+"""
+Result type returned from any deletion mutation
+"""
+type DeletionResponse {
+	result: DeletionResult!
+	message: String
+}

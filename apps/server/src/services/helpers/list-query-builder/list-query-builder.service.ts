@@ -18,7 +18,7 @@ interface ExtraQueryOptions<Entity extends AppEntity> {
 	marketplaceRegionId?: string;
 	where?: FindOptionsWhere<Entity>;
 	orderBy?: FindOneOptions<Entity>['order'];
-	relations?: string[];
+	relations?: any; // TODO:change to a more appropriate type
 }
 
 @Injectable()

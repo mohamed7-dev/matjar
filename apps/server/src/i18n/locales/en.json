@@ -12,6 +12,11 @@
 		"auth_strategy_not_found": "Authentication strategy with the name \"{name}\" is not found",
 		"forbidden": "You are not allowed to access resource",
 		"list_query_limit_exceeded": "Query limit exceeded, the maximum number of items allowed is \"{limit}\"",
-		"invalid_sort_field": "The sort field \"{ fieldName }\" is invalid. Valid fields are: { validFields }"
+		"invalid_sort_field": "The sort field \"{ fieldName }\" is invalid. Valid fields are: { validFields }",
+		"entity_with_id_not_found": "No \"{entityName}\" with the id \"{entityId}\" could be found",
+		"entity_not_found": "Entity not found"
+	},
+	"message": {
+		"asset_to_be_deleted_is_featured": "The selected {assetCount, plural, one {Asset is} other {Assets are}} featured by {products, plural, =0 {} one {1 Product} other {# Products}} {variants, plural, =0 {} one { 1 ProductVariant} other { # ProductVariants}} {collections, plural, =0 {} one { 1 Collection} other { # Collections}}"
 	}
 }

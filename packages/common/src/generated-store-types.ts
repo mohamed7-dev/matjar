@@ -44,6 +44,12 @@ export type Asset = Node & {
   width: Scalars['Int']['output'];
 };
 
+export type AssetList = PaginatedList & {
+  __typename?: 'AssetList';
+  items: Array<Asset>;
+  totalItemsCount: Scalars['Int']['output'];
+};
+
 export type AssetTranslation = {
   __typename?: 'AssetTranslation';
   createdAt: Scalars['DateTime']['output'];
@@ -438,6 +444,20 @@ export type DateTimeRangeInput = {
   /** Latest allowed date/time (inclusive). */
   to: Scalars['DateTime']['input'];
 };
+
+/** Result type returned from any deletion mutation */
+export type DeletionResponse = {
+  __typename?: 'DeletionResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  result: DeletionResult;
+};
+
+export enum DeletionResult {
+  /** Indicates that an entity was deleted successfully */
+  DELETED = 'DELETED',
+  /** Indicates that an entity wasn't deleted successfully and the reason is given in the message */
+  NOT_DELETED = 'NOT_DELETED'
+}
 
 export enum ErrorCode {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR'

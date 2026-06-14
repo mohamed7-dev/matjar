@@ -63,6 +63,55 @@ export type Asset = Node & {
   width: Scalars['Int']['output'];
 };
 
+export type AssetFilterParameter = {
+  createdAt?: InputMaybe<DateTimeFilterInput>;
+  fileSize?: InputMaybe<NumericFilterInput>;
+  height?: InputMaybe<NumericFilterInput>;
+  id?: InputMaybe<IdentifierFilterInput>;
+  languageCode?: InputMaybe<TextFilterInput>;
+  mimetype?: InputMaybe<TextFilterInput>;
+  name?: InputMaybe<TextFilterInput>;
+  previewIdentifier?: InputMaybe<TextFilterInput>;
+  sourceIdentifier?: InputMaybe<TextFilterInput>;
+  type?: InputMaybe<TextFilterInput>;
+  updatedAt?: InputMaybe<DateTimeFilterInput>;
+  width?: InputMaybe<NumericFilterInput>;
+};
+
+export type AssetList = PaginatedList & {
+  __typename?: 'AssetList';
+  items: Array<Asset>;
+  totalItemsCount: Scalars['Int']['output'];
+};
+
+export type AssetListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<AssetFilterParameter>;
+  /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<FilterGroupOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<AssetSortParameter>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  tagsOperator?: InputMaybe<FilterGroupOperator>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type AssetSortParameter = {
+  createdAt?: InputMaybe<SortDirection>;
+  fileSize?: InputMaybe<SortDirection>;
+  height?: InputMaybe<SortDirection>;
+  id?: InputMaybe<SortDirection>;
+  mimetype?: InputMaybe<SortDirection>;
+  name?: InputMaybe<SortDirection>;
+  previewIdentifier?: InputMaybe<SortDirection>;
+  sourceIdentifier?: InputMaybe<SortDirection>;
+  updatedAt?: InputMaybe<SortDirection>;
+  width?: InputMaybe<SortDirection>;
+};
+
 export type AssetTranslation = {
   __typename?: 'AssetTranslation';
   createdAt: Scalars['DateTime']['output'];
@@ -83,6 +132,11 @@ export enum AssetType {
   IMAGE = 'IMAGE',
   VIDEO = 'VIDEO'
 }
+
+export type AssignAssetsToMarketplaceInput = {
+  assetIds: Array<Scalars['ID']['input']>;
+  marketplaceId: Scalars['ID']['input'];
+};
 
 export type AuthenticateAdminUserResult = AuthenticatedAdminUser | InvalidCredentialsError;
 
@@ -123,6 +177,11 @@ export type Coordinate = {
   __typename?: 'Coordinate';
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
+};
+
+export type CoordinateInput = {
+  x: Scalars['Float']['input'];
+  y: Scalars['Float']['input'];
 };
 
 export type CreateAssetsInput = {
@@ -479,6 +538,32 @@ export type DateTimeRangeInput = {
   /** Latest allowed date/time (inclusive). */
   to: Scalars['DateTime']['input'];
 };
+
+export type DeleteAssetInput = {
+  deleteFromAllMarketplaces?: InputMaybe<Scalars['Boolean']['input']>;
+  force?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteAssetsInput = {
+  deleteFromAllMarketplaces?: InputMaybe<Scalars['Boolean']['input']>;
+  force?: InputMaybe<Scalars['Boolean']['input']>;
+  ids: Array<Scalars['ID']['input']>;
+};
+
+/** Result type returned from any deletion mutation */
+export type DeletionResponse = {
+  __typename?: 'DeletionResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  result: DeletionResult;
+};
+
+export enum DeletionResult {
+  /** Indicates that an entity was deleted successfully */
+  DELETED = 'DELETED',
+  /** Indicates that an entity wasn't deleted successfully and the reason is given in the message */
+  NOT_DELETED = 'NOT_DELETED'
+}
 
 export enum ErrorCode {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR'
@@ -898,14 +983,27 @@ export type MarketplaceRegionSortParameter = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Assign assets to marketplace region */
+  assignAssetsToMarketplace: Array<Asset>;
   /** Authenticates an admin user using the provided authentication strategy name and data */
   authenticateAdminUser: AuthenticateAdminUserResult;
   /** Create new assets */
   createAssets: Array<CreateAssetsResult>;
+  /** Delete asset */
+  deleteAsset: DeletionResponse;
+  /** Delete assets */
+  deleteAssets: DeletionResponse;
   login: Scalars['Boolean']['output'];
   /** Terminates the current admin user session */
   logoutAdminUser: Success;
+  /** Update asset */
+  updateAsset: Asset;
   updateGlobalSettings?: Maybe<Scalars['Boolean']['output']>;
+};
+
+
+export type MutationAssignAssetsToMarketplaceArgs = {
+  input: AssignAssetsToMarketplaceInput;
 };
 
 
@@ -920,8 +1018,23 @@ export type MutationCreateAssetsArgs = {
 };
 
 
+export type MutationDeleteAssetArgs = {
+  input: DeleteAssetInput;
+};
+
+
+export type MutationDeleteAssetsArgs = {
+  input: DeleteAssetsInput;
+};
+
+
 export type MutationLoginArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationUpdateAssetArgs = {
+  input: UpdateAssetInput;
 };
 
 
@@ -1056,9 +1169,23 @@ export type Query = {
   __typename?: 'Query';
   activeAdministrator?: Maybe<Administrator>;
   activeMarketplaceRegion: MarketplaceRegion;
+  /** Get single asset by id */
+  asset?: Maybe<Asset>;
+  /** Get a list of assets */
+  assets: AssetList;
   marketplaceRegions: MarketplaceRegionList;
   me?: Maybe<AuthenticatedAdminUser>;
   me2: Scalars['Boolean']['output'];
+};
+
+
+export type QueryAssetArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryAssetsArgs = {
+  options?: InputMaybe<AssetListOptions>;
 };
 
 
@@ -1104,6 +1231,13 @@ export type TextFilterInput = {
 export type TextListFilterInput = {
   /** Returns records where the list contains the specified text value. */
   inList: Scalars['String']['input'];
+};
+
+export type UpdateAssetInput = {
+  focalPoint?: InputMaybe<CoordinateInput>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  translations?: InputMaybe<Array<AssetTranslationInput>>;
 };
 
 export type UpdateGlobalSettingsInput = {

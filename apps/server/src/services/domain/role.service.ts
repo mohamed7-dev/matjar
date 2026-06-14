@@ -1,3 +1,4 @@
+import { Permission } from '@matjar/common/lib/generated-types';
 import {
 	COMPANY_ADMIN_ROLE_CODE,
 	CUSTOMER_ROLE_CODE,
@@ -6,8 +7,10 @@ import {
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
 import { InternalServerError } from '../../common/errors/errors';
+import { PermissionsIndex } from '../../common/helpers/permission-index';
 import { PlatformRole } from '../../entities/role/platform-role.entity';
 import { Role } from '../../entities/role/role.entity';
+import { User } from '../../entities/user/user.entity';
 import { OrmService } from '../../orm/orm.service';
 import { DefaultRolesBuilderService } from '../helpers/default-roles-builder.service';
 import { MarketplaceRegionService } from './marketplace-region.service';
@@ -96,6 +99,58 @@ export class RoleService {
 		}
 
 		return companyAdminRole;
+	}
+
+	/**
+	 * @description
+	 * Returns true if the user has the specified permission on the specified marketplace
+	 */
+	public async userHasPermissionOnMarketplace(
+		ctx: RequestContext,
+		marketplaceId: string,
+		permission: Permission,
+	): Promise<boolean> {
+		return this.userHasAnyPermissionsOnMarketplace(ctx, marketplaceId, [
+			permission,
+		]);
+	}
+
+	/**
+	 * @description
+	 * Returns true if the user has any of the specified permissions on the specified marketplace
+	 */
+	async userHasAnyPermissionsOnMarketplace(
+		ctx: RequestContext,
+		marketplaceId: string,
+		permissions: Permission[],
+	): Promise<boolean> {
+		const permissionsOnMarketplace = await this.getActiveUserPermissionsOnMarketplace(ctx, marketplaceId);
+		for (const permission of permissions) {
+			if (permissionsOnMarketplace.includes(permission)) return true;
+		}
+		return false;
+	}
+
+	private async getActiveUserPermissionsOnMarketplace(
+		ctx: RequestContext,
+		marketplaceId: string,
+	): Promise<Permission[]> {
+		if (ctx.activeUserId == null) return [];
+
+		const user = await this.ormService.getEntityOrThrow(ctx, User, ctx.activeUserId, {
+			relations: {
+				roles: {
+					marketplaceRegions: true,
+				},
+			},
+		});
+
+		const userMarketplaces = PermissionsIndex.build(user);
+		const marketplace = PermissionsIndex.normalizeMap(userMarketplaces).find(
+			(mp) => mp.id === marketplaceId,
+		);
+		if (!marketplace) return [];
+		return marketplace.permissions;
 	}
 
 	private async initializeSuperAdminRole(): Promise<void> {

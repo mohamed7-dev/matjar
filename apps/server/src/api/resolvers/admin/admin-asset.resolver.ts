@@ -1,6 +1,17 @@
-import { MutationCreateAssetsArgs, Permission } from '@matjar/common/lib/generated-types';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import {
+	DeletionResponse,
+	MutationAssignAssetsToMarketplaceArgs,
+	MutationCreateAssetsArgs,
+	MutationDeleteAssetArgs,
+	MutationDeleteAssetsArgs,
+	MutationUpdateAssetArgs,
+	Permission,
+	QueryAssetArgs,
+	QueryAssetsArgs,
+} from '@matjar/common/lib/generated-types';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { InvalidMimetypeError } from '../../../common/errors/generated-graphql-admin-errors';
+import { PaginatedList } from '../../../common/types/paginated-list';
 import { Translated } from '../../../common/types/translatable';
 import { Asset } from '../../../entities/asset/asset.entity';
 import { AssetService } from '../../../services/domain/asset.service';
@@ -9,7 +20,7 @@ import { Ctx } from '../../decorators/ctx.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 import { RequestContext } from '../../request-context/request-context';
 
-@Resolver()
+@Resolver('Asset')
 export class AdminAssetResolver {
 	constructor(private readonly assetService: AssetService) {}
 
@@ -37,5 +48,125 @@ export class AdminAssetResolver {
 		}
 
 		return assets;
+	}
+
+	@Mutation('updateAsset')
+	@Transaction()
+	@Access({
+		permissions: [
+			Permission.platform_catalog_update,
+			Permission.platform_asset_update,
+		],
+		policies: [
+			{
+				name: 'AuthenticatedPolicy',
+			},
+		],
+	})
+	public async update(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationUpdateAssetArgs,
+	): Promise<Translated<Asset>> {
+		return await this.assetService.update(ctx, args.input);
+	}
+
+	@Mutation('deleteAssets')
+	@Transaction()
+	@Access({
+		permissions: [
+			Permission.platform_catalog_delete,
+			Permission.platform_asset_delete,
+		],
+		policies: [
+			{
+				name: 'AuthenticatedPolicy',
+			},
+		],
+	})
+	public async deleteBulk(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationDeleteAssetsArgs,
+	): Promise<DeletionResponse> {
+		return await this.assetService.delete(ctx, args.input.ids, {
+			force: args.input.force || undefined,
+			deleteFromAllMarketplaces: args.input.deleteFromAllMarketplaces || undefined,
+		});
+	}
+
+	@Mutation('deleteAsset')
+	@Transaction()
+	@Access({
+		permissions: [
+			Permission.platform_catalog_delete,
+			Permission.platform_asset_delete,
+		],
+		policies: [
+			{
+				name: 'AuthenticatedPolicy',
+			},
+		],
+	})
+	public async delete(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationDeleteAssetArgs,
+	): Promise<DeletionResponse> {
+		return await this.assetService.delete(
+			ctx,
+			[
+				args.input.id,
+			],
+			{
+				force: args.input.force || undefined,
+				deleteFromAllMarketplaces: args.input.deleteFromAllMarketplaces || undefined,
+			},
+		);
+	}
+
+	@Mutation('assignAssetsToMarketplace')
+	@Transaction()
+	@Access({
+		permissions: [
+			Permission.platform_catalog_update,
+			Permission.platform_asset_update,
+		],
+		policies: [
+			{
+				name: 'AuthenticatedPolicy',
+			},
+		],
+	})
+	public async assignToMarketplace(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationAssignAssetsToMarketplaceArgs,
+	): Promise<Array<Translated<Asset>>> {
+		return await this.assetService.assignToMarketplaceRegion(ctx, args.input);
+	}
+
+	@Query('asset')
+	@Access({
+		permissions: [
+			Permission.platform_catalog_read,
+			Permission.platform_asset_read,
+		],
+	})
+	public async findOne(
+		@Ctx() ctx: RequestContext,
+		@Args() args: QueryAssetArgs,
+	): Promise<Asset | undefined> {
+		return await this.assetService.findOne(ctx, args.id);
+	}
+
+	@Query('assets')
+	@Access({
+		permissions: [
+			Permission.platform_catalog_read,
+			Permission.platform_asset_read,
+		],
+	})
+	public async find(
+		@Ctx() ctx: RequestContext,
+		@Args() args: QueryAssetsArgs,
+	): Promise<PaginatedList<Translated<Asset>>> {
+		return await this.assetService.find(ctx, args.options || undefined);
 	}
 }
