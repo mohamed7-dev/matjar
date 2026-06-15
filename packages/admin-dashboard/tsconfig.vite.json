@@ -8,7 +8,7 @@
 		"plugins": [],
 		"declaration": true,
 		"rootDir": "./vite-plugins",
-		"outDir": "./dist/vite"
+		"outDir": "./lib/vite"
 	},
 	"include": [
 		"vite-plugins/**/*"

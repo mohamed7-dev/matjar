@@ -2,21 +2,22 @@
 	"name": "@matjar/admin-dashboard",
 	"private": true,
 	"type": "module",
-	"module": "./dist/vite/index.js",
-	"main": "./dist/vite/index.js",
-	"types": "./dist/vite/index.d.ts",
+	"module": "./lib/vite/index.js",
+	"main": "./lib/vite/index.js",
+	"types": "./lib/vite/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./dist/vite/index.d.ts",
-			"import": "./dist/vite/index.js",
-			"require": "./dist/vite/index.js"
+			"types": "./lib/vite/index.d.ts",
+			"import": "./lib/vite/index.js",
+			"require": "./lib/vite/index.js"
 		}
 	},
 	"files": [
-		"dist",
+		"lib",
 		"src",
 		"public",
-		"index.html"
+		"index.html",
+		"lingui.config.js"
 	],
 	"scripts": {
 		"watch": "vite dev",
@@ -66,6 +67,7 @@
 		"radix-ui": "^1.5.0",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
+		"react-dropzone": "^15.0.0",
 		"shadcn": "^4.10.0",
 		"tailwind-merge": "^3.5.0",
 		"tailwindcss": "^4.2.2",

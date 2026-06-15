@@ -77,11 +77,6 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 				? normalizedCurrentPath
 				: `/${normalizedCurrentPath}`;
 
-			console.log({
-				cleanPath,
-				itemUrl,
-			});
-
 			// Special handling for root path
 			if (itemUrl === '/') {
 				return cleanPath === '/' || cleanPath === '';

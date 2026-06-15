@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import { defineConfig, loadEnv } from 'vite';
-import { viteMatjarPLugin } from './vite-plugins/vite-matjar-plugin.js';
+import { viteMatjarPlugin } from './vite-plugins/vite-matjar-plugin.js';
 
 export default defineConfig(({ mode }) => {
 	process.env = {
@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
 	const configPath = process.env.APP_CONFIG_PATH ?? './sample-app-config.ts';
 	return {
 		plugins: [
-			viteMatjarPLugin({
+			viteMatjarPlugin({
 				appConfigPath: pathToFileURL(configPath),
 				gqlTadaOutputPath: './src/infra/graphql',
 				ui: {

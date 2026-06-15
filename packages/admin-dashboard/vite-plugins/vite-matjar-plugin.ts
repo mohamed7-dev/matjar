@@ -32,7 +32,7 @@ interface ViteMatjarPLuginOptions {
 	ui?: UiConfigPluginOptions;
 }
 
-export function viteMatjarPLugin(options: ViteMatjarPLuginOptions): PluginOption[] {
+export function viteMatjarPlugin(options: ViteMatjarPLuginOptions): PluginOption[] {
 	const tempDirPath = path.join(import.meta.dirname, '..', '.temp');
 	const packageRoot = getDashboardRoot();
 	const normalizedConfigPath = getNormalizedAppConfigPath(options.appConfigPath);
