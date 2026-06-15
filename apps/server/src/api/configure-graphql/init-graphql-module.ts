@@ -53,6 +53,11 @@ async function buildGraphqlModuleOptionsForApi(
 			res: ctx.res,
 		}),
 		plugins,
+		fieldResolverEnhancers: [
+			'guards',
+		],
+		inheritResolversFromInterfaces: true,
+		csrfPrevention: false,
 	};
 }
 

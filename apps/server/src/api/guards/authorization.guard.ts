@@ -28,7 +28,7 @@ export class AuthorizationGuard implements CanActivate {
 		if (!options) return true;
 
 		this.checkPermissions(requestContext, options);
-		await this.runPolicies(requestContext, options);
+		await this.runPolicies(ctx, requestContext, options);
 		return true;
 	}
 
@@ -45,6 +45,7 @@ export class AuthorizationGuard implements CanActivate {
 	}
 
 	private async runPolicies(
+		executionContext: ExecutionContext,
 		context: RequestContext,
 		options: AccessDecoratorMetadataOptions,
 	): Promise<void> {
@@ -62,7 +63,7 @@ export class AuthorizationGuard implements CanActivate {
 				: blueprint;
 
 			// 3. Evaluate
-			const result = await configuredPolicy.evaluate(context);
+			const result = await configuredPolicy.evaluate(context, executionContext);
 			if (!result) throw new ForbiddenError();
 		}
 	}

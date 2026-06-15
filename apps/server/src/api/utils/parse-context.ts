@@ -9,6 +9,7 @@ interface GraphQLContext {
 	res: Response;
 	isGraphQL: true;
 	info: GraphQLResolveInfo;
+	args: any;
 }
 
 /**
@@ -27,6 +28,7 @@ export function parseContext(executionContext: ExecutionContext | ArgumentsHost)
 			req: gqlContext.getContext().req,
 			res: gqlContext.getContext().res,
 			info: gqlContext.getInfo(),
+			args: gqlContext.getArgs(),
 		};
 	} else {
 		throw new InternalServerError('errors.invalid_execution_context', {

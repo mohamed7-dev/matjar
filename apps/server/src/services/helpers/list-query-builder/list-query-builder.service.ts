@@ -29,10 +29,10 @@ export class ListQueryBuilder {
 	) {}
 	public build<Entity extends AppEntity>(
 		entity: ClassType<Entity>,
-		listQueryOptions: ListQueryOptions<Entity> | null = {},
+		listQueryOptions: ListQueryOptions<Entity> = {},
 		extraOptions: ExtraQueryOptions<Entity> = {},
 	): SelectQueryBuilder<Entity> {
-		listQueryOptions = listQueryOptions ?? {};
+		listQueryOptions = listQueryOptions || {};
 		const apiType = extraOptions.ctx?.apiType ?? 'store';
 		const { skip, take } = this.parsePaginationParams(
 			apiType,
@@ -79,9 +79,9 @@ export class ListQueryBuilder {
 		return queryBuilder;
 	}
 
-	private parsePaginationParams<Entity extends AppEntity>(
+	private parsePaginationParams(
 		apiType: ApiType,
-		options: ListQueryOptions<Entity>,
+		options: ListQueryOptions<any>,
 		ignoreQueryLimits: boolean = false,
 	): {
 		take: number;
@@ -120,6 +120,7 @@ export class ListQueryBuilder {
 		) {
 			take = max;
 		}
+
 		return {
 			skip,
 			take,

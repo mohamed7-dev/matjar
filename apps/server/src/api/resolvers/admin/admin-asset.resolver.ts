@@ -15,6 +15,7 @@ import { PaginatedList } from '../../../common/types/paginated-list';
 import { Translated } from '../../../common/types/translatable';
 import { Asset } from '../../../entities/asset/asset.entity';
 import { AssetService } from '../../../services/domain/asset.service';
+import { UserHasPermissionOnMarketplacePolicyOptions } from '../../access-policies/user-has-permission-on-marketplace.policy';
 import { Access } from '../../decorators/access.decorator';
 import { Ctx } from '../../decorators/ctx.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
@@ -132,6 +133,13 @@ export class AdminAssetResolver {
 		policies: [
 			{
 				name: 'AuthenticatedPolicy',
+			},
+			{
+				name: 'UserHasPermissionOnMarketplacePolicy',
+				options: {
+					permission: Permission.platform_catalog_update,
+					gqlMarketplaceIdArgsPath: 'input.marketplaceId',
+				} satisfies UserHasPermissionOnMarketplacePolicyOptions,
 			},
 		],
 	})

@@ -1,11 +1,20 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import {
+	MiddlewareConsumer,
+	Module,
+	NestModule,
+	OnApplicationBootstrap,
+	OnApplicationShutdown,
+} from '@nestjs/common';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, ModuleRef } from '@nestjs/core';
+import { Injector } from '../common/helpers/injector';
+import { LifecycleStrategy } from '../common/types/lifecycle-strategy';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { I18nModule } from '../i18n/i18n.module';
 import { I18nService } from '../i18n/i18n.service';
 import { OrmModule } from '../orm/orm.module';
 import { ServiceModule } from '../services/service.module';
+import { getAllAccessPolicies } from './access-policies/get-access-policies';
 import { ADMIN_TYPES_PATHS, STORE_TYPES_PATHS } from './common/types-paths';
 import { initGraphqlModule } from './configure-graphql/init-graphql-module';
 import { I18nExceptionLoggerFilter } from './filter/i18n-exception-logger.filter';
@@ -102,11 +111,41 @@ class StoreApiModule {}
 		})),
 	],
 })
-export class ApiModule implements NestModule {
+export class ApiModule implements NestModule, OnApplicationBootstrap, OnApplicationShutdown {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly i18nService: I18nService,
+		private readonly moduleRef: ModuleRef,
 	) {}
+
+	async onApplicationBootstrap(): Promise<void> {
+		await this.initLifecycleStrategies();
+	}
+
+	async onApplicationShutdown(): Promise<void> {
+		await this.destroyLifecycleStrategies();
+	}
+
+	private async initLifecycleStrategies(): Promise<void> {
+		const injector = new Injector(this.moduleRef);
+		for (const strategy of this.getLifecycleStrategies()) {
+			if (typeof strategy.onInit === 'function') {
+				await strategy.onInit(injector);
+			}
+		}
+	}
+
+	private async destroyLifecycleStrategies(): Promise<void> {
+		for (const strategy of this.getLifecycleStrategies()) {
+			if (typeof strategy.onDestroy === 'function') {
+				await strategy.onDestroy();
+			}
+		}
+	}
+
+	private getLifecycleStrategies(): LifecycleStrategy[] {
+		return getAllAccessPolicies();
+	}
 
 	async configure(consumer: MiddlewareConsumer): Promise<void> {
 		const { admin, store } = this.configService.api;

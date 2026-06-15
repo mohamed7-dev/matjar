@@ -254,15 +254,6 @@ export class AssetService {
 		ctx: RequestContext,
 		input: AssignAssetsToMarketplaceInput,
 	): Promise<Array<Translated<Asset>>> {
-		const hasPermission = await this.roleService.userHasPermissionOnMarketplace(
-			ctx,
-			input.marketplaceId,
-			Permission.platform_catalog_update,
-		);
-		if (!hasPermission) {
-			throw new ForbiddenError();
-		}
-
 		const assets = await this.ormService.findByIdsInMarketplace(
 			ctx,
 			Asset,
@@ -386,10 +377,10 @@ export class AssetService {
 			sourceIdentifier: sourceFileIdentifier,
 			previewIdentifier: previewFileIdentifier,
 		});
-		const savedAsset = await this.ormService.getRepository(ctx, Asset).save(asset);
 
 		// 7. assign to active marketplace region
-		await this.marketplaceRegionService.assignToActiveMarketplaceRegion(ctx, savedAsset);
+		await this.marketplaceRegionService.assignToActiveMarketplaceRegion(ctx, asset);
+		const savedAsset = await this.ormService.getRepository(ctx, Asset).save(asset);
 
 		// 8. save translations
 		const defaultName = fileInfo.filename;
