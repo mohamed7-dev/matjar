@@ -1,6 +1,6 @@
 import { generate } from "@graphql-codegen/cli";
+import { Logger } from "@matjar/api";
 import { ADMIN_API_PATH, STORE_API_PATH } from "@matjar/common/lib/shared-constants";
-import { Logger } from "@matjar/server";
 import path from "path";
 import { introspectGraphqlApi } from "./introspect-graphql-api";
 

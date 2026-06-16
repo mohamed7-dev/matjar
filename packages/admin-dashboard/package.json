@@ -77,7 +77,7 @@
 	},
 	"devDependencies": {
 		"@matjar/common": "workspace:*",
-		"@matjar/server": "workspace:*",
+		"@matjar/api": "workspace:*",
 		"@types/babel__core": "^7.20.5"
 	},
 	"pnpm": {

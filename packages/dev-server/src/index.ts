@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-import 'dotenv/config';
 import path from 'node:path';
 import { bootstrap } from '@matjar/api';
 import { appConfig } from './app-config';

@@ -1,4 +1,4 @@
-import type { AppConfig } from '@matjar/server';
+import type { AppConfig } from '@matjar/api';
 
 export const appConfig: AppConfig = {
 	api: {

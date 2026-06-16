@@ -24,9 +24,9 @@
 		"@graphql-codegen/typescript": "5.0.1",
 		"@graphql-codegen/typescript-operations": "5.0.1",
 		"@graphql-codegen/visitor-plugin-common": "^6.3.0",
-		"@matjar/common": "workspace:*",
-		"@matjar/server": "workspace:*",
 		"@matjar/admin-dashboard": "workspace:*",
+		"@matjar/api": "workspace:*",
+		"@matjar/common": "workspace:*",
 		"@nestjs/common": "^11.1.24",
 		"@types/node": "24.1.0",
 		"graphql": "^16.14.0",
@@ -35,6 +35,8 @@
 		"lint-staged": "^16.4.0",
 		"rimraf": "^6.1.3",
 		"sql.js": "^1.14.1",
+		"ts-node": "^10.9.2",
+		"tsconfig-paths": "^4.2.0",
 		"tsx": "^4.22.4",
 		"typescript": "5.9.3",
 		"vitest": "^4.1.7"
@@ -42,5 +44,8 @@
 	"workspaces": [
 		"./packages/*",
 		"./apps/*"
-	]
+	],
+	"dependencies": {
+		"dotenv": "^17.4.2"
+	}
 }

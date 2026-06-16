@@ -1,10 +1,10 @@
+import type { AppConfig } from '@matjar/api';
 import type { LanguageCode } from '@matjar/common/lib/generated-types';
 import {
 	ADMIN_API_PATH,
 	DEFAULT_AUTH_TOKEN_HEADER_KEY,
 	DEFAULT_MARKETPLACE_REGION_IDENTIFIER,
 } from '@matjar/common/lib/shared-constants';
-import type { AppConfig } from '@matjar/server';
 import type { PluginOption } from 'vite';
 import {
 	DEFAULT_AVAILABLE_LANGUAGE_CODES,

@@ -1,11 +1,25 @@
+import 'reflect-metadata';
+import path from 'node:path';
+import { INestApplication, NestApplicationOptions } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import express, { NextFunction, Request, Response } from 'express';
 import { PartialAppConfig, RuntimeAppConfig } from './config/types/app-config.interface';
 import { AppConfigUtils } from './config/utils/config-utils';
 import { entitiesMap } from './entities/entities-map';
 import { Logger } from './logger/logger';
 
-export async function bootstrap(userConfig?: PartialAppConfig): Promise<NestExpressApplication> {
+interface BootstrapConfigOptions {
+	userConfig?: PartialAppConfig;
+	adminDashboardRootPath: string;
+	nestOptions?: NestApplicationOptions;
+}
+
+export async function bootstrap({
+	userConfig,
+	adminDashboardRootPath,
+	nestOptions,
+}: BootstrapConfigOptions): Promise<NestExpressApplication> {
 	const appConfig = runPreConfig(userConfig);
 
 	Logger.setLoggerStrategy(appConfig.system.loggerStrategy);
@@ -16,6 +30,7 @@ export async function bootstrap(userConfig?: PartialAppConfig): Promise<NestExpr
 	const app = await NestFactory.create<NestExpressApplication>(
 		await import('./app.module.js').then((mod) => mod.AppModule),
 		{
+			...nestOptions,
 			logger: new Logger(),
 			cors,
 		},
@@ -23,11 +38,46 @@ export async function bootstrap(userConfig?: PartialAppConfig): Promise<NestExpr
 
 	app.useLogger(new Logger());
 
+	setupAdminDashboardRoute(app, adminDashboardRootPath);
+
 	await app.listen(port, host, () => {
 		Logger.info(`Server is running on port ${port}`);
 	});
 
 	return app;
+}
+function setupAdminDashboardRoute(app: INestApplication, adminDashboardRootPath: string): void {
+	const dashboardRoot = adminDashboardRootPath;
+	const expressApp = app.getHttpAdapter().getInstance();
+	const dashboardSpaFallback = (req: Request, res: Response, next: NextFunction): any => {
+		if (
+			![
+				'GET',
+				'HEAD',
+			].includes(req.method) ||
+			!req.accepts('html')
+		) {
+			return next();
+		}
+		const requestPath = new URL(req.originalUrl, 'http://localhost').pathname.replace(/\/$/, '');
+		if (path.extname(requestPath)) {
+			return next();
+		}
+		return res.sendFile(path.join(dashboardRoot, 'index.html'));
+	};
+	expressApp.use(
+		'/dashboard',
+		express.static(dashboardRoot, {
+			index: false,
+		}),
+	);
+	expressApp.get(
+		[
+			'/dashboard',
+			'/dashboard/{*dashboardPath}',
+		],
+		dashboardSpaFallback,
+	);
 }
 
 function runPreConfig(userConfig?: PartialAppConfig): RuntimeAppConfig {

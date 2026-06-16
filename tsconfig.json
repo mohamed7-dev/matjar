@@ -13,11 +13,14 @@
 		],
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
+		"moduleDetection": "force",
 
 		"strict": true,
+		"incremental": true,
 		"noLib": false,
 		"skipLibCheck": true,
 		"sourceMap": false,
+		"removeComments": false,
 		"newLine": "LF"
 	}
 }

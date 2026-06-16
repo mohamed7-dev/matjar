@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import http from "node:http";
+import { bootstrap, Logger, LogLevel, StdoutLoggerStrategy } from "@matjar/api";
 import { ADMIN_API_PATH, STORE_API_PATH } from "@matjar/common/lib/shared-constants";
-import { bootstrap, Logger, LogLevel, StdoutLoggerStrategy } from "@matjar/server";
 import type { INestApplication } from "@nestjs/common";
 import { getIntrospectionQuery } from "graphql";
 import { CODEGEN_LOG_CONTEXT } from "./generate-types";

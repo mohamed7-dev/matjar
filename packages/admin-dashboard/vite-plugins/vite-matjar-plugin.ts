@@ -50,6 +50,7 @@ export function viteMatjarPlugin(options: ViteMatjarPLuginOptions): PluginOption
 		tailwindcss(),
 		viteAppConfigLoaderPlugin({
 			appConfigPath: normalizedConfigPath,
+			tempPath: tempDirPath,
 		}),
 		viteConfigPlugin({
 			packageRoot,

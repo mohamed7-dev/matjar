@@ -7,7 +7,7 @@ import {
 	AppConfigUtils,
 	buildFinalGraphqlSchema,
 	type RuntimeAppConfig,
-} from '@matjar/server';
+} from '@matjar/api';
 import { GraphQLTypesLoader } from '@nestjs/graphql';
 import { buildSchema, type GraphQLSchema, printSchema } from 'graphql';
 import type { ConfigPluginContext, PluginOption } from 'vite';

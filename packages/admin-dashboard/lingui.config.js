@@ -8,7 +8,7 @@ export default defineConfig({
     catalogs: [
         {
             path: '<rootDir>/src/i18n/dictionaries/{locale}',
-            include: ['<rootDir>/src'],
+            include: ['<rootDir>/src/**'],
             exclude: ['<rootDir>/src/**/*.stories.tsx'],
         },
     ],

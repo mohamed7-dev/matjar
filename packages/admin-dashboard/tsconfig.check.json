@@ -7,6 +7,7 @@
 		"**/*.spec.tsx",
 		"**/*.stories.ts",
 		"**/*.stories.tsx",
-		"node_modules"
+		"node_modules",
+		"./tsconfig.check.tsbuildinfo"
 	]
 }

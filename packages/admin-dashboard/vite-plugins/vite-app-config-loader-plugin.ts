@@ -1,13 +1,10 @@
 import fs from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import type { RuntimeAppConfig } from '@matjar/server';
+import type { RuntimeAppConfig } from '@matjar/api';
 import ts from 'typescript';
 import { normalizePath, type Plugin, type PluginOption } from 'vite';
 
-const VIRTUAL_ID = 'virtual:app-config';
-const RESOLVED_ID = `\0${VIRTUAL_ID}`;
 export const configLoaderPluginName = 'matjar:app-config-loader';
 const compiledConfigCache = new Map<string, Promise<RuntimeAppConfig>>();
 
@@ -17,6 +14,7 @@ export interface ConfigLoaderApi {
 
 interface ViteAppConfigLoaderPluginOptions {
 	appConfigPath: string;
+	tempPath: string;
 }
 
 /**
@@ -33,27 +31,53 @@ interface ViteAppConfigLoaderPluginOptions {
  */
 export function viteAppConfigLoaderPlugin(options: ViteAppConfigLoaderPluginOptions): PluginOption {
 	const appConfigPath = normalizePath(options.appConfigPath);
+	let result: RuntimeAppConfig;
+	const onConfigLoaded: Array<() => void> = [];
+
 	return {
 		name: configLoaderPluginName,
-		resolveId(id) {
-			if (id === VIRTUAL_ID) return RESOLVED_ID;
-		},
-		async load(id) {
-			if (id !== RESOLVED_ID) return;
-			return [
-				`import { appConfig as loadedAppConfig } from ${JSON.stringify(options.appConfigPath)};`,
-				'export const appConfig = loadedAppConfig;',
-			].join('\n');
+		async buildStart() {
+			this.info(
+				`Loading app config. This can take a short while depending on the size of your project...`,
+			);
+			try {
+				const startTime = Date.now();
+				result = await compileAndLoadAppConfig({
+					...options,
+					appConfigPath,
+				});
+				const endTime = Date.now();
+				const duration = endTime - startTime;
+				this.info(`App config loaded in ${duration}ms`);
+			} catch (e) {
+				if (e instanceof Error) {
+					this.error(`Error loading app config: ${e.message}`);
+				}
+			}
+			onConfigLoaded.forEach((fn) => {
+				fn();
+			});
 		},
 		api: {
-			async getAppConfig(): Promise<RuntimeAppConfig> {
-				return compileAndLoadAppConfig(appConfigPath);
+			getAppConfig(): Promise<RuntimeAppConfig> {
+				if (result) {
+					return Promise.resolve(result);
+				} else {
+					return new Promise<RuntimeAppConfig>((resolve) => {
+						onConfigLoaded.push(() => {
+							resolve(result);
+						});
+					});
+				}
 			},
 		} satisfies ConfigLoaderApi,
 	};
 }
 
-async function compileAndLoadAppConfig(appConfigPath: string): Promise<RuntimeAppConfig> {
+async function compileAndLoadAppConfig({
+	appConfigPath,
+	tempPath,
+}: ViteAppConfigLoaderPluginOptions): Promise<RuntimeAppConfig> {
 	const sourceFilePath = await resolveAppConfigSource(appConfigPath);
 	if (!sourceFilePath) {
 		throw new Error(`Could not resolve app config path: ${appConfigPath}`);
@@ -61,7 +85,7 @@ async function compileAndLoadAppConfig(appConfigPath: string): Promise<RuntimeAp
 
 	const cacheKey = sourceFilePath;
 	if (!compiledConfigCache.has(cacheKey)) {
-		compiledConfigCache.set(cacheKey, compileAndImportAppConfig(sourceFilePath));
+		compiledConfigCache.set(cacheKey, compileAndImportAppConfig(sourceFilePath, tempPath));
 	}
 	return compiledConfigCache.get(cacheKey) as Promise<RuntimeAppConfig>;
 }
@@ -90,8 +114,11 @@ async function fileExists(filePath: string): Promise<boolean> {
 	}
 }
 
-async function compileAndImportAppConfig(sourceFilePath: string): Promise<RuntimeAppConfig> {
-	const outputPath = await buildTempEnv(sourceFilePath);
+async function compileAndImportAppConfig(
+	sourceFilePath: string,
+	tempPath: string,
+): Promise<RuntimeAppConfig> {
+	const outputPath = await buildTempEnv(sourceFilePath, tempPath);
 	const sourceFiles = await collectLocalSourceFiles(sourceFilePath);
 	const sourceRoot = path.dirname(sourceFilePath);
 	for (const filePath of sourceFiles) {
@@ -126,11 +153,11 @@ async function compileAndImportAppConfig(sourceFilePath: string): Promise<Runtim
 	return imported.appConfig as RuntimeAppConfig;
 }
 
-async function buildTempEnv(sourceFilePath: string) {
+async function buildTempEnv(sourceFilePath: string, tempPath: string) {
 	// nodejs won't understand .ts files so we have to create a temp env that contains the compiled js files
 
 	const outputPath = path.join(
-		os.tmpdir(),
+		tempPath,
 		'matjar-dashboard-app-config',
 		path.basename(sourceFilePath, path.extname(sourceFilePath)),
 	);

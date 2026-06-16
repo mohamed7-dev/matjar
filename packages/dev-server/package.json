@@ -1,0 +1,21 @@
+{
+	"name": "@matjar/dev-server",
+	"private": true,
+	"main": "index.js",
+	"scripts": {
+		"dev:server": "node -r ts-node/register -r dotenv/config -r tsconfig-paths/register ./src/index.ts",
+		"dev:dashboard": "vite dev",
+		"build:dashboard": "vite build",
+		"dev": "concurrently pnpm:dev:server pnpm:dev:dashboard"
+	},
+	"dependencies": {
+		"@lingui/cli": "^6.3.0",
+		"@matjar/admin-dashboard": "workspace:*",
+		"@matjar/api": "workspace:*",
+		"@matjar/common": "workspace:*"
+	},
+	"devDependencies": {
+		"concurrently": "^10.0.3",
+		"vite": "^7.3.1"
+	}
+}

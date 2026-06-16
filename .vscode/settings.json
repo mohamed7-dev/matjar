@@ -6,7 +6,9 @@
 		"source.fixAll.biome": "explicit"
 	},
 	"conventionalCommits.scopes": [
+		"api",
 		"server",
+		"dev-server",
 		"common",
 		"dashboard",
 		"design",
