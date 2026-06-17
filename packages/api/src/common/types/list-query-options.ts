@@ -49,7 +49,7 @@ export type FilterParameter<Entity extends AppEntity> = {
 	_or?: Array<FilterParameter<Entity>>;
 };
 
-export interface TextFilterInput {
+export type TextFilterInput = {
 	equals?: string;
 	notEquals?: string;
 	contains?: string;
@@ -58,9 +58,9 @@ export interface TextFilterInput {
 	excludedFrom?: string;
 	matchesRegex?: string;
 	isNull?: boolean;
-}
+};
 
-export interface NumericFilterInput {
+export type NumericFilterInput = {
 	equals?: number;
 	lessThan?: number;
 	lessThanOrEqual?: number;
@@ -68,31 +68,31 @@ export interface NumericFilterInput {
 	greaterThanOrEqual?: number;
 	withinRange?: NumericRangeInput;
 	isNull?: boolean;
-}
+};
 
 export interface NumericRangeInput {
 	min: number;
 	max: number;
 }
 
-export interface BooleanFilterInput {
+export type BooleanFilterInput = {
 	equals: boolean;
 	isNull: boolean;
-}
+};
 
-export interface DateTimeRangeInput {
+export type DateTimeRangeInput = {
 	from: Date;
 	to: Date;
-}
+};
 
-export interface DateTimeFilterInput {
+export type DateTimeFilterInput = {
 	equals?: Date;
 	before?: Date;
 	after?: Date;
 	withinRange?: DateTimeRangeInput;
 	isNull?: boolean;
-}
+};
 
-export interface ListFilterInput {
+export type ListFilterInput = {
 	inList?: string | number | boolean | Date;
-}
+};

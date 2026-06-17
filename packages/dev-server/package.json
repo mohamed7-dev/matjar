@@ -3,7 +3,7 @@
 	"private": true,
 	"main": "index.js",
 	"scripts": {
-		"dev:server": "node -r ts-node/register -r dotenv/config -r tsconfig-paths/register ./src/index.ts",
+		"dev:api": "node -r ts-node/register -r dotenv/config -r tsconfig-paths/register ./src/index.ts",
 		"dev:dashboard": "vite dev",
 		"build:dashboard": "vite build",
 		"dev": "concurrently pnpm:dev:server pnpm:dev:dashboard"

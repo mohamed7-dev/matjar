@@ -12,7 +12,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { imageSize } from 'image-size';
 import mime from 'mime-types';
-import { FindOptionsRelations } from 'typeorm';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContext } from '../../api/request-context/request-context';
 import { ForbiddenError, InternalServerError } from '../../common/errors/errors';
 import { InvalidMimetypeError } from '../../common/errors/generated-graphql-admin-errors';
@@ -220,11 +220,11 @@ export class AssetService {
 	public async findOne(
 		ctx: RequestContext,
 		id: string,
-		relations?: FindOptionsRelations<Asset>,
+		relations?: RelationPaths<Asset>,
 	): Promise<Translated<Asset> | undefined> {
 		return await this.ormService
 			.findOneInMarketplace(ctx, Asset, id, ctx.marketplaceRegionId, {
-				relations,
+				relations: relations ?? [],
 			})
 			.then((entity) => (entity ? this.translatorService.translate(ctx, entity) : undefined));
 	}
@@ -232,13 +232,13 @@ export class AssetService {
 	public async find(
 		ctx: RequestContext,
 		options?: AssetListOptions,
-		relations?: FindOptionsRelations<Asset>,
+		relations?: RelationPaths<Asset>,
 	): Promise<PaginatedList<Translated<Asset>>> {
 		// TODO: before calling getManyAndCount(), handle filtering by tags
 		return await this.listQueryBuilder
 			.build(Asset, options as any, {
 				ctx,
-				relations,
+				relations: relations ?? [],
 				marketplaceRegionId: ctx.marketplaceRegionId,
 			})
 			.getManyAndCount()

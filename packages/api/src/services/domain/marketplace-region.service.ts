@@ -262,7 +262,10 @@ export class MarketplaceRegionService {
 
 		if (defaultMarketplaceRegion && defaultMarketplaceRegion.token !== defaultMarketplaceRegionToken) {
 			defaultMarketplaceRegion.token = defaultMarketplaceRegionToken;
-		} else {
+			await this.ormService.dataSource.getRepository(MarketplaceRegion).save(defaultMarketplaceRegion, {
+				reload: false,
+			});
+		} else if (!defaultMarketplaceRegion) {
 			defaultMarketplaceRegion = new MarketplaceRegion({
 				code: DEFAULT_MARKETPLACE_REGION_CODE,
 				token: defaultMarketplaceRegionToken,
@@ -275,10 +278,9 @@ export class MarketplaceRegionService {
 					this.configService.defaultLanguageCode,
 				],
 			});
+			await this.ormService.dataSource.getRepository(MarketplaceRegion).save(defaultMarketplaceRegion, {
+				reload: false,
+			});
 		}
-
-		await this.ormService.dataSource.getRepository(MarketplaceRegion).save(defaultMarketplaceRegion, {
-			reload: false,
-		});
 	}
 }

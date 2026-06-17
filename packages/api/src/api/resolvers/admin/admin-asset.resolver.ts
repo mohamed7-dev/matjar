@@ -18,6 +18,7 @@ import { AssetService } from '../../../services/domain/asset.service';
 import { UserHasPermissionOnMarketplacePolicyOptions } from '../../access-policies/user-has-permission-on-marketplace.policy';
 import { Access } from '../../decorators/access.decorator';
 import { Ctx } from '../../decorators/ctx.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 import { RequestContext } from '../../request-context/request-context';
 
@@ -160,8 +161,9 @@ export class AdminAssetResolver {
 	public async findOne(
 		@Ctx() ctx: RequestContext,
 		@Args() args: QueryAssetArgs,
+		@Relations(Asset) relations: RelationPaths<Asset>,
 	): Promise<Asset | undefined> {
-		return await this.assetService.findOne(ctx, args.id);
+		return await this.assetService.findOne(ctx, args.id, relations);
 	}
 
 	@Query('assets')
@@ -174,7 +176,8 @@ export class AdminAssetResolver {
 	public async find(
 		@Ctx() ctx: RequestContext,
 		@Args() args: QueryAssetsArgs,
+		@Relations(Asset) relations: RelationPaths<Asset>,
 	): Promise<PaginatedList<Translated<Asset>>> {
-		return await this.assetService.find(ctx, args.options || undefined);
+		return await this.assetService.find(ctx, args.options || undefined, relations);
 	}
 }
