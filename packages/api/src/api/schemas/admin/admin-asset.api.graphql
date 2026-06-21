@@ -30,7 +30,7 @@ input AssetTranslationInput {
 }
 
 type InvalidMimetypeError implements ApiError {
-	code: ErrorCode!
+	errorCode: ErrorCode!
 	message: String!
 	fileName: String!
 	mimeType: String!

@@ -1,7 +1,7 @@
 import pc from 'picocolors';
 import { LoggerStrategy, LogLevel } from './logger-strategy.interface';
 
-const DEFAULT_CONTEXT = 'RiwaqServer';
+const DEFAULT_CONTEXT = 'MatjarServer';
 
 interface StdoutLoggerStrategyOptions {
 	defaultContext?: string;

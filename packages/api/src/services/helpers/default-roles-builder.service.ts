@@ -54,9 +54,9 @@ export class DefaultRolesBuilderService {
 			description: CUSTOMER_ROLE_DESCRIPTION,
 		});
 
-		this.defaultRolesDefinitions.get(RoleScope.COMPANY)?.set(COMPANY_ADMIN_ROLE_CODE, {
+		this.defaultRolesDefinitions.get(RoleScope.PLATFORM)?.set(COMPANY_ADMIN_ROLE_CODE, {
 			code: COMPANY_ADMIN_ROLE_CODE,
-			permissions: this.getAssignableCompanyOwnerPermissions(),
+			permissions: this.getAssignableCompanyAdminPermissions(),
 			description: COMPANY_ADMIN_ROLE_DESCRIPTION,
 		});
 	}
@@ -88,7 +88,7 @@ export class DefaultRolesBuilderService {
 		return allPermissions.filter((p) => p.assignable && p.scope === RoleScope.PLATFORM).map((p) => p.key);
 	}
 
-	private getAssignableCompanyOwnerPermissions(): Permission[] {
+	private getAssignableCompanyAdminPermissions(): Permission[] {
 		const allPermissions = getNormalizedCompanyAppPermissions();
 		return allPermissions.filter((p) => p.assignable && p.scope === RoleScope.COMPANY).map((p) => p.key);
 	}

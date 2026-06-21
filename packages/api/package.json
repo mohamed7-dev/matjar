@@ -13,6 +13,9 @@
 	},
 	"types": "./dist/index.d.ts",
 	"scripts": {
+		"watch:tsc": "tsc -p ./tsconfig.build.json -w",
+		"watch:assets": "tsx ./scripts/watch-assets --watch",
+		"watch": "concurrently 'pnpm run watch:tsc' 'pnpm run watch:assets'",
 		"build": "nest build",
 		"test": "vitest --config vitest.config.mts --run",
 		"lint": "biome lint",
@@ -32,6 +35,7 @@
 		"@nestjs/platform-express": "^11.1.24",
 		"@nestjs/typeorm": "^11.0.1",
 		"bcryptjs": "^3.0.3",
+		"chokidar": "^5.0.0",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
 		"graphql": "^16.14.0",
@@ -60,6 +64,7 @@
 		"@types/graphql-upload": "^17.0.0",
 		"@types/mime-types": "^3.0.1",
 		"@types/ms": "^2.1.0",
-		"@types/node": "24.1.0"
+		"@types/node": "24.1.0",
+		"concurrently": "^10.0.3"
 	}
 }

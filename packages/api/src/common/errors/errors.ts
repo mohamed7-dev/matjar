@@ -1,5 +1,5 @@
 import { LogLevel } from '../../config/strategies/logger/logger-strategy.interface';
-import { entitiesMap } from '../../entities/entities-map';
+import { type EntityNames } from '../../entities/entities-map';
 import { I18nError } from '../../i18n/i18n-error';
 
 export class InternalServerError extends I18nError {
@@ -54,7 +54,7 @@ export class MarketplaceRegionNotFoundError extends I18nError {
 export class EntityNotFoundError extends I18nError {
 	constructor(
 		variables: {
-			entityName: keyof typeof entitiesMap;
+			entityName: EntityNames;
 			entityId: string;
 		},
 		logLevel?: LogLevel,
@@ -63,6 +63,40 @@ export class EntityNotFoundError extends I18nError {
 			'errors.entity_with_id_not_found',
 			variables,
 			'ENTITY_NOT_FOUND_ERROR',
+			logLevel ?? LogLevel.Warn,
+		);
+	}
+}
+
+export class DuplicateRoleAssignmentError extends I18nError {
+	constructor(
+		variables: {
+			roleCode: string;
+			userId: string;
+		},
+		logLevel?: LogLevel,
+	) {
+		super(
+			'errors.duplicate_role_assignment',
+			variables,
+			'DUPLICATE_ROLE_ASSIGNMENT',
+			logLevel ?? LogLevel.Warn,
+		);
+	}
+}
+
+export class CompanyMarketplaceMembershipError extends I18nError {
+	constructor(
+		variables: {
+			marketplaceCode: string;
+			companyCode: string;
+		},
+		logLevel?: LogLevel,
+	) {
+		super(
+			'errors.company_not_available_in_marketplace',
+			variables,
+			'COMPANY_MARKETPLACE_MEMBERSHIP_ERROR',
 			logLevel ?? LogLevel.Warn,
 		);
 	}

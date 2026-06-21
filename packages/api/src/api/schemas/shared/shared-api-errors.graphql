@@ -1,6 +1,6 @@
 "Returned if the credentials provided by the user are not valid"
 type InvalidCredentialsError implements ApiError {
-	code: ErrorCode!
+	errorCode: ErrorCode!
 	message: String!
 	authenticationError: String!
 }

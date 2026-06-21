@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 import { ForbiddenError } from '../../../common/errors/errors';
 import { InvalidCredentialsError } from '../../../common/errors/generated-graphql-admin-errors';
 import { isGraphqlApiError } from '../../../common/errors/graphql-api-error';
-import { PermissionsIndex } from '../../../common/helpers/permission-index';
+import { UserPermissionsMap } from '../../../common/helpers/user-permissions-map';
 import { ConfigService } from '../../../config/config.service';
 import { LogLevel } from '../../../config/strategies/logger/logger-strategy.interface';
 import { User } from '../../../entities/user/user.entity';
@@ -45,7 +45,7 @@ export class AdminAuthResolver {
 		if (isGraphqlApiError(sessionResult)) return sessionResult;
 
 		if (ctx.apiType && ctx.apiType === 'admin') {
-			const foundAdmin = await this.administratorService.getOneByUserId(ctx, sessionResult.user.id);
+			const foundAdmin = await this.administratorService.getOneByUserId(sessionResult.user.id, ctx);
 			if (!foundAdmin)
 				return new InvalidCredentialsError({
 					authenticationError: '',
@@ -109,7 +109,7 @@ export class AdminAuthResolver {
 	})
 	public async me(@Ctx() ctx: RequestContext): Promise<AuthenticatedUser | null> {
 		if (ctx.apiType === 'admin') {
-			const admin = await this.administratorService.getOneByUserId(ctx, ctx.activeUserId as string);
+			const admin = await this.administratorService.getOneByUserId(ctx.activeUserId as string, ctx);
 			if (!admin) throw new ForbiddenError(LogLevel.Verbose);
 		}
 		const user = ctx.activeUserId && (await this.userService.getUserById(ctx, ctx.activeUserId));
@@ -117,15 +117,15 @@ export class AdminAuthResolver {
 	}
 
 	private clientSafeUser(user: User): AuthenticatedAdminUser {
-		const permissionIndex = PermissionsIndex.build(user);
+		const userPermissionsMap = UserPermissionsMap.build(user);
 		return {
 			id: user.id,
 			identifier: user.identifier,
-			marketplaceRegions: PermissionsIndex.normalizeMap(permissionIndex).map((mp) => ({
-				id: mp.id,
-				token: mp.marketplaceToken,
-				code: mp.marketplaceCode,
-				permissions: mp.permissions,
+			marketplaceRegions: UserPermissionsMap.list(userPermissionsMap).map((item) => ({
+				id: item.id,
+				token: item.token,
+				code: item.code,
+				permissions: item.permissions,
 			})),
 		};
 	}

@@ -41,7 +41,7 @@ export type Administrator = Node & {
 };
 
 export type ApiError = {
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String']['output'];
 };
 
@@ -173,6 +173,15 @@ export type BooleanListFilterInput = {
   inList: Scalars['Boolean']['input'];
 };
 
+export type Company = Node & {
+  __typename?: 'Company';
+  code: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  token: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type Coordinate = {
   __typename?: 'Coordinate';
   x: Scalars['Float']['output'];
@@ -190,6 +199,16 @@ export type CreateAssetsInput = {
 };
 
 export type CreateAssetsResult = Asset | InvalidMimetypeError;
+
+export type CreateRoleInput = {
+  code: Scalars['String']['input'];
+  companyId?: InputMaybe<Scalars['ID']['input']>;
+  description: Scalars['String']['input'];
+  marketplaceRegionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  permissions: Array<Permission>;
+};
+
+export type CreateRoleResult = Role | RoleCodeConflictError;
 
 export enum CurrencyCode {
   /** United Arab Emirates dirham */
@@ -602,13 +621,13 @@ export type IdentifierListFilterInput = {
 export type InvalidCredentialsError = ApiError & {
   __typename?: 'InvalidCredentialsError';
   authenticationError: Scalars['String']['output'];
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String']['output'];
 };
 
 export type InvalidMimetypeError = ApiError & {
   __typename?: 'InvalidMimetypeError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   fileName: Scalars['String']['output'];
   message: Scalars['String']['output'];
   mimeType: Scalars['String']['output'];
@@ -989,16 +1008,24 @@ export type Mutation = {
   authenticateAdminUser: AuthenticateAdminUserResult;
   /** Create new assets */
   createAssets: Array<CreateAssetsResult>;
+  /** Create a new Role */
+  createRole: CreateRoleResult;
   /** Delete asset */
   deleteAsset: DeletionResponse;
   /** Delete assets */
   deleteAssets: DeletionResponse;
+  /** Delete an existing Role */
+  deleteRole: DeletionResponse;
+  /** Delete multiple Roles */
+  deleteRoles: Array<DeletionResponse>;
   login: Scalars['Boolean']['output'];
   /** Terminates the current admin user session */
   logoutAdminUser: Success;
   /** Update asset */
   updateAsset: Asset;
   updateGlobalSettings?: Maybe<Scalars['Boolean']['output']>;
+  /** Update an existing Role */
+  updateRole: UpdateRoleResult;
 };
 
 
@@ -1018,6 +1045,11 @@ export type MutationCreateAssetsArgs = {
 };
 
 
+export type MutationCreateRoleArgs = {
+  input: CreateRoleInput;
+};
+
+
 export type MutationDeleteAssetArgs = {
   input: DeleteAssetInput;
 };
@@ -1025,6 +1057,16 @@ export type MutationDeleteAssetArgs = {
 
 export type MutationDeleteAssetsArgs = {
   input: DeleteAssetsInput;
+};
+
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteRolesArgs = {
+  ids: Array<Scalars['ID']['input']>;
 };
 
 
@@ -1040,6 +1082,11 @@ export type MutationUpdateAssetArgs = {
 
 export type MutationUpdateGlobalSettingsArgs = {
   input: UpdateGlobalSettingsInput;
+};
+
+
+export type MutationUpdateRoleArgs = {
+  input: UpdateRoleInput;
 };
 
 export type NativeAuthInput = {
@@ -1107,6 +1154,14 @@ export type PaginatedList = {
 export enum Permission {
   /** Allows read on Company */
   company_company_read = 'company_company_read',
+  /** Grants permission to create Order */
+  company_order_create = 'company_order_create',
+  /** Grants permission to delete Order */
+  company_order_delete = 'company_order_delete',
+  /** Grants permission to read Order */
+  company_order_read = 'company_order_read',
+  /** Grants permission to update Order */
+  company_order_update = 'company_order_update',
   /** Grants permission to create Role */
   company_role_create = 'company_role_create',
   /** Grants permission to delete Role */
@@ -1155,6 +1210,14 @@ export enum Permission {
   platform_marketplace_region_read = 'platform_marketplace_region_read',
   /** Grants permission to update Marketplace_Region */
   platform_marketplace_region_update = 'platform_marketplace_region_update',
+  /** Grants permission to create Order */
+  platform_order_create = 'platform_order_create',
+  /** Grants permission to delete Order */
+  platform_order_delete = 'platform_order_delete',
+  /** Grants permission to read Order */
+  platform_order_read = 'platform_order_read',
+  /** Grants permission to update Order */
+  platform_order_update = 'platform_order_update',
   /** Grants permission to create Role */
   platform_role_create = 'platform_role_create',
   /** Grants permission to delete Role */
@@ -1176,6 +1239,8 @@ export type Query = {
   marketplaceRegions: MarketplaceRegionList;
   me?: Maybe<AuthenticatedAdminUser>;
   me2: Scalars['Boolean']['output'];
+  role?: Maybe<Role>;
+  roles: RoleList;
 };
 
 
@@ -1191,6 +1256,69 @@ export type QueryAssetsArgs = {
 
 export type QueryMarketplaceRegionsArgs = {
   options?: InputMaybe<MarketplaceRegionListOptions>;
+};
+
+
+export type QueryRoleArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryRolesArgs = {
+  options?: InputMaybe<RoleListOptions>;
+};
+
+export type Role = Node & {
+  __typename?: 'Role';
+  code: Scalars['String']['output'];
+  company?: Maybe<Company>;
+  createdAt: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  marketplaceRegions: Array<MarketplaceRegion>;
+  permissions: Array<Permission>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type RoleCodeConflictError = ApiError & {
+  __typename?: 'RoleCodeConflictError';
+  errorCode: ErrorCode;
+  message: Scalars['String']['output'];
+};
+
+export type RoleFilterParameter = {
+  code?: InputMaybe<TextFilterInput>;
+  createdAt?: InputMaybe<DateTimeFilterInput>;
+  description?: InputMaybe<TextFilterInput>;
+  id?: InputMaybe<IdentifierFilterInput>;
+  updatedAt?: InputMaybe<DateTimeFilterInput>;
+};
+
+export type RoleList = PaginatedList & {
+  __typename?: 'RoleList';
+  items: Array<Role>;
+  totalItemsCount: Scalars['Int']['output'];
+};
+
+export type RoleListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<RoleFilterParameter>;
+  /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<FilterGroupOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<RoleSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type RoleSortParameter = {
+  code?: InputMaybe<SortDirection>;
+  createdAt?: InputMaybe<SortDirection>;
+  description?: InputMaybe<SortDirection>;
+  id?: InputMaybe<SortDirection>;
+  updatedAt?: InputMaybe<SortDirection>;
 };
 
 /** Controls the ordering direction for sorted results. */
@@ -1243,6 +1371,17 @@ export type UpdateAssetInput = {
 export type UpdateGlobalSettingsInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type UpdateRoleInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  companyId?: InputMaybe<Scalars['ID']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  marketplaceRegionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  permissions?: InputMaybe<Array<Permission>>;
+};
+
+export type UpdateRoleResult = Role | RoleCodeConflictError;
 
 export type User = Node & {
   __typename?: 'User';

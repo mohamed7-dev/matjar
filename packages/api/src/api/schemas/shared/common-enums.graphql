@@ -5,6 +5,22 @@ enum ErrorCode {
 	UNKNOWN_ERROR
 }
 
+"""
+Controls how multiple filter groups are combined together.
+"""
+enum FilterGroupOperator {
+	AND
+	OR
+}
+
+"""
+Controls the ordering direction for sorted results.
+"""
+enum SortDirection {
+	ASC
+	DESC
+}
+
 enum DeletionResult {
 	"Indicates that an entity was deleted successfully"
 	DELETED

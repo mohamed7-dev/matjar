@@ -25,6 +25,7 @@ import { AdminAdministratorResolver } from './resolvers/admin/admin-administrato
 import { AdminAssetResolver } from './resolvers/admin/admin-asset.resolver';
 import { AdminAuthResolver } from './resolvers/admin/admin-auth.resolver';
 import { AdminMarketplaceRegionResolver } from './resolvers/admin/admin-marketplace-region.resolver';
+import { AdminRoleResolver } from './resolvers/admin/admin-role.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 
 @Module({
@@ -71,6 +72,7 @@ class SharedApiModule {}
 		AdminAssetResolver,
 		AdminAdministratorResolver,
 		AdminMarketplaceRegionResolver,
+		AdminRoleResolver,
 	],
 })
 class AdminApiModule {}

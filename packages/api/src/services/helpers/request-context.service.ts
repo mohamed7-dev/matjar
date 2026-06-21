@@ -7,7 +7,7 @@ import ms from 'ms';
 import { RequestContext } from '../../api/request-context/request-context';
 import { ApiType, getApiType } from '../../api/utils/get-api-type';
 import { UserInputError } from '../../common/errors/errors';
-import { PermissionsIndex } from '../../common/helpers/permission-index';
+import { UserPermissionsMap } from '../../common/helpers/user-permissions-map';
 import { ConfigService } from '../../config/config.service';
 import { SessionCacheEntry } from '../../config/strategies/auth/session-cache-strategy.interface';
 import { Company } from '../../entities/company/company.entity';
@@ -75,13 +75,13 @@ export class RequestContextService {
 		let session: SessionCacheEntry | undefined;
 
 		if (user) {
-			const permissionsIndex = user.roles ? PermissionsIndex.build(user) : PermissionsIndex.dummy();
+			const permissionsIndex = user.roles ? UserPermissionsMap.build(user) : UserPermissionsMap.dummy();
 			session = {
 				user: {
 					id: user.id,
 					identifier: user.identifier,
 					isVerified: user.isVerified,
-					permissionsIndex: permissionsIndex,
+					userPermissionsMap: permissionsIndex,
 				},
 				id: '__dummy_session_id__',
 				token: '__dummy_session_token__',

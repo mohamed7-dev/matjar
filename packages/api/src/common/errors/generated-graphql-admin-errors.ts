@@ -17,13 +17,13 @@ export type Scalars = {
 
 export class ApiError {
   readonly __typename: string;
-  readonly code: string;
+  readonly errorCode: string;
   readonly message: Scalars['String'];
 }
 
 export class InvalidCredentialsError extends ApiError {
   readonly __typename = 'InvalidCredentialsError';
-  readonly code = 'INVALID_CREDENTIALS_ERROR' as any;
+  readonly errorCode = 'INVALID_CREDENTIALS_ERROR' as any;
   readonly message = 'INVALID_CREDENTIALS_ERROR';
   readonly authenticationError: Scalars['String'];
   constructor(
@@ -36,7 +36,7 @@ export class InvalidCredentialsError extends ApiError {
 
 export class InvalidMimetypeError extends ApiError {
   readonly __typename = 'InvalidMimetypeError';
-  readonly code = 'INVALID_MIMETYPE_ERROR' as any;
+  readonly errorCode = 'INVALID_MIMETYPE_ERROR' as any;
   readonly message = 'INVALID_MIMETYPE_ERROR';
   readonly fileName: Scalars['String'];
   readonly mimeType: Scalars['String'];
@@ -49,8 +49,19 @@ export class InvalidMimetypeError extends ApiError {
   }
 }
 
+export class RoleCodeConflictError extends ApiError {
+  readonly __typename = 'RoleCodeConflictError';
+  readonly errorCode = 'ROLE_CODE_CONFLICT_ERROR' as any;
+  readonly message = 'ROLE_CODE_CONFLICT_ERROR';
+  constructor(
 
-const errorTypeNames = new Set<string>(['InvalidCredentialsError', 'InvalidMimetypeError']);
+  ) {
+    super();
+  }
+}
+
+
+const errorTypeNames = new Set<string>(['InvalidCredentialsError', 'InvalidMimetypeError', 'RoleCodeConflictError']);
 function isGraphQLApiError(input: any): input is import('@matjar/common/lib/generated-types').ApiError {
   return input instanceof ApiError || errorTypeNames.has(input.__typename);
 }
@@ -64,6 +75,16 @@ export const adminErrorOperationTypeResolvers = {
   CreateAssetsResult: {
     __resolveType(value: any) {
       return isGraphQLApiError(value) ? (value as any).__typename : 'Asset';
+    },
+  },
+  CreateRoleResult: {
+    __resolveType(value: any) {
+      return isGraphQLApiError(value) ? (value as any).__typename : 'Role';
+    },
+  },
+  UpdateRoleResult: {
+    __resolveType(value: any) {
+      return isGraphQLApiError(value) ? (value as any).__typename : 'Role';
     },
   },
 };

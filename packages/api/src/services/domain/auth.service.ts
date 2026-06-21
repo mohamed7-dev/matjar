@@ -55,16 +55,18 @@ export class AuthService {
 			// TODO: throw NotVerifiedAccountError
 		}
 
-		if (!user.roles?.[0]?.marketplaceRegions) {
+		if (!user.roles[0]?.marketplaceRegions?.[0]) {
 			const userWithRoles = await this.ormService
 				.getRepository(ctx, User)
 				.createQueryBuilder('user')
-				.leftJoinAndSelect('user.roles', 'roles')
-				.leftJoinAndSelect('roles.marketplaceRegions', 'mpr')
+				.leftJoinAndSelect('user.roles', 'role')
+				.leftJoinAndSelect('role.marketplaceRegions', 'mpr')
+				.leftJoinAndSelect('role.company', 'company')
 				.where('user.id = :userId', {
 					userId: user.id,
 				})
 				.getOne();
+
 			user.roles = userWithRoles?.roles ?? [];
 		}
 

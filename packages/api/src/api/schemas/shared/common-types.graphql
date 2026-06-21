@@ -17,7 +17,7 @@ type Mutation {
 }
 
 interface ApiError {
-	code: ErrorCode!
+	errorCode: ErrorCode!
 	message: String!
 }
 
@@ -30,22 +30,6 @@ type Success {
 interface PaginatedList {
 	items: [Node!]!
 	totalItemsCount: Int!
-}
-
-"""
-Controls how multiple filter groups are combined together.
-"""
-enum FilterGroupOperator {
-	AND
-	OR
-}
-
-"""
-Controls the ordering direction for sorted results.
-"""
-enum SortDirection {
-	ASC
-	DESC
 }
 
 """

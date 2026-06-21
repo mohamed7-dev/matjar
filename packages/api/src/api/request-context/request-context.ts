@@ -1,7 +1,7 @@
 import { CurrencyCode, LanguageCode, Permission } from '@matjar/common/lib/generated-types';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
-import { PermissionIndexItemType, PermissionsIndex } from '../../common/helpers/permission-index';
+import { UserPermissionsMap } from '../../common/helpers/user-permissions-map';
 import { SessionCacheEntry } from '../../config/strategies/auth/session-cache-strategy.interface';
 import { Company } from '../../entities/company/company.entity';
 import { MarketplaceRegion } from '../../entities/marketplace-region/marketplace-region.entity';
@@ -87,11 +87,10 @@ export class RequestContext {
 	}
 
 	public hasAnyPermission(perms: Permission[]): boolean {
-		if (this.session?.user.permissionsIndex) {
-			return PermissionsIndex.has(
-				this.session?.user.permissionsIndex,
+		if (this.session?.user.userPermissionsMap) {
+			return UserPermissionsMap.hasAny(
+				this.session?.user.userPermissionsMap,
 				{
-					type: this.companyId ? PermissionIndexItemType.COMPANY : PermissionIndexItemType.PLATFORM,
 					companyId: this.companyId,
 					marketplaceRegionId: this.marketplaceRegionId,
 				},
@@ -102,11 +101,10 @@ export class RequestContext {
 	}
 
 	public hasAllPermissions(perms: Permission[]): boolean {
-		if (this.session?.user.permissionsIndex) {
-			return PermissionsIndex.hasAll(
-				this.session?.user.permissionsIndex,
+		if (this.session?.user.userPermissionsMap) {
+			return UserPermissionsMap.hasAll(
+				this.session?.user.userPermissionsMap,
 				{
-					type: this.companyId ? PermissionIndexItemType.COMPANY : PermissionIndexItemType.PLATFORM,
 					companyId: this.companyId,
 					marketplaceRegionId: this.marketplaceRegionId,
 				},

@@ -14,7 +14,12 @@
 		"list_query_limit_exceeded": "Query limit exceeded, the maximum number of items allowed is \"{limit}\"",
 		"invalid_sort_field": "The sort field \"{ fieldName }\" is invalid. Valid fields are: { validFields }",
 		"entity_with_id_not_found": "No \"{entityName}\" with the id \"{entityId}\" could be found",
-		"entity_not_found": "Entity not found"
+		"entity_not_found": "Entity not found",
+		"duplicate_role_assignment": "Role \"{roleCode}\" is already assigned to the user with the id \"{userId}\"",
+		"company_not_available_in_marketplace": "Marketplace \"{marketplaceCode}\" does not belong to company \"{companyCode}\"",
+		"active_user_does_not_have_sufficient_permissions": "Active user doesn't have sufficient permissions",
+		"invalid_permissions": "Invalid permission",
+		"cannot_modify_role": "Role with the code \"{roleCode}\" can't be modified"
 	},
 	"message": {
 		"asset_to_be_deleted_is_featured": "The selected {assetCount, plural, one {Asset is} other {Assets are}} featured by {products, plural, =0 {} one {1 Product} other {# Products}} {variants, plural, =0 {} one { 1 ProductVariant} other { # ProductVariants}} {collections, plural, =0 {} one { 1 Collection} other { # Collections}}"

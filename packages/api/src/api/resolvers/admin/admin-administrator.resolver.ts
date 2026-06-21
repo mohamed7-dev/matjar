@@ -19,7 +19,7 @@ export class AdminAdministratorResolver {
 	})
 	public async activeAdministrator(@Ctx() ctx: RequestContext): Promise<Administrator | undefined> {
 		if (ctx.activeUserId) {
-			return await this.administratorService.getOneByUserId(ctx, ctx.activeUserId);
+			return await this.administratorService.getOneByUserId(ctx.activeUserId, ctx);
 		}
 	}
 }

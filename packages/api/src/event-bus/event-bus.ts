@@ -92,6 +92,11 @@ export class EventBus {
 						);
 					}
 
+					// a previous handler could have placed this dependency after it
+					// the current handler asks this dependency to be executed after it
+					// so we have to reposition the dependency in the ordered array to be after
+					// current handler being processed
+
 					ordered.splice(
 						ordered.findIndex((x) => x.id === dependency.id),
 						1,

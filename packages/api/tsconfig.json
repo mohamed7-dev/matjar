@@ -2,6 +2,10 @@
 	"$schema": "https://www.schemastore.org/tsconfig",
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
+		"lib": [
+			"es2022"
+		],
+
 		"declaration": true,
 		"declarationMap": true,
 

@@ -17,13 +17,13 @@ export type Scalars = {
 
 export class ApiError {
   readonly __typename: string;
-  readonly code: string;
+  readonly errorCode: string;
   readonly message: Scalars['String'];
 }
 
 export class InvalidCredentialsError extends ApiError {
   readonly __typename = 'InvalidCredentialsError';
-  readonly code = 'INVALID_CREDENTIALS_ERROR' as any;
+  readonly errorCode = 'INVALID_CREDENTIALS_ERROR' as any;
   readonly message = 'INVALID_CREDENTIALS_ERROR';
   readonly authenticationError: Scalars['String'];
   constructor(

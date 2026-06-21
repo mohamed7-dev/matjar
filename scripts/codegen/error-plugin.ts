@@ -94,9 +94,9 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, _key, _parent) => {
 			return [
 				`export class ${ERROR_INTERFACE_NAME} {`,
 				`  readonly __typename: string;`,
-				`  readonly code: string;`,
+				`  readonly errorCode: string;`,
 				...(node.fields
-					?.filter((f) => (f as any as TransformedField).name !== "code")
+					?.filter((f) => (f as any as TransformedField).name !== "errorCode")
 					.map((f) => `  readonly ${f.name}: ${f.type};`) ?? []),
 				`}`,
 			].join("\n");
@@ -106,7 +106,7 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, _key, _parent) => {
 				return "";
 			}
 			const constructorArgs = (node.fields as any as TransformedField[]).filter(
-				(f) => f.name !== "code" && f.name !== "message",
+				(f) => f.name !== "errorCode" && f.name !== "message",
 			);
 
 			return [
@@ -115,7 +115,7 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, _key, _parent) => {
 				// We cast this to "any" otherwise we need to specify it as type "ErrorCode",
 				// which means shared ErrorResult classes e.g. OrderStateTransitionError
 				// will not be compatible between the admin and shop variations.
-				`  readonly code = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
+				`  readonly errorCode = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
 				`  readonly message = '${camelToUpperSnakeCase(node.name.value)}';`,
 				...constructorArgs.map((f) => `  readonly ${f.name}: ${f.type};`),
 				`  constructor(`,

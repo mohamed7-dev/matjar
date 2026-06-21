@@ -2,8 +2,8 @@ import crypto from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import ms, { type StringValue } from 'ms';
 import { RequestContext } from '../../api/request-context/request-context';
-import { PermissionsIndex } from '../../common/helpers/permission-index';
 import { race } from '../../common/helpers/race';
+import { UserPermissionsMap } from '../../common/helpers/user-permissions-map';
 import { ConfigService } from '../../config/config.service';
 import {
 	SessionCacheEntry,
@@ -51,8 +51,9 @@ export class SessionService {
 			.getRepository(Session)
 			.createQueryBuilder('session')
 			.leftJoinAndSelect('session.user', 'user')
-			.leftJoinAndSelect('user.roles', 'roles')
-			.leftJoinAndSelect('roles.marketplaceRegions', 'marketplaceRegions')
+			.leftJoinAndSelect('user.roles', 'role')
+			.leftJoinAndSelect('role.marketplaceRegions', 'mpr')
+			.leftJoinAndSelect('role.company', 'company')
 			.where('session.revoked = false')
 			.andWhere('session.token = :token', {
 				token: sessionToken,
@@ -131,7 +132,7 @@ export class SessionService {
 				identifier: session.user.identifier,
 				id: session.user.id,
 				isVerified: session.user.isVerified,
-				permissionsIndex: PermissionsIndex.build(session.user),
+				userPermissionsMap: UserPermissionsMap.build(session.user),
 			},
 		};
 

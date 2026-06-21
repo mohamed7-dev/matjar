@@ -52,12 +52,17 @@ export class ConfigModule implements OnApplicationShutdown, OnApplicationBootstr
 
 		const { cacheStrategy } = this.configService.system;
 
+		const { assetNamingStrategy, assetPreviewStrategy, assetStorageStrategy } = this.configService.asset;
+
 		return [
 			sessionCacheStrategy,
 			passwordHashingStrategy,
 			...adminAuthenticationStrategies,
 			...storeAuthenticationStrategies,
 			cacheStrategy,
+			assetNamingStrategy,
+			assetStorageStrategy,
+			assetPreviewStrategy,
 		];
 	}
 }

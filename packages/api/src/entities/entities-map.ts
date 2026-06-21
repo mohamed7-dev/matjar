@@ -1,28 +1,33 @@
-// will be deleted once company is imported somewhere
-import * as Company from './company/company.entity';
+import { Administrator } from './administrator/administrator.entity';
+import { Asset } from './asset/asset.entity';
+import { AssetTranslation } from './asset/asset-translation.entity';
+import { AuthenticationMethod } from './authentication-method/authentication-method.entity';
+import { ExternalAuthenticationMethod } from './authentication-method/external-authentication-method.entity';
+import { NativeAuthenticationMethod } from './authentication-method/native-authentication-method.entity';
+import { Company } from './company/company.entity';
+import { MarketplaceRegion } from './marketplace-region/marketplace-region.entity';
+import { Role } from './role/role.entity';
+import { Session } from './session/session.entity';
+import { User } from './user/user.entity';
 
 export const entitiesMap = {
-	User: require('./user/user.entity').User,
-	AuthenticationMethod: require('./authentication-method/authentication-method.entity')
-		.AuthenticationMethod,
-	NativeAuthenticationMethod: require('./authentication-method/native-authentication-method.entity')
-		.NativeAuthenticationMethod,
-	ExternalAuthenticationMethod: require('./authentication-method/external-authentication-method.entity')
-		.ExternalAuthenticationMethod,
+	User: User,
+	AuthenticationMethod: AuthenticationMethod,
+	NativeAuthenticationMethod: NativeAuthenticationMethod,
+	ExternalAuthenticationMethod: ExternalAuthenticationMethod,
 
-	Administrator: require('./administrator/administrator.entity').Administrator,
+	Administrator: Administrator,
 
-	Session: require('./session/session.entity').Session,
-	// RefreshToken: require('./refresh-token/refresh-token.entity').RefreshToken,
+	Session: Session,
 
-	Company: require('./company/company.entity').Company,
+	Company: Company,
 
-	MarketplaceRegion: require('./marketplace-region/marketplace-region.entity').MarketplaceRegion,
+	MarketplaceRegion: MarketplaceRegion,
 
-	Role: require('./role/role.entity').Role,
-	CompanyRole: require('./role/company-role.entity').CompanyRole,
-	PlatformRole: require('./role/platform-role.entity').PlatformRole,
+	Role: Role,
 
-	Asset: require('./asset/asset.entity').Asset,
-	AssetTranslation: require('./asset/asset-translation.entity').AssetTranslation,
+	Asset: Asset,
+	AssetTranslation: AssetTranslation,
 };
+
+export type EntityNames = keyof typeof entitiesMap;

@@ -19,7 +19,9 @@ export class UserService {
 			.getRepository(ctx, User)
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.authenticationMethods', 'authMethods')
-			.leftJoinAndSelect('user.roles', 'roles')
+			.leftJoinAndSelect('user.roles', 'role')
+			.leftJoinAndSelect('role.marketplaceRegions', 'mpr')
+			.leftJoinAndSelect('role.company', 'company')
 			.where('user.deletedAt IS NULL')
 			.andWhere(
 				isEmailIdentifier ? 'LOWER(user.identifier) = :identifier' : 'user.identifier = :identifier',
@@ -37,8 +39,9 @@ export class UserService {
 			.getRepository(ctx, User)
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.authenticationMethods', 'authMethods')
-			.leftJoinAndSelect('user.roles', 'roles')
-			.leftJoinAndSelect('roles.marketplaceRegions', 'mpr')
+			.leftJoinAndSelect('user.roles', 'role')
+			.leftJoinAndSelect('role.marketplaceRegions', 'mpr')
+			.leftJoinAndSelect('role.company', 'company')
 			.where('user.deletedAt IS NULL')
 			.andWhere('user.id = :id', {
 				id: id,

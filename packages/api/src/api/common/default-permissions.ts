@@ -12,12 +12,14 @@ export const DEFAULT_PLATFORM_PERMISSIONS = [
 	new CrudPermission('Marketplace_Region', RoleScope.PLATFORM),
 	new CrudPermission('Catalog', RoleScope.PLATFORM),
 	new CrudPermission('Asset', RoleScope.PLATFORM),
+	new CrudPermission('Order', RoleScope.PLATFORM),
 ];
 
 export const DEFAULT_COMPANY_PERMISSIONS = [
 	new ResourcePermission('Company', RoleScope.COMPANY, [
 		'read',
 	]),
+	new CrudPermission('Order', RoleScope.COMPANY),
 	new CrudPermission('Role', RoleScope.COMPANY),
 ];
 

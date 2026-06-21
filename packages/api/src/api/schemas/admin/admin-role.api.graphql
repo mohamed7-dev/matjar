@@ -1,0 +1,44 @@
+type Query {
+	role(id: ID!): Role
+	roles(options: RoleListOptions): RoleList!
+}
+
+type Mutation {
+	"Create a new Role"
+	createRole(input: CreateRoleInput!): CreateRoleResult!
+	"Update an existing Role"
+	updateRole(input: UpdateRoleInput!): UpdateRoleResult!
+	"Delete an existing Role"
+	deleteRole(id: ID!): DeletionResponse!
+	"Delete multiple Roles"
+	deleteRoles(ids: [ID!]!): [DeletionResponse!]!
+}
+
+input CreateRoleInput {
+	code: String!
+	description: String!
+	permissions: [Permission!]!
+	companyId: ID
+	marketplaceRegionIds: [ID!]
+}
+
+type RoleCodeConflictError implements ApiError {
+	errorCode: ErrorCode!
+	message: String!
+}
+
+union CreateRoleResult = Role | RoleCodeConflictError
+
+input UpdateRoleInput {
+	id: ID!
+	code: String
+	description: String
+	permissions: [Permission!]
+	companyId: ID
+	marketplaceRegionIds: [ID!]
+}
+
+union UpdateRoleResult = Role | RoleCodeConflictError
+
+# generated at runtime by the generateListOptions function
+input RoleListOptions

@@ -22,7 +22,7 @@ export type Scalars = {
 };
 
 export type ApiError = {
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String']['output'];
 };
 
@@ -89,6 +89,15 @@ export type BooleanFilterInput = {
 export type BooleanListFilterInput = {
   /** Returns records where the list contains the specified boolean value. */
   inList: Scalars['Boolean']['input'];
+};
+
+export type Company = Node & {
+  __typename?: 'Company';
+  code: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  token: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type Coordinate = {
@@ -496,7 +505,7 @@ export type IdentifierListFilterInput = {
 export type InvalidCredentialsError = ApiError & {
   __typename?: 'InvalidCredentialsError';
   authenticationError: Scalars['String']['output'];
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String']['output'];
 };
 
@@ -905,6 +914,14 @@ export type PaginatedList = {
 export enum Permission {
   /** Allows read on Company */
   company_company_read = 'company_company_read',
+  /** Grants permission to create Order */
+  company_order_create = 'company_order_create',
+  /** Grants permission to delete Order */
+  company_order_delete = 'company_order_delete',
+  /** Grants permission to read Order */
+  company_order_read = 'company_order_read',
+  /** Grants permission to update Order */
+  company_order_update = 'company_order_update',
   /** Grants permission to create Role */
   company_role_create = 'company_role_create',
   /** Grants permission to delete Role */
@@ -953,6 +970,14 @@ export enum Permission {
   platform_marketplace_region_read = 'platform_marketplace_region_read',
   /** Grants permission to update Marketplace_Region */
   platform_marketplace_region_update = 'platform_marketplace_region_update',
+  /** Grants permission to create Order */
+  platform_order_create = 'platform_order_create',
+  /** Grants permission to delete Order */
+  platform_order_delete = 'platform_order_delete',
+  /** Grants permission to read Order */
+  platform_order_read = 'platform_order_read',
+  /** Grants permission to update Order */
+  platform_order_update = 'platform_order_update',
   /** Grants permission to create Role */
   platform_role_create = 'platform_role_create',
   /** Grants permission to delete Role */
@@ -966,6 +991,24 @@ export enum Permission {
 export type Query = {
   __typename?: 'Query';
   me2: Scalars['Boolean']['output'];
+};
+
+export type Role = Node & {
+  __typename?: 'Role';
+  code: Scalars['String']['output'];
+  company?: Maybe<Company>;
+  createdAt: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  marketplaceRegions: Array<MarketplaceRegion>;
+  permissions: Array<Permission>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type RoleList = PaginatedList & {
+  __typename?: 'RoleList';
+  items: Array<Role>;
+  totalItemsCount: Scalars['Int']['output'];
 };
 
 /** Controls the ordering direction for sorted results. */

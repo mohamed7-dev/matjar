@@ -38,23 +38,25 @@ export class AdministratorService {
 			},
 			relations: relations
 				? relations
-				: {
-						user: {
-							roles: true,
-						},
-					},
+				: [
+						'user',
+						'user.roles',
+					],
 		});
 
 		return admin ?? undefined;
 	}
 
 	public async getOneByUserId(
-		ctx: RequestContext,
 		userId: string,
+		ctx?: RequestContext,
 		relations?: any,
 	): Promise<Administrator | undefined> {
+		const repo = ctx
+			? this.ormService.getRepository(ctx, Administrator)
+			: this.ormService.dataSource.getRepository(Administrator);
 		return (
-			(await this.ormService.getRepository(ctx, Administrator).findOne({
+			(await repo.findOne({
 				relations: relations
 					? relations
 					: {
@@ -122,6 +124,7 @@ export class AdministratorService {
 			administrator.user = createdAdminUser;
 			const { id } = await this.ormService.getRepository(ctx, Administrator).save(administrator);
 			const createdSuperAdmin = await assertPromise(this.getOne(ctx, id));
+
 			createdSuperAdmin.user.roles.push(superAdminRole);
 			await this.ormService.dataSource.getRepository(User).save(createdSuperAdmin?.user, {
 				reload: false,

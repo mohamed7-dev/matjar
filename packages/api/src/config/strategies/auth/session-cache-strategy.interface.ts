@@ -1,11 +1,11 @@
-import { PermissionsIndexMap } from '../../../common/helpers/permission-index';
+import { UserPermissionsMapType } from '../../../common/helpers/user-permissions-map';
 import { LifecycleStrategy } from '../../../common/types/lifecycle-strategy';
 
 export type CachedSessionUser = {
 	id: string;
 	identifier: string;
 	isVerified: boolean;
-	permissionsIndex: PermissionsIndexMap;
+	userPermissionsMap: UserPermissionsMapType;
 };
 
 export interface SessionCacheEntry {

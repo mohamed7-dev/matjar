@@ -1,0 +1,15 @@
+type Role implements Node {
+	id: ID!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	code: String!
+	description: String!
+	permissions: [Permission!]!
+	company: Company
+	marketplaceRegions: [MarketplaceRegion!]!
+}
+
+type RoleList implements PaginatedList {
+	items: [Role!]!
+	totalItemsCount: Int!
+}

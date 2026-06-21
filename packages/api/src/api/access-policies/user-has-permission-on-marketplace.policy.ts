@@ -1,6 +1,7 @@
 import { Permission } from '@matjar/common/lib/generated-types';
 import { ExecutionContext } from '@nestjs/common';
 import { Injector } from '../../common/helpers/injector';
+import { getByPath } from '../../common/utils/get-by-path';
 import { RequestContext } from '../request-context/request-context';
 import { parseContext } from '../utils/parse-context';
 import { AccessPolicy } from './access-policy.interface';
@@ -41,10 +42,4 @@ export class UserHasPermissionOnMarketplacePolicy implements AccessPolicy {
 
 		return hasPermission;
 	}
-}
-
-function getByPath(obj: unknown, path?: string): unknown {
-	if (!path) return undefined;
-
-	return path.split('.').reduce((current: any, key) => current?.[key], obj);
 }

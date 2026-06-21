@@ -1,0 +1,7 @@
+type Company implements Node {
+	id: ID!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	token: String!
+	code: String!
+}

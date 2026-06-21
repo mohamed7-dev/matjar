@@ -3,6 +3,7 @@ import { Column, Entity, ManyToMany } from 'typeorm';
 import { AppEntity } from '../../common/helpers/app-entity';
 import { DeepPartial } from '../../common/types/deep-partial';
 import { generateId } from '../../common/utils/generate-id';
+import { Company } from '../company/company.entity';
 import { Role } from '../role/role.entity';
 
 @Entity()
@@ -53,6 +54,12 @@ export class MarketplaceRegion extends AppEntity {
 		(roles) => roles.marketplaceRegions,
 	)
 	roles: Role[];
+
+	@ManyToMany(
+		() => Company,
+		(companies) => companies.marketplaceRegions,
+	)
+	companies: Company[];
 
 	private generateToken(): string {
 		return generateId();

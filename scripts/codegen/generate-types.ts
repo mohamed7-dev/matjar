@@ -67,7 +67,7 @@ async function main() {
 					},
 					[path.join(
 						__dirname,
-						"../../apps/server/src/common/errors/generated-graphql-admin-errors.ts",
+						"../../packages/api/src/common/errors/generated-graphql-admin-errors.ts",
 					)]: {
 						schema: [
 							ADMIN_SCHEMA_OUTPUT_FILE,
@@ -79,7 +79,7 @@ async function main() {
 					},
 					[path.join(
 						__dirname,
-						"../../apps/server/src/common/errors/generated-graphql-store-errors.ts",
+						"../../packages/api/src/common/errors/generated-graphql-store-errors.ts",
 					)]: {
 						schema: [
 							STORE_SCHEMA_OUTPUT_FILE,

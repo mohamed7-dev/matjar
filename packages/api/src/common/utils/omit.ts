@@ -1,4 +1,4 @@
-import { isFileObject, isObject } from './data-type-checkers';
+import { isFileObject } from './data-type-checkers';
 
 export function omit<T extends object, K extends keyof T>(obj: T, keysToOmit: K[]): Omit<T, K>;
 export function omit<T extends object | any[]>(obj: T, keysToOmit: string[], recursive: boolean): T;
@@ -29,4 +29,8 @@ export function omit<T, K extends keyof T>(obj: T, keysToOmit: string[], recursi
 		},
 		{} as Omit<T, K>,
 	);
+}
+
+function isObject(input: any): input is object {
+	return typeof input === 'object' && input !== null;
 }
