@@ -8,6 +8,8 @@ type Mutation {
 	createRole(input: CreateRoleInput!): CreateRoleResult!
 	"Update an existing Role"
 	updateRole(input: UpdateRoleInput!): UpdateRoleResult!
+	"Remove a role from marketplace regions"
+	removeRoleFromMarketplaceRegions(input: RemoveRoleFromMarketplaceRegionsInput!): Success!
 	"Delete an existing Role"
 	deleteRole(id: ID!): DeletionResponse!
 	"Delete multiple Roles"
@@ -18,7 +20,6 @@ input CreateRoleInput {
 	code: String!
 	description: String!
 	permissions: [Permission!]!
-	companyId: ID
 	marketplaceRegionIds: [ID!]
 }
 
@@ -34,11 +35,15 @@ input UpdateRoleInput {
 	code: String
 	description: String
 	permissions: [Permission!]
-	companyId: ID
 	marketplaceRegionIds: [ID!]
 }
 
 union UpdateRoleResult = Role | RoleCodeConflictError
+
+input RemoveRoleFromMarketplaceRegionsInput {
+	id: ID!
+	marketplaceRegionIds: [ID!]!
+}
 
 # generated at runtime by the generateListOptions function
 input RoleListOptions

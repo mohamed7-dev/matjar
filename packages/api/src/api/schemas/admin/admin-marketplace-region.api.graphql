@@ -3,6 +3,11 @@ type Query {
 	activeMarketplaceRegion: MarketplaceRegion!
 }
 
+type Mutation {
+	"Create a new MarketplaceRegion"
+	createMarketplaceRegion(input: CreateMarketplaceRegionInput!): MarketplaceRegion!
+}
+
 type MarketplaceRegionList implements PaginatedList {
 	items: [MarketplaceRegion!]!
 	totalItemsCount: Int!
@@ -10,3 +15,12 @@ type MarketplaceRegionList implements PaginatedList {
 
 # Generated at runtime
 input MarketplaceRegionListOptions
+
+input CreateMarketplaceRegionInput {
+	code: String!
+	token: String!
+	primaryLanguageCode: LanguageCode!
+	availableLanguageCodes: [LanguageCode!]
+	primaryCurrencyCode: CurrencyCode!
+	availableCurrencyCodes: [CurrencyCode!]
+}

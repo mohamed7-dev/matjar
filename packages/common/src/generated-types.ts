@@ -200,9 +200,17 @@ export type CreateAssetsInput = {
 
 export type CreateAssetsResult = Asset | InvalidMimetypeError;
 
+export type CreateMarketplaceRegionInput = {
+  availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
+  availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
+  code: Scalars['String']['input'];
+  primaryCurrencyCode: CurrencyCode;
+  primaryLanguageCode: LanguageCode;
+  token: Scalars['String']['input'];
+};
+
 export type CreateRoleInput = {
   code: Scalars['String']['input'];
-  companyId?: InputMaybe<Scalars['ID']['input']>;
   description: Scalars['String']['input'];
   marketplaceRegionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   permissions: Array<Permission>;
@@ -585,6 +593,9 @@ export enum DeletionResult {
 }
 
 export enum ErrorCode {
+  INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
+  INVALID_MIMETYPE_ERROR = 'INVALID_MIMETYPE_ERROR',
+  ROLE_CODE_CONFLICT_ERROR = 'ROLE_CODE_CONFLICT_ERROR',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR'
 }
 
@@ -1008,6 +1019,8 @@ export type Mutation = {
   authenticateAdminUser: AuthenticateAdminUserResult;
   /** Create new assets */
   createAssets: Array<CreateAssetsResult>;
+  /** Create a new MarketplaceRegion */
+  createMarketplaceRegion: MarketplaceRegion;
   /** Create a new Role */
   createRole: CreateRoleResult;
   /** Delete asset */
@@ -1021,6 +1034,8 @@ export type Mutation = {
   login: Scalars['Boolean']['output'];
   /** Terminates the current admin user session */
   logoutAdminUser: Success;
+  /** Remove a role from marketplace regions */
+  removeRoleFromMarketplaceRegions: Success;
   /** Update asset */
   updateAsset: Asset;
   updateGlobalSettings?: Maybe<Scalars['Boolean']['output']>;
@@ -1042,6 +1057,11 @@ export type MutationAuthenticateAdminUserArgs = {
 
 export type MutationCreateAssetsArgs = {
   input: Array<CreateAssetsInput>;
+};
+
+
+export type MutationCreateMarketplaceRegionArgs = {
+  input: CreateMarketplaceRegionInput;
 };
 
 
@@ -1072,6 +1092,11 @@ export type MutationDeleteRolesArgs = {
 
 export type MutationLoginArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationRemoveRoleFromMarketplaceRegionsArgs = {
+  input: RemoveRoleFromMarketplaceRegionsInput;
 };
 
 
@@ -1268,6 +1293,11 @@ export type QueryRolesArgs = {
   options?: InputMaybe<RoleListOptions>;
 };
 
+export type RemoveRoleFromMarketplaceRegionsInput = {
+  id: Scalars['ID']['input'];
+  marketplaceRegionIds: Array<Scalars['ID']['input']>;
+};
+
 export type Role = Node & {
   __typename?: 'Role';
   code: Scalars['String']['output'];
@@ -1374,7 +1404,6 @@ export type UpdateGlobalSettingsInput = {
 
 export type UpdateRoleInput = {
   code?: InputMaybe<Scalars['String']['input']>;
-  companyId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   marketplaceRegionIds?: InputMaybe<Array<Scalars['ID']['input']>>;

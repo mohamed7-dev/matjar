@@ -469,6 +469,7 @@ export enum DeletionResult {
 }
 
 export enum ErrorCode {
+  INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR'
 }
 

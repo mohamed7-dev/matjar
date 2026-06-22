@@ -3,6 +3,8 @@ import {
 	DeletionResponse,
 	DeletionResult,
 	Permission,
+	RemoveRoleFromMarketplaceRegionsInput,
+	Success,
 	UpdateRoleInput,
 } from '@matjar/common/lib/generated-types';
 import {
@@ -18,6 +20,8 @@ import {
 } from '../../api/common/default-permissions';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContext } from '../../api/request-context/request-context';
+import { Cache } from '../../cache/cache';
+import { CacheService } from '../../cache/cache.service';
 import {
 	CompanyMarketplaceMembershipError,
 	EntityNotFoundError,
@@ -27,6 +31,8 @@ import {
 } from '../../common/errors/errors';
 import { RoleCodeConflictError } from '../../common/errors/generated-graphql-admin-errors';
 import { UserPermissionsMap, type UserPermissionsMapType } from '../../common/helpers/user-permissions-map';
+import { ListQueryOptions } from '../../common/types/list-query-options';
+import { PaginatedList } from '../../common/types/paginated-list';
 import { assertPromise } from '../../common/utils/assert-promise';
 import { filterUnique } from '../../common/utils/filter-unique';
 import { Company } from '../../entities/company/company.entity';
@@ -38,19 +44,37 @@ import { RoleEvent } from '../../event-bus/events/role-event';
 import { OrmService } from '../../orm/orm.service';
 import { patchEntity } from '../../orm/utils/patch-entity';
 import { DefaultRolesBuilderService } from '../helpers/default-roles-builder.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder.service';
 import { RequestContextService } from '../helpers/request-context.service';
 import { MarketplaceRegionService } from './marketplace-region.service';
 
 @Injectable()
 export class RoleService {
+	private rolesCacheKey = 'RoleService.allRoles';
+	private rolesCache: Cache;
+
 	constructor(
 		private readonly ormService: OrmService,
 		private readonly defaultRolesBuilder: DefaultRolesBuilderService,
 		private readonly marketplaceRegionService: MarketplaceRegionService,
 		private readonly requestContextService: RequestContextService,
 		private readonly eventBus: EventBus,
+		private readonly cacheService: CacheService,
+		private readonly listQueryBuilder: ListQueryBuilder,
 	) {
 		this.defaultRolesBuilder.build();
+		this.rolesCache = this.cacheService.createCache({
+			generateKey: (scope) => `${this.rolesCacheKey}:${scope}`,
+			entryOptions: {
+				ttlInMs: 1000 * 60 * 60, // 1 hour
+			},
+		});
+
+		// listen to the RoleEvent and clear the cache if there is any mutation
+		// done on the data
+		this.eventBus.ofType(RoleEvent).subscribe((event) => {
+			this.rolesCache.removeBulk(event.entity?.company ? event.entity?.company?.id : '*');
+		});
 	}
 
 	/**@internal */
@@ -80,6 +104,13 @@ export class RoleService {
 			targetMarketplaces = await this.getTargetMarketplaces(
 				ctx,
 				input.marketplaceRegionIds,
+				companyId
+					? [
+							Permission.company_role_create,
+						]
+					: [
+							Permission.platform_role_create,
+						],
 				company?.id,
 			);
 		} else {
@@ -129,6 +160,7 @@ export class RoleService {
 		input: UpdateRoleInput,
 	): Promise<Role | RoleCodeConflictError> {
 		const companyId = ctx.companyId;
+
 		// check permissions are valid
 		this.checkPermissionsValidity(input.permissions ?? [], companyId);
 
@@ -160,7 +192,18 @@ export class RoleService {
 
 		// retrieve target marketplaces
 		const targetMarketplaces = input.marketplaceRegionIds
-			? await this.getTargetMarketplaces(ctx, input.marketplaceRegionIds)
+			? await this.getTargetMarketplaces(
+					ctx,
+					input.marketplaceRegionIds,
+					companyId
+						? [
+								Permission.company_role_update,
+							]
+						: [
+								Permission.platform_role_update,
+							],
+					company?.id,
+				)
 			: undefined;
 
 		const affectedMarketplaces = targetMarketplaces
@@ -199,8 +242,8 @@ export class RoleService {
 			permissions: input.permissions ? filterUnique(input.permissions) : undefined,
 		});
 
-		if (targetMarketplaces) {
-			role.marketplaceRegions = targetMarketplaces;
+		if (affectedMarketplaces) {
+			role.marketplaceRegions = affectedMarketplaces;
 		}
 
 		if (company) {
@@ -216,9 +259,63 @@ export class RoleService {
 		return updatedRole;
 	}
 
+	// needs testing in multi-marketplace env
+	public async removeRoleFromMarketplaceRegions(
+		ctx: RequestContext,
+		input: RemoveRoleFromMarketplaceRegionsInput,
+	): Promise<Success> {
+		const role = await this.ormService.getEntityOrThrow(ctx, Role, input.id, {
+			relations: [
+				'marketplaceRegions',
+				'company',
+			],
+		});
+
+		const roleCompanyId = role.company?.id;
+
+		const targetMarketplaces = await this.getTargetMarketplaces(
+			ctx,
+			input.marketplaceRegionIds,
+			roleCompanyId
+				? [
+						Permission.company_role_update,
+					]
+				: [
+						Permission.platform_role_update,
+					],
+			roleCompanyId,
+		);
+
+		if (targetMarketplaces.length) {
+			const marketplaces = role.marketplaceRegions.filter(
+				(mpr) => !targetMarketplaces.some((tmp) => tmp.id === mpr.id),
+			);
+
+			role.marketplaceRegions = marketplaces;
+			const updatedRole = await this.ormService.getRepository(ctx, Role).save(role);
+			await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
+
+			return {
+				success: true,
+			};
+		}
+
+		return {
+			success: false,
+		};
+	}
+
 	public async deleteRoles(ctx: RequestContext, ids: string[]): Promise<DeletionResponse[]> {
 		const companyId = ctx.companyId;
-		const roles = await Promise.all(ids.map((id) => this.ormService.getEntityOrThrow(ctx, Role, id)));
+		const roles = await Promise.all(
+			ids.map((id) =>
+				this.ormService.getEntityOrThrow(ctx, Role, id, {
+					relations: [
+						'company',
+					],
+				}),
+			),
+		);
 
 		if (companyId) {
 			// prevents anyone who stole the role id from delete the roles
@@ -262,13 +359,106 @@ export class RoleService {
 
 		// TODO: check if the current user can read the role
 
-		if (role?.company) {
+		if (role && !(await this.checkActiveUserCanReadRole(ctx, role))) {
+			return undefined;
+		}
+
+		if (ctx.companyId && role?.company) {
 			this.checkCurrentCompanyOwnsRoles(ctx, [
 				role,
 			]);
 		}
 
 		return role;
+	}
+
+	public async findAll(
+		ctx: RequestContext,
+		listQueryOptions?: ListQueryOptions<Role>,
+		relations?: RelationPaths<Role>,
+	): Promise<PaginatedList<Role>> {
+		const companyId = ctx.companyId;
+
+		const storedRoles = await this.rolesCache.getOrInsert(companyId ? companyId : '*', async () => {
+			const roles = await this.ormService.getRepository(ctx, Role).find({
+				where: companyId
+					? {
+							company: {
+								id: companyId,
+							},
+						}
+					: {},
+				relations: [
+					'marketplaceRegions',
+					'company',
+				],
+			});
+			return JSON.stringify(roles);
+		});
+
+		const roles = JSON.parse(storedRoles);
+
+		const accessibleRoleIds: string[] = [];
+		for (const role of roles) {
+			if (await this.checkActiveUserCanReadRole(ctx, role)) {
+				accessibleRoleIds.push(role.id);
+			}
+		}
+
+		if (accessibleRoleIds.length === 0) {
+			return {
+				items: [],
+				totalItemsCount: 0,
+			};
+		}
+
+		const [items, totalItems] = await this.listQueryBuilder
+			.build(Role, listQueryOptions, {
+				relations: filterUnique([
+					...(relations ?? []),
+					'marketplaceRegions',
+					'company',
+				]),
+				ctx,
+			})
+			.andWhere({
+				id: In(accessibleRoleIds),
+			})
+			.getManyAndCount();
+
+		return {
+			items,
+			totalItemsCount: totalItems,
+		};
+	}
+
+	private async checkActiveUserCanReadRole(ctx: RequestContext, role: Role): Promise<boolean> {
+		const permissionsMap = UserPermissionsMap.buildFromRoles([
+			role,
+		]);
+
+		for (const mapItem of UserPermissionsMap.list(permissionsMap)) {
+			let activeUserHasRequiredPermissions = false;
+			if (mapItem.scope === 'company') {
+				activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnMarketplace(
+					ctx,
+					mapItem.marketplaceRegionId,
+					mapItem.permissions,
+					mapItem.id,
+				);
+			} else {
+				activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnMarketplace(
+					ctx,
+					mapItem.id,
+					mapItem.permissions,
+				);
+			}
+
+			if (!activeUserHasRequiredPermissions) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private checkCurrentCompanyOwnsRoles(ctx: RequestContext, roles: Role[]): void {
@@ -373,7 +563,6 @@ export class RoleService {
 		if (!belongsToCompany) {
 			throw new CompanyMarketplaceMembershipError({
 				companyCode: company.code,
-				marketplaceCode: company.code,
 			});
 		}
 	}
@@ -405,6 +594,7 @@ export class RoleService {
 	private async getTargetMarketplaces(
 		ctx: RequestContext,
 		marketplacesRegionIds: string[],
+		requiredPermissions: Permission[],
 		companyId?: string,
 	): Promise<Array<MarketplaceRegion>> {
 		const repo = this.ormService.getRepository(ctx, MarketplaceRegion);
@@ -426,26 +616,18 @@ export class RoleService {
 
 		const permissionsMap = await this.getActiveUserPermissionsMap(ctx);
 		for (const marketplaceId of marketplacesRegionIds) {
-			const allowed = companyId
-				? UserPermissionsMap.hasAll(
-						permissionsMap,
-						{
-							companyId,
-							marketplaceRegionId: marketplaceId,
-						},
-						[
-							Permission.company_role_create,
-						],
-					)
-				: UserPermissionsMap.hasAll(
-						permissionsMap,
-						{
-							marketplaceRegionId: marketplaceId,
-						},
-						[
-							Permission.platform_role_create,
-						],
-					);
+			const allowed = UserPermissionsMap.hasAll(
+				permissionsMap,
+				{
+					...(companyId
+						? {
+								companyId,
+							}
+						: null),
+					marketplaceRegionId: marketplaceId,
+				},
+				requiredPermissions,
+			);
 
 			if (!allowed) {
 				throw new ForbiddenError();
@@ -554,25 +736,40 @@ export class RoleService {
 	/**
 	 * @description
 	 * Returns true if the user has the specified permission on the specified marketplace
+	 *
+	 * :::info
+	 * the checking process could be scoped to a specific company by passing the optional companyId
+	 * :::
 	 */
 	public async userHasPermissionOnMarketplace(
 		ctx: RequestContext,
 		marketplaceId: string,
 		permission: Permission,
+		companyId?: string,
 	): Promise<boolean> {
-		return this.userHasAnyPermissionsOnMarketplace(ctx, marketplaceId, [
-			permission,
-		]);
+		return this.userHasAnyPermissionsOnMarketplace(
+			ctx,
+			marketplaceId,
+			[
+				permission,
+			],
+			companyId,
+		);
 	}
 
 	/**
 	 * @description
 	 * Returns true if the user has any of the specified permissions on the specified marketplace
+	 *
+	 * :::info
+	 * the checking process could be scoped to a specific company by passing the optional companyId
+	 * :::
 	 */
 	public async userHasAnyPermissionsOnMarketplace(
 		ctx: RequestContext,
 		marketplaceId: string,
 		permissions: Permission[],
+		companyId?: string,
 	): Promise<boolean> {
 		const userPermissionsMap = await this.getActiveUserPermissionsMap(ctx);
 		if (
@@ -580,6 +777,7 @@ export class RoleService {
 				userPermissionsMap,
 				{
 					marketplaceRegionId: marketplaceId,
+					companyId,
 				},
 				permissions,
 			)
@@ -590,32 +788,19 @@ export class RoleService {
 		return false;
 	}
 
+	/**
+	 * @description
+	 * Returns true if the user has all specified permissions on the specified marketplace
+	 *
+	 * :::info
+	 * the checking process could be scoped to a specific company by passing the optional companyId
+	 * :::
+	 */
 	public async userHasAllPermissionsOnMarketplace(
 		ctx: RequestContext,
 		marketplaceId: string,
 		permissions: Permission[],
-	): Promise<boolean> {
-		const userPermissionsMap = await this.getActiveUserPermissionsMap(ctx);
-		if (
-			UserPermissionsMap.hasAll(
-				userPermissionsMap,
-				{
-					marketplaceRegionId: marketplaceId,
-				},
-				permissions,
-			)
-		) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public async userHasAllPermissionsOnMarketplaceCompany(
-		ctx: RequestContext,
-		marketplaceId: string,
-		companyId: string,
-		permissions: Permission[],
+		companyId?: string,
 	): Promise<boolean> {
 		const userPermissionsMap = await this.getActiveUserPermissionsMap(ctx);
 		if (

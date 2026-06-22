@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { OrmModule } from '../orm/orm.module';
@@ -43,6 +44,7 @@ const domainsServices = [
 		ConfigModule,
 		OrmModule,
 		EventBusModule,
+		CacheModule,
 	],
 	providers: [
 		...domainsServices,

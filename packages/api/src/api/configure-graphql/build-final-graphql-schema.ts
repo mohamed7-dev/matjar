@@ -5,6 +5,7 @@ import { ApiType } from '../utils/get-api-type';
 import { generateAuthInputType } from './generate-auth-input-type';
 import { generateListOptions } from './generate-list-options';
 import { generatePermissionEnum } from './generate-permission-enum';
+import { generateErrorCodeEnum } from './generate-error-code-enum';
 
 interface BuildFinalGraphqlSchemaOptions {
 	typesPaths: string[];
@@ -39,6 +40,7 @@ export async function buildFinalGraphqlSchema(
 			: options.config.auth.storeAuthenticationStrategies,
 	);
 	schema = generateListOptions(schema);
+	schema = generateErrorCodeEnum(schema);
 
 	if (options.outputAs === 'sdl') {
 		return printSchema(schema);

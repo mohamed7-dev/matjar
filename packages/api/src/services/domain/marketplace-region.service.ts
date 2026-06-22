@@ -1,4 +1,4 @@
-import { CurrencyCode } from '@matjar/common/lib/generated-types';
+import { CreateMarketplaceRegionInput, CurrencyCode } from '@matjar/common/lib/generated-types';
 import { DEFAULT_MARKETPLACE_REGION_CODE } from '@matjar/common/lib/shared-constants';
 import { Injectable } from '@nestjs/common';
 import { FindOptionsWhere } from 'typeorm';
@@ -14,6 +14,7 @@ import { ConfigService } from '../../config/config.service';
 import { MarketplaceRegion } from '../../entities/marketplace-region/marketplace-region.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ChangeMarketplaceRegionEvent } from '../../event-bus/events/change-marketplace-region-event';
+import { MarketplaceRegionEvent } from '../../event-bus/events/marketplace-region-event';
 import { OrmService } from '../../orm/orm.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder.service';
 
@@ -29,6 +30,36 @@ export class MarketplaceRegionService {
 	/**@internal */
 	public async initMarketplaceRegions(): Promise<void> {
 		await this.initializeDefaultMarketplaceRegion();
+	}
+
+	public async createMarketplaceRegion(
+		ctx: RequestContext,
+		input: CreateMarketplaceRegionInput,
+	): Promise<MarketplaceRegion> {
+		const marketplace = new MarketplaceRegion({
+			code: input.code,
+			token: input.token,
+			primaryLanguageCode: input.primaryLanguageCode,
+			availableLanguageCodes: input.availableLanguageCodes ?? [
+				input.primaryLanguageCode,
+			],
+			primaryCurrencyCode: input.primaryCurrencyCode,
+			availableCurrencyCodes:
+				input.availableCurrencyCodes ??
+				(input.primaryCurrencyCode
+					? [
+							input.primaryCurrencyCode,
+						]
+					: []),
+		});
+
+		const savedMarketplace = await this.ormService
+			.getRepository(ctx, MarketplaceRegion)
+			.save(marketplace);
+
+		await this.eventBus.publish(new MarketplaceRegionEvent(ctx, savedMarketplace, 'created', input));
+
+		return savedMarketplace;
 	}
 
 	public async findAll(

@@ -33,19 +33,21 @@ export class MarketplaceRegion extends AppEntity {
 	@Column()
 	code: string;
 
-	@Column()
+	@Column('varchar')
 	primaryLanguageCode: LanguageCode;
 
 	@Column({
 		type: 'simple-array',
+		nullable: true,
 	})
 	availableLanguageCodes: LanguageCode[];
 
-	@Column()
+	@Column('varchar')
 	primaryCurrencyCode: CurrencyCode;
 
 	@Column({
 		type: 'simple-array',
+		nullable: true,
 	})
 	availableCurrencyCodes: CurrencyCode[];
 

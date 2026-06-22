@@ -4,12 +4,16 @@ import {
 	MutationCreateRoleArgs,
 	MutationDeleteRoleArgs,
 	MutationDeleteRolesArgs,
+	MutationRemoveRoleFromMarketplaceRegionsArgs,
 	MutationUpdateRoleArgs,
 	Permission,
 	QueryRoleArgs,
+	QueryRolesArgs,
+	Success,
 	UpdateRoleResult,
 } from '@matjar/common/lib/generated-types';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { PaginatedList } from '../../../common/types/paginated-list';
 import { Role } from '../../../entities/role/role.entity';
 import { RoleService } from '../../../services/domain/role.service';
 import { ActiveUserIsCompanyMemberPolicyOptions } from '../../access-policies/active-user-is-company-member.policy';
@@ -42,6 +46,27 @@ export class AdminRoleResolver {
 		@Relations(Role) relations: RelationPaths<Role>,
 	): Promise<Role | undefined> {
 		return await this.roleService.findOne(ctx, args.id, relations);
+	}
+
+	@Query('roles')
+	@Access({
+		permissions: [
+			Permission.platform_role_read,
+			Permission.company_role_read,
+		],
+		policies: [
+			{
+				name: 'AuthenticatedPolicy',
+			},
+		],
+		requireAllPermissions: false,
+	})
+	public async find(
+		@Ctx() ctx: RequestContext,
+		@Args() args: QueryRolesArgs,
+		@Relations(Role) relations: RelationPaths<Role>,
+	): Promise<PaginatedList<Role>> {
+		return await this.roleService.findAll(ctx, args.options || undefined, relations);
 	}
 
 	@Mutation('createRole')
@@ -97,6 +122,28 @@ export class AdminRoleResolver {
 		@Args() args: MutationUpdateRoleArgs,
 	): Promise<UpdateRoleResult> {
 		const result = await this.roleService.updateRole(ctx, args.input);
+		return result;
+	}
+
+	@Mutation('removeRoleFromMarketplaceRegions')
+	@Transaction()
+	@Access({
+		permissions: [
+			Permission.platform_role_update,
+			Permission.company_role_update,
+		],
+		policies: [
+			{
+				name: 'AuthenticatedPolicy',
+			},
+		],
+		requireAllPermissions: false,
+	})
+	public async removeRoleFromMarketplaces(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationRemoveRoleFromMarketplaceRegionsArgs,
+	): Promise<Success> {
+		const result = await this.roleService.removeRoleFromMarketplaceRegions(ctx, args.input);
 		return result;
 	}
 

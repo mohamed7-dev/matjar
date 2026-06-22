@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Subject } from 'rxjs';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { filter, Observable, Subject, takeUntil } from 'rxjs';
 import { ClassType } from '../common/types/class-type';
+import { notNullOrUndefined } from '../common/utils/not-null-or-undefined';
 import { Logger } from '../logger/logger';
 import { AppEvent } from './app-event';
 import { BlockingHandlerOptions } from './types/blocking-handler';
@@ -8,9 +9,29 @@ import { BlockingHandlerOptions } from './types/blocking-handler';
 const ContextName = 'EventBus';
 
 @Injectable()
-export class EventBus {
+export class EventBus implements OnModuleDestroy {
 	private readonly stream = new Subject<AppEvent>();
+	private destroy$ = new Subject<void>();
+
 	private readonly handlers = new Map<ClassType<AppEvent>, Array<BlockingHandlerOptions<any>>>();
+
+	/** @internal */
+	onModuleDestroy(): any {
+		this.destroy$.next();
+	}
+
+	/**
+	 * @description
+	 * Returns a stream of events of the given event type
+	 */
+	public ofType<Event extends AppEvent>(event: ClassType<Event>): Observable<Event> {
+		return this.stream.asObservable().pipe(
+			takeUntil(this.destroy$),
+			filter((e) => e.constructor === event),
+			// TODO: we should await any active transaction
+			filter(notNullOrUndefined),
+		) as Observable<Event>;
+	}
 
 	public async publish<Event extends AppEvent>(event: Event): Promise<void> {
 		this.stream.next(event);
@@ -34,6 +55,10 @@ export class EventBus {
 		}
 	}
 
+	/**
+	 * @description
+	 * Registers blocking event handler
+	 */
 	public register<Event extends AppEvent>(options: BlockingHandlerOptions<Event>): void {
 		const events = Array.isArray(options.event)
 			? options.event

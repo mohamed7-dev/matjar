@@ -88,7 +88,6 @@ export class DuplicateRoleAssignmentError extends I18nError {
 export class CompanyMarketplaceMembershipError extends I18nError {
 	constructor(
 		variables: {
-			marketplaceCode: string;
 			companyCode: string;
 		},
 		logLevel?: LogLevel,

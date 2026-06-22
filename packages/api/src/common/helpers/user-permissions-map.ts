@@ -1,4 +1,5 @@
 import { Permission } from '@matjar/common/lib/generated-types';
+import { Role } from '../../entities/role/role.entity';
 import { User } from '../../entities/user/user.entity';
 import { filterUnique } from '../utils/filter-unique';
 
@@ -38,10 +39,18 @@ export class UserPermissionsMap {
 		return new Map();
 	}
 
+	public static buildFromRoles(roles: Role[]): UserPermissionsMapType {
+		return UserPermissionsMap._build(roles);
+	}
+
 	public static build(user: User): UserPermissionsMapType {
+		return UserPermissionsMap._build(user.roles);
+	}
+
+	private static _build(roles: Role[]): UserPermissionsMapType {
 		const map: UserPermissionsMapType = new Map();
 
-		for (const role of user.roles) {
+		for (const role of roles) {
 			for (const marketplace of role.marketplaceRegions) {
 				const key = UserPermissionsMap.buildKey({
 					marketplaceRegionId: marketplace.id,

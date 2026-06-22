@@ -21,7 +21,7 @@ export interface ListQueryOptions<Entity extends AppEntity> {
 	skip?: number | null;
 	sort?: NullOptionals<SortParameter<Entity>> | null;
 	filter?: NullOptionals<FilterParameter<Entity>> | null;
-	filterOperator?: FilterGroupOperator;
+	filterOperator?: FilterGroupOperator | null;
 }
 
 export type PrimitiveFields<Entity extends AppEntity> = {
@@ -54,8 +54,8 @@ export type TextFilterInput = {
 	notEquals?: string;
 	contains?: string;
 	doesNotContain?: string;
-	includedIn?: string;
-	excludedFrom?: string;
+	includedIn?: string[];
+	excludedFrom?: string[];
 	matchesRegex?: string;
 	isNull?: boolean;
 };

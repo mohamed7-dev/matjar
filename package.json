@@ -7,6 +7,7 @@
 	"packageManager": "pnpm@11.1.2",
 	"scripts": {
 		"watch": "lerna run watch",
+		"watch:api-common": "lerna run --scope @matjar/api --scope @matjar/common watch --parallel",
 		"build": "",
 		"format": "",
 		"lint": "",
