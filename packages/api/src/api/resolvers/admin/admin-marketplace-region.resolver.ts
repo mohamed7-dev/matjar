@@ -1,6 +1,11 @@
 import {
+	DeletionResponse,
 	MutationCreateMarketplaceRegionArgs,
+	MutationDeleteMarketplaceRegionArgs,
+	MutationDeleteMarketplaceRegionsArgs,
+	MutationUpdateMarketplaceRegionArgs,
 	Permission,
+	QueryMarketplaceRegionArgs,
 	QueryMarketplaceRegionsArgs,
 } from '@matjar/common/lib/generated-types';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
@@ -45,10 +50,23 @@ export class AdminMarketplaceRegionResolver {
 		return await this.marketplaceRegionService.findAll(ctx, args.options ?? ({} as any));
 	}
 
+	@Query('marketplaceRegion')
+	@Access({
+		permissions: [
+			Permission.platform_marketplace_region_read,
+		],
+	})
+	public async marketplaceRegion(
+		@Ctx() ctx: RequestContext,
+		@Args() args: QueryMarketplaceRegionArgs,
+	): Promise<MarketplaceRegion | undefined> {
+		return await this.marketplaceRegionService.findOne(ctx, args.id);
+	}
+
 	@Mutation('createMarketplaceRegion')
 	@Access({
 		permissions: [
-			Permission.platform_marketplace_region_create,
+			Permission.platform_super_admin,
 		],
 	})
 	public async create(
@@ -71,5 +89,48 @@ export class AdminMarketplaceRegionResolver {
 			result.id,
 		]);
 		return result;
+	}
+
+	@Mutation('updateMarketplaceRegion')
+	@Access({
+		permissions: [
+			Permission.platform_super_admin,
+		],
+	})
+	public async update(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationUpdateMarketplaceRegionArgs,
+	): Promise<MarketplaceRegion> {
+		return await this.marketplaceRegionService.updateMarketplaceRegion(ctx, args.input);
+	}
+
+	@Mutation('deleteMarketplaceRegion')
+	@Access({
+		permissions: [
+			Permission.platform_super_admin,
+		],
+	})
+	public async delete(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationDeleteMarketplaceRegionArgs,
+	): Promise<DeletionResponse> {
+		return await this.marketplaceRegionService
+			.deleteMarketplaceRegions(ctx, [
+				args.id,
+			])
+			.then((deletionResponses) => deletionResponses[0]);
+	}
+
+	@Mutation('deleteMarketplaceRegions')
+	@Access({
+		permissions: [
+			Permission.platform_super_admin,
+		],
+	})
+	public async deleteMany(
+		@Ctx() ctx: RequestContext,
+		@Args() args: MutationDeleteMarketplaceRegionsArgs,
+	): Promise<DeletionResponse[]> {
+		return await this.marketplaceRegionService.deleteMarketplaceRegions(ctx, args.ids);
 	}
 }

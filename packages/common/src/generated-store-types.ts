@@ -38,6 +38,7 @@ export type Asset = Node & {
   name: Scalars['String']['output'];
   previewIdentifier: Scalars['String']['output'];
   sourceIdentifier: Scalars['String']['output'];
+  tags: Array<Tag>;
   translations: Array<AssetTranslation>;
   type: AssetType;
   updatedAt: Scalars['DateTime']['output'];
@@ -963,14 +964,8 @@ export enum Permission {
   platform_company_read = 'platform_company_read',
   /** Grants permission to update Company */
   platform_company_update = 'platform_company_update',
-  /** Grants permission to create Marketplace_Region */
-  platform_marketplace_region_create = 'platform_marketplace_region_create',
-  /** Grants permission to delete Marketplace_Region */
-  platform_marketplace_region_delete = 'platform_marketplace_region_delete',
-  /** Grants permission to read Marketplace_Region */
+  /** Allows read on Marketplace_Region */
   platform_marketplace_region_read = 'platform_marketplace_region_read',
-  /** Grants permission to update Marketplace_Region */
-  platform_marketplace_region_update = 'platform_marketplace_region_update',
   /** Grants permission to create Order */
   platform_order_create = 'platform_order_create',
   /** Grants permission to delete Order */
@@ -986,7 +981,9 @@ export enum Permission {
   /** Grants permission to read Role */
   platform_role_read = 'platform_role_read',
   /** Grants permission to update Role */
-  platform_role_update = 'platform_role_update'
+  platform_role_update = 'platform_role_update',
+  /** SuperAdmin permissions grants user access to all operations */
+  platform_super_admin = 'platform_super_admin'
 }
 
 export type Query = {
@@ -1021,6 +1018,14 @@ export enum SortDirection {
 export type Success = {
   __typename?: 'Success';
   success: Scalars['Boolean']['output'];
+};
+
+export type Tag = Node & {
+  __typename?: 'Tag';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  value: Scalars['String']['output'];
 };
 
 /** Filtering operations available for text-based fields. */

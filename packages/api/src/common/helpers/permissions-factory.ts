@@ -82,11 +82,13 @@ export class CrudPermission extends AppPermission {
 	constructor(
 		resource: string,
 		private scope: RoleScope,
+		protected options?: AppPermissionPayload['options'],
 		private descriptionFn?: (operation: 'create' | 'read' | 'update' | 'delete') => string,
 	) {
 		super({
 			resource,
 			scope,
+			options,
 		});
 	}
 
@@ -107,8 +109,8 @@ export class CrudPermission extends AppPermission {
 				description:
 					this.descriptionFn?.(operation as any) ??
 					`Grants permission to ${operation} ${this.config.resource}`,
-				internal: false,
-				assignable: true,
+				internal: this.options?.internal || false,
+				assignable: this.options?.assignable || true,
 			};
 		});
 	}
@@ -135,11 +137,13 @@ export class ResourcePermission extends AppPermission {
 		private resource: string,
 		private scope: RoleScope,
 		private actions: string[],
+		protected options?: AppPermissionPayload['options'],
 		private descriptionFn?: (action: string) => string,
 	) {
 		super({
 			resource,
 			scope,
+			options,
 		});
 	}
 
@@ -150,8 +154,8 @@ export class ResourcePermission extends AppPermission {
 			resource: this.resource,
 			action,
 			description: this.descriptionFn?.(action) ?? `Allows ${action} on ${this.resource}`,
-			assignable: true,
-			internal: false,
+			internal: this.options?.internal || false,
+			assignable: this.options?.assignable || true,
 		}));
 	}
 }

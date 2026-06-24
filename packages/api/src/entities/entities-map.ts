@@ -8,6 +8,7 @@ import { Company } from './company/company.entity';
 import { MarketplaceRegion } from './marketplace-region/marketplace-region.entity';
 import { Role } from './role/role.entity';
 import { Session } from './session/session.entity';
+import { Tag } from './tag/tag.entity';
 import { User } from './user/user.entity';
 
 export const entitiesMap = {
@@ -28,6 +29,8 @@ export const entitiesMap = {
 
 	Asset: Asset,
 	AssetTranslation: AssetTranslation,
+
+	Tag: Tag,
 };
 
 export type EntityNames = keyof typeof entitiesMap;

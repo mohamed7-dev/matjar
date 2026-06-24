@@ -7,3 +7,8 @@ type Administrator implements Node {
 	identifier: String!
 	user: User!
 }
+
+type AdministratorList implements PaginatedList {
+	items: [Administrator!]!
+	totalItemsCount: Int!
+}

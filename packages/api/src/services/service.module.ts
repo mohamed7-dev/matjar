@@ -10,6 +10,7 @@ import { CompanyService } from './domain/company.service';
 import { MarketplaceRegionService } from './domain/marketplace-region.service';
 import { RoleService } from './domain/role.service';
 import { SessionService } from './domain/session.service';
+import { TagService } from './domain/tag.service';
 import { UserService } from './domain/user.service';
 import { DefaultRolesBuilderService } from './helpers/default-roles-builder.service';
 import { InitializerService } from './helpers/initializer.service';
@@ -37,6 +38,7 @@ const domainsServices = [
 	SessionService,
 	CompanyService,
 	AssetService,
+	TagService,
 ];
 
 @Module({

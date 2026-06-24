@@ -41,7 +41,7 @@ export class RequestContextService {
 		private readonly companyService: CompanyService,
 	) {}
 
-	public async create(options: CreateOptions): Promise<RequestContext> {
+	public async create(options: CreateOptions, dummy: boolean = false): Promise<RequestContext> {
 		const {
 			languageCode,
 			currencyCode,
@@ -60,6 +60,8 @@ export class RequestContextService {
 		} else if (typeof marketplaceOrToken === 'string') {
 			marketplaceRegion =
 				await this.marketplaceRegionService.getMarketplaceRegionByToken(marketplaceOrToken);
+		} else if (dummy) {
+			marketplaceRegion = new MarketplaceRegion();
 		} else {
 			marketplaceRegion = await this.marketplaceRegionService.getDefaultMarketplaceRegion();
 		}

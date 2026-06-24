@@ -1,11 +1,18 @@
 type Query {
 	marketplaceRegions(options: MarketplaceRegionListOptions): MarketplaceRegionList!
 	activeMarketplaceRegion: MarketplaceRegion!
+	marketplaceRegion(id: ID!): MarketplaceRegion
 }
 
 type Mutation {
 	"Create a new MarketplaceRegion"
 	createMarketplaceRegion(input: CreateMarketplaceRegionInput!): MarketplaceRegion!
+	"Update an existing MarketplaceRegion"
+	updateMarketplaceRegion(input: UpdateMarketplaceRegionInput!): MarketplaceRegion!
+	"Delete a MarketplaceRegion"
+	deleteMarketplaceRegion(id: ID!): DeletionResponse!
+	"Delete multiple MarketplaceRegions"
+	deleteMarketplaceRegions(ids: [ID!]!): DeletionResponse!
 }
 
 type MarketplaceRegionList implements PaginatedList {
@@ -22,5 +29,15 @@ input CreateMarketplaceRegionInput {
 	primaryLanguageCode: LanguageCode!
 	availableLanguageCodes: [LanguageCode!]
 	primaryCurrencyCode: CurrencyCode!
+	availableCurrencyCodes: [CurrencyCode!]
+}
+
+input UpdateMarketplaceRegionInput {
+	id: ID!
+	code: String
+	token: String
+	primaryLanguageCode: LanguageCode
+	availableLanguageCodes: [LanguageCode!]
+	primaryCurrencyCode: CurrencyCode
 	availableCurrencyCodes: [CurrencyCode!]
 }

@@ -6,6 +6,7 @@ import {
 	CreateAssetsInput,
 	DeletionResponse,
 	DeletionResult,
+	FilterGroupOperator,
 	Permission,
 	UpdateAssetInput,
 } from '@matjar/common/lib/generated-types';
@@ -36,6 +37,7 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { TranslatorService } from '../helpers/translator.service';
 import { MarketplaceRegionService } from './marketplace-region.service';
 import { RoleService } from './role.service';
+import { TagService } from './tag.service';
 
 @Injectable()
 export class AssetService {
@@ -53,6 +55,7 @@ export class AssetService {
 		private readonly translatableSaver: TranslatableSaver,
 		private readonly roleService: RoleService,
 		private readonly listQueryBuilder: ListQueryBuilder,
+		private readonly tagService: TagService,
 	) {
 		this.normalizeFileTypes();
 	}
@@ -76,6 +79,12 @@ export class AssetService {
 			errorPromise,
 		]);
 		if (isGraphqlApiError(result)) return result;
+		if (input.tags) {
+			// values => tags
+			const tags = await this.tagService.createTagsFromValues(ctx, input.tags);
+			result.tags = tags;
+			await this.ormService.getRepository(ctx, Asset).save(result);
+		}
 		await this.eventBus.publish(new AssetEvent(ctx, result, 'created', input));
 		const translatedAsset = this.translatorService.translate(ctx, result);
 		return translatedAsset;
@@ -96,10 +105,14 @@ export class AssetService {
 			omit(input, [
 				'name',
 				'translations',
+				'tags',
 			]),
 		);
 
 		// 3. handle tags
+		if (input.tags) {
+			asset.tags = await this.tagService.createTagsFromValues(ctx, input.tags);
+		}
 
 		// 4. handle translations and save updated asset
 		if (input.translations && input.translations.length > 0) {
@@ -234,20 +247,41 @@ export class AssetService {
 		options?: AssetListOptions,
 		relations?: RelationPaths<Asset>,
 	): Promise<PaginatedList<Translated<Asset>>> {
-		// TODO: before calling getManyAndCount(), handle filtering by tags
-		return await this.listQueryBuilder
-			.build(Asset, options as any, {
-				ctx,
-				relations: relations ?? [],
-				marketplaceRegionId: ctx.marketplaceRegionId,
-			})
-			.getManyAndCount()
-			.then(([items, totalItems]) => {
-				return {
-					items: items.map((asset) => this.translatorService.translate(ctx, asset)),
-					totalItemsCount: totalItems,
-				};
+		const qb = this.listQueryBuilder.build(Asset, options, {
+			ctx,
+			relations: [
+				...(relations ?? []),
+				'tags',
+			],
+			marketplaceRegionId: ctx.marketplaceRegionId,
+		});
+
+		const tags = options?.tags;
+		if (tags?.length) {
+			const operator = options?.tagsOperator ?? FilterGroupOperator.AND;
+			const subquery = qb.connection
+				.createQueryBuilder()
+				.select('asset.id')
+				.from(Asset, 'asset')
+				.leftJoin('asset.tags', 'tags')
+				.where('tags.value IN (:...tags)');
+
+			if (operator === FilterGroupOperator.AND) {
+				subquery.groupBy('asset.id').having('COUNT(asset.id) = :tagCount');
+			}
+
+			qb.andWhere(`asset.id IN (${subquery.getQuery()})`).setParameters({
+				tags,
+				tagCount: tags.length,
 			});
+		}
+
+		return await qb.getManyAndCount().then(([items, totalItems]) => {
+			return {
+				items: items.map((asset) => this.translatorService.translate(ctx, asset)),
+				totalItemsCount: totalItems,
+			};
+		});
 	}
 
 	public async assignToMarketplaceRegion(

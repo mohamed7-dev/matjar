@@ -19,7 +19,11 @@
 		"company_not_available_in_marketplace": "Company \"{companyCode}\" is not available in marketplace region",
 		"active_user_does_not_have_sufficient_permissions": "Active user doesn't have sufficient permissions",
 		"invalid_permissions": "Invalid permission",
-		"cannot_modify_role": "Role with the code \"{roleCode}\" can't be modified"
+		"cannot_modify_role": "Role with the code \"{roleCode}\" can't be modified",
+		"available_currency_codes_must_include_primary": "Available currency codes must include the primary currency code \"{primaryCurrencyCode}\"",
+		"admin_identifier_already_exists": "An administrator with the same identifier already exists",
+		"super_admin-must-have-super_admin-role": "SuperAdmin user must have SuperAdmin role",
+		"cannot_delete_sole_super_admin": "Sole SuperAdmin can't be deleted"
 	},
 	"message": {
 		"asset_to_be_deleted_is_featured": "The selected {assetCount, plural, one {Asset is} other {Assets are}} featured by {products, plural, =0 {} one {1 Product} other {# Products}} {variants, plural, =0 {} one { 1 ProductVariant} other { # ProductVariants}} {collections, plural, =0 {} one { 1 Collection} other { # Collections}}"

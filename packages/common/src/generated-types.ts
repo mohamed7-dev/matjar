@@ -40,6 +40,43 @@ export type Administrator = Node & {
   user: User;
 };
 
+export type AdministratorFilterParameter = {
+  createdAt?: InputMaybe<DateTimeFilterInput>;
+  firstName?: InputMaybe<TextFilterInput>;
+  id?: InputMaybe<IdentifierFilterInput>;
+  identifier?: InputMaybe<TextFilterInput>;
+  lastName?: InputMaybe<TextFilterInput>;
+  updatedAt?: InputMaybe<DateTimeFilterInput>;
+};
+
+export type AdministratorList = PaginatedList & {
+  __typename?: 'AdministratorList';
+  items: Array<Administrator>;
+  totalItemsCount: Scalars['Int']['output'];
+};
+
+export type AdministratorListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<AdministratorFilterParameter>;
+  /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<FilterGroupOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<AdministratorSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type AdministratorSortParameter = {
+  createdAt?: InputMaybe<SortDirection>;
+  firstName?: InputMaybe<SortDirection>;
+  id?: InputMaybe<SortDirection>;
+  identifier?: InputMaybe<SortDirection>;
+  lastName?: InputMaybe<SortDirection>;
+  updatedAt?: InputMaybe<SortDirection>;
+};
+
 export type ApiError = {
   errorCode: ErrorCode;
   message: Scalars['String']['output'];
@@ -57,6 +94,7 @@ export type Asset = Node & {
   name: Scalars['String']['output'];
   previewIdentifier: Scalars['String']['output'];
   sourceIdentifier: Scalars['String']['output'];
+  tags: Array<Tag>;
   translations: Array<AssetTranslation>;
   type: AssetType;
   updatedAt: Scalars['DateTime']['output'];
@@ -193,8 +231,17 @@ export type CoordinateInput = {
   y: Scalars['Float']['input'];
 };
 
+export type CreateAdministratorInput = {
+  firstName: Scalars['String']['input'];
+  identifier: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  roleIds: Array<Scalars['ID']['input']>;
+};
+
 export type CreateAssetsInput = {
   file: Scalars['Upload']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
   translations?: InputMaybe<Array<AssetTranslationInput>>;
 };
 
@@ -1015,18 +1062,30 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Assign assets to marketplace region */
   assignAssetsToMarketplace: Array<Asset>;
+  /** Assign a Role to an Administrator */
+  assignRoleToAdministrator: Administrator;
   /** Authenticates an admin user using the provided authentication strategy name and data */
   authenticateAdminUser: AuthenticateAdminUserResult;
+  /** Create new Administrator */
+  createAdministrator: Administrator;
   /** Create new assets */
   createAssets: Array<CreateAssetsResult>;
   /** Create a new MarketplaceRegion */
   createMarketplaceRegion: MarketplaceRegion;
   /** Create a new Role */
   createRole: CreateRoleResult;
+  /** Delete an Administrator */
+  deleteAdministrator: DeletionResponse;
+  /** Delete multiple Administrators */
+  deleteAdministrators: Array<DeletionResponse>;
   /** Delete asset */
   deleteAsset: DeletionResponse;
   /** Delete assets */
   deleteAssets: DeletionResponse;
+  /** Delete a MarketplaceRegion */
+  deleteMarketplaceRegion: DeletionResponse;
+  /** Delete multiple MarketplaceRegions */
+  deleteMarketplaceRegions: DeletionResponse;
   /** Delete an existing Role */
   deleteRole: DeletionResponse;
   /** Delete multiple Roles */
@@ -1036,9 +1095,15 @@ export type Mutation = {
   logoutAdminUser: Success;
   /** Remove a role from marketplace regions */
   removeRoleFromMarketplaceRegions: Success;
+  /** Update the active (authenticated) Administrator */
+  updateActiveAdministrator: Administrator;
+  /** Update an existing Administrator */
+  updateAdministrator: Administrator;
   /** Update asset */
   updateAsset: Asset;
   updateGlobalSettings?: Maybe<Scalars['Boolean']['output']>;
+  /** Update an existing MarketplaceRegion */
+  updateMarketplaceRegion: MarketplaceRegion;
   /** Update an existing Role */
   updateRole: UpdateRoleResult;
 };
@@ -1049,9 +1114,20 @@ export type MutationAssignAssetsToMarketplaceArgs = {
 };
 
 
+export type MutationAssignRoleToAdministratorArgs = {
+  administratorId: Scalars['ID']['input'];
+  roleId: Scalars['ID']['input'];
+};
+
+
 export type MutationAuthenticateAdminUserArgs = {
   input: AuthenticationInput;
   rememberMe?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationCreateAdministratorArgs = {
+  input: CreateAdministratorInput;
 };
 
 
@@ -1070,6 +1146,16 @@ export type MutationCreateRoleArgs = {
 };
 
 
+export type MutationDeleteAdministratorArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteAdministratorsArgs = {
+  ids: Array<Scalars['ID']['input']>;
+};
+
+
 export type MutationDeleteAssetArgs = {
   input: DeleteAssetInput;
 };
@@ -1077,6 +1163,16 @@ export type MutationDeleteAssetArgs = {
 
 export type MutationDeleteAssetsArgs = {
   input: DeleteAssetsInput;
+};
+
+
+export type MutationDeleteMarketplaceRegionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMarketplaceRegionsArgs = {
+  ids: Array<Scalars['ID']['input']>;
 };
 
 
@@ -1100,6 +1196,16 @@ export type MutationRemoveRoleFromMarketplaceRegionsArgs = {
 };
 
 
+export type MutationUpdateActiveAdministratorArgs = {
+  input: UpdateActiveAdministratorInput;
+};
+
+
+export type MutationUpdateAdministratorArgs = {
+  input: UpdateAdministratorInput;
+};
+
+
 export type MutationUpdateAssetArgs = {
   input: UpdateAssetInput;
 };
@@ -1107,6 +1213,11 @@ export type MutationUpdateAssetArgs = {
 
 export type MutationUpdateGlobalSettingsArgs = {
   input: UpdateGlobalSettingsInput;
+};
+
+
+export type MutationUpdateMarketplaceRegionArgs = {
+  input: UpdateMarketplaceRegionInput;
 };
 
 
@@ -1227,14 +1338,8 @@ export enum Permission {
   platform_company_read = 'platform_company_read',
   /** Grants permission to update Company */
   platform_company_update = 'platform_company_update',
-  /** Grants permission to create Marketplace_Region */
-  platform_marketplace_region_create = 'platform_marketplace_region_create',
-  /** Grants permission to delete Marketplace_Region */
-  platform_marketplace_region_delete = 'platform_marketplace_region_delete',
-  /** Grants permission to read Marketplace_Region */
+  /** Allows read on Marketplace_Region */
   platform_marketplace_region_read = 'platform_marketplace_region_read',
-  /** Grants permission to update Marketplace_Region */
-  platform_marketplace_region_update = 'platform_marketplace_region_update',
   /** Grants permission to create Order */
   platform_order_create = 'platform_order_create',
   /** Grants permission to delete Order */
@@ -1250,22 +1355,37 @@ export enum Permission {
   /** Grants permission to read Role */
   platform_role_read = 'platform_role_read',
   /** Grants permission to update Role */
-  platform_role_update = 'platform_role_update'
+  platform_role_update = 'platform_role_update',
+  /** SuperAdmin permissions grants user access to all operations */
+  platform_super_admin = 'platform_super_admin'
 }
 
 export type Query = {
   __typename?: 'Query';
   activeAdministrator?: Maybe<Administrator>;
   activeMarketplaceRegion: MarketplaceRegion;
+  administrator?: Maybe<Administrator>;
+  administrators: AdministratorList;
   /** Get single asset by id */
   asset?: Maybe<Asset>;
   /** Get a list of assets */
   assets: AssetList;
+  marketplaceRegion?: Maybe<MarketplaceRegion>;
   marketplaceRegions: MarketplaceRegionList;
   me?: Maybe<AuthenticatedAdminUser>;
   me2: Scalars['Boolean']['output'];
   role?: Maybe<Role>;
   roles: RoleList;
+};
+
+
+export type QueryAdministratorArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryAdministratorsArgs = {
+  options: AdministratorListOptions;
 };
 
 
@@ -1276,6 +1396,11 @@ export type QueryAssetArgs = {
 
 export type QueryAssetsArgs = {
   options?: InputMaybe<AssetListOptions>;
+};
+
+
+export type QueryMarketplaceRegionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1362,6 +1487,14 @@ export type Success = {
   success: Scalars['Boolean']['output'];
 };
 
+export type Tag = Node & {
+  __typename?: 'Tag';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  value: Scalars['String']['output'];
+};
+
 /** Filtering operations available for text-based fields. */
 export type TextFilterInput = {
   /** Matches values containing the provided substring. */
@@ -1391,15 +1524,42 @@ export type TextListFilterInput = {
   inList: Scalars['String']['input'];
 };
 
+export type UpdateActiveAdministratorInput = {
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  identifier?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateAdministratorInput = {
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  identifier?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+  roleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
 export type UpdateAssetInput = {
   focalPoint?: InputMaybe<CoordinateInput>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
   translations?: InputMaybe<Array<AssetTranslationInput>>;
 };
 
 export type UpdateGlobalSettingsInput = {
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMarketplaceRegionInput = {
+  availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
+  availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
+  code?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  primaryCurrencyCode?: InputMaybe<CurrencyCode>;
+  primaryLanguageCode?: InputMaybe<LanguageCode>;
+  token?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateRoleInput = {

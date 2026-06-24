@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RequestContext } from '../../api/request-context/request-context';
 import { isEmailAddressLike, normalizeInput } from '../../common/utils/normalize-input';
 import { NativeAuthenticationMethod } from '../../entities/authentication-method/native-authentication-method.entity';
 import { User } from '../../entities/user/user.entity';
 import { OrmService } from '../../orm/orm.service';
 import { PasswordHashingService } from '../helpers/password-hashing.service';
+import { SessionService } from './session.service';
 
 @Injectable()
 export class UserService {
 	constructor(
 		private readonly ormService: OrmService,
 		private readonly passwordHashingService: PasswordHashingService,
+		@Inject(forwardRef(() => SessionService)) private sessionService: SessionService,
 	) {}
 
 	public async getUserByIdentifier(ctx: RequestContext, identifier: string): Promise<User | undefined> {
@@ -78,5 +80,19 @@ export class UserService {
 		];
 
 		return await this.ormService.getRepository(ctx, User).save(user);
+	}
+
+	public async softDeleteUser(ctx: RequestContext, userId: string): Promise<void> {
+		const user = await this.ormService.getEntityOrThrow(ctx, User, userId);
+
+		await this.sessionService.deleteUserSessions(ctx, user);
+		await this.ormService.getRepository(ctx, User).update(
+			{
+				id: userId,
+			},
+			{
+				deletedAt: new Date(),
+			},
+		);
 	}
 }

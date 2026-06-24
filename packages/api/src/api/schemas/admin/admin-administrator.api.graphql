@@ -1,3 +1,47 @@
 type Query {
 	activeAdministrator: Administrator
+	administrator(id: ID!): Administrator
+	administrators(options: AdministratorListOptions!): AdministratorList!
 }
+
+type Mutation {
+	"Create new Administrator"
+	createAdministrator(input: CreateAdministratorInput!): Administrator!
+	"Update an existing Administrator"
+	updateAdministrator(input: UpdateAdministratorInput!): Administrator!
+	"Update the active (authenticated) Administrator"
+	updateActiveAdministrator(input: UpdateActiveAdministratorInput!): Administrator!
+	"Assign a Role to an Administrator"
+	assignRoleToAdministrator(administratorId: ID!, roleId: ID!): Administrator!
+	"Delete an Administrator"
+	deleteAdministrator(id: ID!): DeletionResponse!
+	"Delete multiple Administrators"
+	deleteAdministrators(ids: [ID!]!): [DeletionResponse!]!
+}
+
+input CreateAdministratorInput {
+	firstName: String!
+	lastName: String!
+	identifier: String!
+	password: String!
+	roleIds: [ID!]!
+}
+
+input UpdateAdministratorInput {
+	id: ID!
+	firstName: String
+	lastName: String
+	identifier: String
+	password: String
+	roleIds: [ID!]
+}
+
+input UpdateActiveAdministratorInput {
+	firstName: String
+	lastName: String
+	identifier: String
+	password: String
+}
+
+# Populated at runtime
+input AdministratorListOptions

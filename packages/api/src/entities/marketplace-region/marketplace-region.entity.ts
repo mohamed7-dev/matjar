@@ -20,7 +20,9 @@ export class MarketplaceRegion extends AppEntity {
 	 * @description
 	 * Unique identifier used to identify the marketplace region in the request header
 	 */
-	@Column()
+	@Column({
+		unique: true,
+	})
 	token: string;
 
 	/**
@@ -54,6 +56,9 @@ export class MarketplaceRegion extends AppEntity {
 	@ManyToMany(
 		() => Role,
 		(roles) => roles.marketplaceRegions,
+		{
+			onDelete: 'CASCADE',
+		},
 	)
 	roles: Role[];
 
