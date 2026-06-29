@@ -76,8 +76,8 @@ export interface NumericRangeInput {
 }
 
 export type BooleanFilterInput = {
-	equals: boolean;
-	isNull: boolean;
+	equals?: boolean;
+	isNull?: boolean;
 };
 
 export type DateTimeRangeInput = {

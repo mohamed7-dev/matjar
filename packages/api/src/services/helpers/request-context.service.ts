@@ -18,7 +18,7 @@ import { MarketplaceRegionService } from '../domain/marketplace-region.service';
 
 interface BuildFromRequestOptions {
 	req: Request;
-	graphqlResolveInfo: GraphQLResolveInfo;
+	graphqlResolveInfo?: GraphQLResolveInfo;
 	session?: SessionCacheEntry;
 }
 

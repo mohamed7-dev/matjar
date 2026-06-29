@@ -3,6 +3,7 @@ import { AuthenticatedLayout as BaseAuthenticatedLayout } from '@/components/app
 import { useAuth } from '@/providers/auth-provider.js';
 
 export const Route = createFileRoute('/_authenticated')({
+	component: AuthenticatedLayout,
 	beforeLoad: ({ context, location }) => {
 		if (!context.auth.isAuthenticated) {
 			throw redirect({
@@ -16,7 +17,6 @@ export const Route = createFileRoute('/_authenticated')({
 	loader: () => ({
 		breadcrumb: 'Insights',
 	}),
-	component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {

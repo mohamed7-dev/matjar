@@ -47,7 +47,6 @@ function LoginPage() {
 	}
 
 	const isVerifying = isLoading || auth.status === 'verifying';
-
 	return (
 		<main className='h-screen w-full flex items-center justify-center bg-secondary-background'>
 			<div className='w-full max-w-[420px]'>

@@ -6,12 +6,19 @@ import { AppEntity } from '../../common/helpers/app-entity';
 import { ClassType } from '../../common/types/class-type';
 import { EntityRelationPaths } from '../../common/types/entity-relation-paths';
 import { filterUnique } from '../../common/utils/filter-unique';
+import { InMemoryCacheStrategy } from '../../config/strategies/cache/in-memory-cache.strategy';
 import { isGraphQLResolveInfo } from '../utils/is-gql-resolver-info';
 import { parseContext } from '../utils/parse-context';
 
 const graphqlFields = require('graphql-fields');
 
 const DEFAULT_DEPTH = 3;
+
+const cacheTTL = 5 * 60 * 1000;
+
+const cache = new InMemoryCacheStrategy({
+	cacheSize: 500,
+});
 
 export type RelationPaths<T extends AppEntity> = Array<EntityRelationPaths<T>>;
 
@@ -32,6 +39,9 @@ export const Relations: <Entity extends AppEntity>(
 		}
 		const { info } = parseContext(ctx);
 		if (!isGraphQLResolveInfo(info)) return [];
+		const cacheKey = `${info.fieldName}__${ctx.getArgByIndex(2).req.body.query as string}`;
+		const cachedResult = cache.retrieve(cacheKey);
+		if (cachedResult) return cachedResult;
 		const fields = graphqlFields(info);
 		const targetFields = isPaginatedListQuery(info) ? (fields.items ?? {}) : fields;
 		const entity = typeof data === 'function' ? data : data.entity;
@@ -42,7 +52,9 @@ export const Relations: <Entity extends AppEntity>(
 		for (const omitPath of omit) {
 			result = result.filter((resultPath) => !resultPath.startsWith(omitPath as string));
 		}
-		// TODO:cache the result to improve performance
+		cache.store(cacheKey, result, {
+			ttlInMs: cacheTTL,
+		});
 		return result;
 	},
 );

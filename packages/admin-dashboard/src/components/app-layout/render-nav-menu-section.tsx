@@ -16,20 +16,28 @@ import { ChevronRightIcon } from 'lucide-react';
 import type { SidebarNavMenuItem, SidebarNavMenuSection } from '@/lib/sidebar-items.js';
 import { CollapsedNavMenuSection } from './collapsed-nav-menu-section.js';
 
-export function renderNavMenuSection(
-	item: SidebarNavMenuItem | SidebarNavMenuSection,
-	isPathActive: (path: string) => boolean,
-	isSidebarCollapsed: boolean,
-	isOpen: boolean,
-	onToggle: (id: string, isOpen: boolean) => void,
-	i18n: I18n,
-) {
+interface RenderNavMenuSectionProps {
+	item: SidebarNavMenuItem | SidebarNavMenuSection;
+	isPathActive: (path: string) => boolean;
+	isSidebarCollapsed: boolean;
+	isOpen: boolean;
+	onToggle: (id: string, isOpen: boolean) => void;
+	i18n: I18n;
+}
+
+export function renderNavMenuSection({
+	item,
+	isPathActive,
+	isSidebarCollapsed,
+	isOpen,
+	onToggle,
+	i18n,
+}: RenderNavMenuSectionProps) {
 	if ('path' in item) {
 		return (
 			<SidebarMenuItem key={item.id}>
 				<SidebarMenuButton
 					tooltip={i18n.t(item.title)}
-					// render={<Link to={item.url} />}
 					isActive={isPathActive(item.path)}
 					asChild
 				>
@@ -73,7 +81,6 @@ export function renderNavMenuSection(
 						{item.children.map((subItem) => (
 							<SidebarMenuSubItem key={subItem.id}>
 								<SidebarMenuSubButton
-									// render={<Link to={subItem.url} />}
 									isActive={isPathActive(subItem.path)}
 									asChild
 								>

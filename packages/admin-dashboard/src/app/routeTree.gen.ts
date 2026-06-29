@@ -13,6 +13,8 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAssetsAssetsRouteImport } from './routes/_authenticated/_assets/assets'
+import { Route as AuthenticatedAdministratorsAdministratorsRouteImport } from './routes/_authenticated/_administrators/administrators'
+import { Route as AuthenticatedAssetsAssetsIdRouteImport } from './routes/_authenticated/_assets/assets_.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -34,35 +36,55 @@ const AuthenticatedAssetsAssetsRoute =
     path: '/assets',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdministratorsAdministratorsRoute =
+  AuthenticatedAdministratorsAdministratorsRouteImport.update({
+    id: '/_administrators/administrators',
+    path: '/administrators',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAssetsAssetsIdRoute =
+  AuthenticatedAssetsAssetsIdRouteImport.update({
+    id: '/_assets/assets_/$id',
+    path: '/assets/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute
   '/assets': typeof AuthenticatedAssetsAssetsRoute
+  '/assets/$id': typeof AuthenticatedAssetsAssetsIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/': typeof AuthenticatedIndexRoute
+  '/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute
   '/assets': typeof AuthenticatedAssetsAssetsRoute
+  '/assets/$id': typeof AuthenticatedAssetsAssetsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/_administrators/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute
   '/_authenticated/_assets/assets': typeof AuthenticatedAssetsAssetsRoute
+  '/_authenticated/_assets/assets_/$id': typeof AuthenticatedAssetsAssetsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/assets'
+  fullPaths: '/' | '/login' | '/administrators' | '/assets' | '/assets/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/' | '/assets'
+  to: '/login' | '/' | '/administrators' | '/assets' | '/assets/$id'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/'
+    | '/_authenticated/_administrators/administrators'
     | '/_authenticated/_assets/assets'
+    | '/_authenticated/_assets/assets_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,17 +122,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssetsAssetsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/_administrators/administrators': {
+      id: '/_authenticated/_administrators/administrators'
+      path: '/administrators'
+      fullPath: '/administrators'
+      preLoaderRoute: typeof AuthenticatedAdministratorsAdministratorsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/_assets/assets_/$id': {
+      id: '/_authenticated/_assets/assets_/$id'
+      path: '/assets/$id'
+      fullPath: '/assets/$id'
+      preLoaderRoute: typeof AuthenticatedAssetsAssetsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdministratorsAdministratorsRoute: typeof AuthenticatedAdministratorsAdministratorsRoute
   AuthenticatedAssetsAssetsRoute: typeof AuthenticatedAssetsAssetsRoute
+  AuthenticatedAssetsAssetsIdRoute: typeof AuthenticatedAssetsAssetsIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAdministratorsAdministratorsRoute:
+    AuthenticatedAdministratorsAdministratorsRoute,
   AuthenticatedAssetsAssetsRoute: AuthenticatedAssetsAssetsRoute,
+  AuthenticatedAssetsAssetsIdRoute: AuthenticatedAssetsAssetsIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

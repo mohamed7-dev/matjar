@@ -1385,7 +1385,7 @@ export type QueryAdministratorArgs = {
 
 
 export type QueryAdministratorsArgs = {
-  options: AdministratorListOptions;
+  options?: InputMaybe<AdministratorListOptions>;
 };
 
 

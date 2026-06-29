@@ -1,4 +1,4 @@
-import { borderRadii, fontWeight, lightTheme as lightTokens, shadows } from '@matjar/design-system';
+import { lightTheme as lightTokens } from '@matjar/design-system';
 import type { PluginOption } from 'vite';
 
 type TokenMap = Record<string, string | undefined>;
@@ -65,21 +65,20 @@ function buildThemeSheet() {
 	return [
 		cssVars(':root', {
 			...lightTokens.colors,
-			...lightTokens.font,
+			...lightTokens.fontFamily,
 			...lightTokens.spacing,
 		}),
-		// cssVars('.dark', baseDark),
 	].join('\n\n');
 }
 
 function createInlineTheme() {
-	const { colors, spacing, font } = lightTokens;
+	const { colors, spacing, fontFamily, fontWeight, radius, shadow } = lightTokens;
 	const colorVars = Object.entries(colors).map(([k]) => `--color-${k}: var(--${k});`);
-	const fontVars = Object.entries(font).map(([k]) => `--font-${k}: var(--${k});`);
-	const spacingVars = Object.entries(spacing).map(([k]) => `--spacing-${k}: var(--${k});`);
+	const fontFamilyVars = Object.entries(fontFamily).map(([k]) => `--font-${k}: var(--${k});`);
+	const spacingVars = Object.entries(spacing).map(([k, v]) => `--spacing-${k}: ${v};`);
 	const fontWeightVars = Object.entries(fontWeight).map(([k, v]) => `--font-weight-${k}: ${v};`);
-	const radiusVars = Object.entries(borderRadii).map(([k, v]) => `--radius-${k}: ${v};`);
-	const shadowVars = Object.entries(shadows).map(([k, v]) => `--shadow-${k}: ${v};`);
+	const radiusVars = Object.entries(radius).map(([k, v]) => `--radius-${k}: ${v};`);
+	const shadowVars = Object.entries(shadow).map(([k, v]) => `--shadow-${k}: ${v};`);
 
 	const dashboardExtensions = [
 		'   --shadow-nav: 4px 4px 0px 0px var(--border);',
@@ -88,7 +87,7 @@ function createInlineTheme() {
 	const lines = [
 		...colorVars,
 		...shadowVars,
-		...fontVars,
+		...fontFamilyVars,
 		...fontWeightVars,
 		...spacingVars,
 		...radiusVars,

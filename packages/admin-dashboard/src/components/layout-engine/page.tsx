@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: no other unique identifier available when processing react children */
 
+import type { Permission } from '@matjar/common/lib/generated-types';
 import { Button } from '@matjar/design-system/components/button';
 import {
 	DropdownMenu,
@@ -10,11 +11,13 @@ import { useIsMobile } from '@matjar/design-system/hooks/use-mobile';
 import { cn } from '@matjar/design-system/lib/utils';
 import { EllipsisVerticalIcon } from 'lucide-react';
 import React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+import { Form } from '@/lib/form.js';
+import { PermissionGuard } from '../shared/permission-guard.js';
 import { type PageContextProps, PageProvider, usePage } from './page-provider.js';
 
 interface PageProps extends React.ComponentProps<'div'> {
-	children: React.ReactNode;
-	form?: any;
+	form?: UseFormReturn<any>;
 	submitHandler?: any;
 	entity?: any;
 	pageId: string;
@@ -31,8 +34,8 @@ export function Page(props: PageProps) {
 	);
 
 	const pageHeader = (
-		<div className='flex items-center justify-between gap-2'>
-			<div className='min-w-0 shrink'>{pageTitle ?? <div />}</div>
+		<div className='flex items-center justify-between gap-2 bg-secondary-background px-3.5 py-4 rounded-base border-2 border-border'>
+			<div className='min-w-0 shrink'>{pageTitle ?? ''}</div>
 			<div className='shrink-0'>{pageActionBar}</div>
 		</div>
 	);
@@ -48,7 +51,16 @@ export function Page(props: PageProps) {
 				{...restProps}
 			>
 				{form ? (
-					<form>{pageContent}</form>
+					<Form {...form}>
+						{/* // TODO: Implement Navigation Confirmation to intercept the trial of leaving the current form  */}
+						<form
+							onSubmit={submitHandler}
+							className='space-y-4'
+						>
+							{pageHeader}
+							{pageContent}
+						</form>
+					</Form>
 				) : (
 					<div className='space-y-4'>
 						{pageHeader}
@@ -113,6 +125,8 @@ export function PageActionBar({ children, menuItems }: PageActionBarProps) {
 					pageContext={pageContext}
 				/>
 			)}
+
+			{/* // TODO: add entity info dropdown  */}
 		</div>
 	);
 }
@@ -120,11 +134,15 @@ export function PageActionBar({ children, menuItems }: PageActionBarProps) {
 export interface ActionBarItemProps {
 	children: React.ReactNode;
 	id: string;
-	requiredPermissions?: string[];
+	requiredPermissions?: string[] | Permission[];
 }
 
 export function PageActionBarItem({ children, requiredPermissions }: ActionBarItemProps) {
-	const content = requiredPermissions ? <>Require Permissions</> : children;
+	const content = requiredPermissions ? (
+		<PermissionGuard requiredPermissions={requiredPermissions}>{children}</PermissionGuard>
+	) : (
+		children
+	);
 
 	return <>{content}</>;
 }

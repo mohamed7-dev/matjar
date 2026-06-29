@@ -17,7 +17,7 @@
 		"lib": "@matjar/design-system/lib",
 		"ui": "@matjar/design-system/components"
 	},
-	"rtl": false,
+	"rtl": true,
 	"menuColor": "default",
 	"menuAccent": "subtle"
 }

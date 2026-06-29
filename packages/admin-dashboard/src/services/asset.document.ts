@@ -45,3 +45,57 @@ export const createAssetsMutationDocument = graphql(
 		assetFragment,
 	],
 );
+
+export const updateAssetMutationDocument = graphql(`
+    mutation UpdateAsset($input: UpdateAssetInput!) {
+        updateAsset(input: $input) {
+            id
+        }
+    }
+`);
+
+export const deleteAssetsMutationDocument = graphql(
+	`
+    mutation DeleteAssets($input: DeleteAssetsInput!){
+        deleteAssets(input: $input) {
+                ... on DeletionResponse {
+                    message
+                    result
+                }
+        }
+    }
+    `,
+);
+
+export const assetsQueryDocument = graphql(
+	`
+        query GetAssetList($options: AssetListOptions) {
+            assets(options: $options) {
+                items {
+                    ...Asset
+                }
+                totalItemsCount
+            }
+        }
+    `,
+	[
+		assetFragment,
+	],
+);
+
+export const assetQueryDocument = graphql(
+	`
+        query GetAsset($id: ID!) {
+            asset(id: $id) {
+                ...Asset
+                tags {
+                    id
+                    value
+                }
+            }
+        }
+    `,
+	[
+		assetFragment,
+	],
+);

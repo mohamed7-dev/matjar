@@ -16,10 +16,11 @@ export interface PageBlockProps {
 	title?: React.ReactNode | string;
 	description?: React.ReactNode | string;
 	className?: string;
+	unStyled?: boolean;
 }
 
 export function PageBlock(props: PageBlockProps) {
-	const { id, title, description, column, className, children } = props;
+	const { id, title, description, column, className, children, unStyled = false } = props;
 	const contextValue = React.useMemo(
 		() => ({
 			id,
@@ -37,15 +38,28 @@ export function PageBlock(props: PageBlockProps) {
 
 	return (
 		<PageBlockProvider {...contextValue}>
-			<Card className={cn('@container  w-full', className, 'animate-in fade-in duration-300')}>
-				{title || description ? (
-					<CardHeader>
-						{title && <CardTitle>{title}</CardTitle>}
-						{description && <CardDescription>{description}</CardDescription>}
-					</CardHeader>
-				) : null}
-				<CardContent>{children}</CardContent>
-			</Card>
+			{unStyled && (
+				<div className={cn('@container  w-full', className, 'animate-in fade-in duration-300')}>
+					{/* {title || description ? (
+						<div>
+							{title && <CardTitle>{title}</CardTitle>}
+							{description && <CardDescription>{description}</CardDescription>}
+						</div>
+					) : null} */}
+					{children}
+				</div>
+			)}
+			{!unStyled && (
+				<Card className={cn('@container  w-full', className, 'animate-in fade-in duration-300')}>
+					{title || description ? (
+						<CardHeader>
+							{title && <CardTitle>{title}</CardTitle>}
+							{description && <CardDescription>{description}</CardDescription>}
+						</CardHeader>
+					) : null}
+					<CardContent>{children}</CardContent>
+				</Card>
+			)}
 		</PageBlockProvider>
 	);
 }

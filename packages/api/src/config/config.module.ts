@@ -1,10 +1,25 @@
+import path from 'node:path';
 import { Module, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { Injector } from '../common/helpers/injector';
 import { LifecycleStrategy } from '../common/types/lifecycle-strategy';
 import { ConfigService } from './config.service';
 
+const devImports =
+	process.env.NODE_ENV === 'development'
+		? [
+				ServeStaticModule.forRoot({
+					rootPath: path.join(process.cwd(), 'public', 'assets'),
+					serveRoot: '/assets',
+				}),
+			]
+		: [];
+
 @Module({
+	imports: [
+		...devImports,
+	],
 	providers: [
 		ConfigService,
 	],

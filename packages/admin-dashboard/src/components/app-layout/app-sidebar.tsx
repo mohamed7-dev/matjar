@@ -7,10 +7,10 @@ import {
 	useSidebar,
 } from '@matjar/design-system/components/sidebar';
 import { cn } from '@matjar/design-system/lib/utils';
-import { ShoppingBagIcon } from 'lucide-react';
 import { sidebarNavMenuItems } from '@/lib/sidebar-items.js';
-
+import { Logo } from '../shared/logo.js';
 import { NavMenu } from './nav-menu.js';
+import { UserNavMenu } from './user-nav-menu.js';
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 	const { state } = useSidebar();
@@ -22,22 +22,18 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 		>
 			<SidebarHeader>
 				<div className={cn('flex items-center gap-2 p-4', collapsed && 'p-0')}>
-					<div className='size-[34px] bg-primary border-2 border-primary flex items-center justify-center shrink-0'>
-						<ShoppingBagIcon
-							className='text-primary-foreground'
-							size={18}
-							strokeWidth={2.5}
-						/>
-					</div>
-					{!collapsed && (
-						<span className='text-primary text-lg font-bold whitespace-nowrap'>MATJAR</span>
-					)}
+					<Logo
+						hideText={collapsed}
+						size={collapsed ? 'sm' : 'default'}
+					/>
 				</div>
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMenu navItems={sidebarNavMenuItems.sections} />
 			</SidebarContent>
-			<SidebarFooter>{/* <SidebarUserNav /> */}</SidebarFooter>
+			<SidebarFooter>
+				<UserNavMenu />
+			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>
 	);

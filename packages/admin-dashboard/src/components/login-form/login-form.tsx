@@ -6,6 +6,8 @@ import { Input } from '@matjar/design-system/components/input';
 import { useForm } from '@tanstack/react-form';
 import { GlobeIcon, Loader2Icon } from 'lucide-react';
 import type { SubmitEvent } from 'react';
+import React from 'react';
+import { toast } from 'sonner';
 import { type LoginFormSchema, loginFormSchema } from '@/models/auth.schema.js';
 import { Logo } from '../shared/logo.js';
 
@@ -15,7 +17,7 @@ type LoginFormProps = {
 	loginErrorMessage?: string;
 };
 
-export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
+export function LoginForm({ onFormSubmit, isVerifying, loginErrorMessage }: LoginFormProps) {
 	const { t } = useLingui();
 	const form = useForm({
 		defaultValues: {
@@ -34,6 +36,16 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 		e.preventDefault();
 		form.handleSubmit();
 	};
+
+	React.useEffect(() => {
+		if (loginErrorMessage && !isVerifying) {
+			toast.error(loginErrorMessage);
+		}
+	}, [
+		loginErrorMessage,
+		isVerifying,
+	]);
+
 	return (
 		<Card>
 			<CardHeader>
@@ -47,7 +59,7 @@ export function LoginForm({ onFormSubmit, isVerifying }: LoginFormProps) {
 							</span>
 						</div>
 						<span>/</span>
-						<h2 className='font-lg font-bold leading-1'>
+						<h2 className='text-lg font-heading leading-1'>
 							<Trans>SIGN IN</Trans>
 						</h2>
 					</div>

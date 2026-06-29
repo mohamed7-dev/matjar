@@ -18,7 +18,7 @@ export const LoginMutationDocument = graphql(`
             }
             ... on ApiError {
                 message
-                code
+                errorCode
             }
         }
     }

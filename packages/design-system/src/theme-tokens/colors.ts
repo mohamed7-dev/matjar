@@ -12,13 +12,17 @@ export const neutral = {
 	950: "#000000",
 } as const;
 
+/**
+ * - Background Color: 200
+ * - Primary: 500
+ */
 export const primary = {
 	50: "#F3F8FF",
 	100: "#E4EFFF",
-	200: "#C7DDFF", // background color
+	200: "#C7DDFF",
 	300: "#A4C6FF",
 	400: "#7AADFF",
-	500: "#5294FF", // primary neo-brutalism color
+	500: "#5294FF",
 	600: "#337BFF",
 	700: "#1F63E6",
 	800: "#174DB4",

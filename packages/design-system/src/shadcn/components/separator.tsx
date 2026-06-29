@@ -1,6 +1,10 @@
+"use client";
+
 import { cn } from "@matjar/design-system/lib/utils";
 import { Separator as SeparatorPrimitive } from "radix-ui";
 import type * as React from "react";
+
+// Neo-Brutalism
 
 function Separator({
 	className,
@@ -14,7 +18,7 @@ function Separator({
 			decorative={decorative}
 			orientation={orientation}
 			className={cn(
-				"shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
+				"shrink-0 bg-border data-horizontal:h-0.5 data-horizontal:w-full data-vertical:w-0.5 data-vertical:self-stretch",
 				className,
 			)}
 			{...props}

@@ -1,4 +1,5 @@
 import { useLingui } from '@lingui/react';
+import { Trans } from '@lingui/react/macro';
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -7,6 +8,7 @@ import {
 } from '@matjar/design-system/components/sidebar';
 import { useRouter, useRouterState } from '@tanstack/react-router';
 import React from 'react';
+import { usePermissions } from '@/hooks/use-permissions.js';
 import type {
 	SidebarNavItemPosition,
 	SidebarNavMenuItem,
@@ -19,15 +21,10 @@ type SortNavItemInput = {
 	title: string;
 };
 
-/**
- * Escapes special regex characters in a string to be used as a literal pattern
- */
-function escapeRegexChars(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | SidebarNavMenuItem> }) {
 	const { i18n } = useLingui();
+	const { hasPermissions } = usePermissions();
+
 	const router = useRouter();
 	const routerState = useRouterState();
 
@@ -37,22 +34,82 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 	const { state: sidebarState, isMobile } = useSidebar();
 	const isSidebarCollapsed = sidebarState === 'collapsed' && !isMobile;
 
+	const isPathActive = React.useCallback(
+		(itemPath: string) => {
+			// Remove the prefix from the current path
+			const currentPathWithNoBase = basePath
+				? currentPath.replace(new RegExp(`^${basePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`), '')
+				: currentPath;
+
+			// Current path must start with /
+			const normalizedPath = currentPathWithNoBase.startsWith('/')
+				? currentPathWithNoBase
+				: `/${currentPathWithNoBase}`;
+
+			// Root path: should match both / and empty path
+			if (itemPath === '/') {
+				return normalizedPath === '/' || normalizedPath === '';
+			}
+
+			// Any other path: exact match or prefix match
+			return normalizedPath === itemPath || normalizedPath.startsWith(`${itemPath}/`);
+		},
+		[
+			currentPath,
+			basePath,
+		],
+	);
+
 	// Initialize state with active sections on mount
-	const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(null);
+	const initializeActiveSections = React.useCallback(
+		(itemsOrSections: Array<SidebarNavMenuSection | SidebarNavMenuItem>) => {
+			const activeTopSections = new Set<string>();
+			let activeBottomSection: string | null = null;
 
-	const [openTopSectionIds, setOpenTopSectionIds] = React.useState<Set<string>>(new Set());
+			for (const itemOrSection of itemsOrSections) {
+				if ('children' in itemOrSection && itemOrSection.children) {
+					const section = itemOrSection;
+					const sectionHasActiveItem = section.children.some((item) => isPathActive(item.path));
 
-	// Handle top section open/close (only one section open at a time)
+					if (sectionHasActiveItem) {
+						if (section.position === 'top') {
+							activeTopSections.add(section.id);
+						} else if (section.position === 'bottom' && !activeBottomSection) {
+							activeBottomSection = section.id;
+						}
+					}
+				}
+			}
+
+			return {
+				activeTopSections,
+				activeBottomSection,
+			};
+		},
+		[
+			isPathActive,
+		],
+	);
+
+	const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(() => {
+		const { activeBottomSection } = initializeActiveSections(navItems);
+		return activeBottomSection;
+	});
+
+	const [openTopSectionIds, setOpenTopSectionIds] = React.useState<Set<string>>(() => {
+		const { activeTopSections } = initializeActiveSections(navItems);
+		return activeTopSections;
+	});
+
 	const handleTopSectionToggle = (sectionId: string, isOpen: boolean) => {
+		// only one section open at a time
 		if (isOpen) {
-			// When opening a section, close all others
 			setOpenTopSectionIds(
 				new Set([
 					sectionId,
 				]),
 			);
 		} else {
-			// When closing a section, remove it from the set
 			setOpenTopSectionIds(new Set());
 		}
 	};
@@ -65,32 +122,6 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 		}
 	};
 
-	const isPathActive = React.useCallback(
-		(itemUrl: string) => {
-			// Remove basepath prefix from current path for comparison
-			const normalizedCurrentPath = basePath
-				? currentPath.replace(new RegExp(`^${escapeRegexChars(basePath)}`), '')
-				: currentPath;
-
-			// Ensure normalized path starts with /
-			const cleanPath = normalizedCurrentPath.startsWith('/')
-				? normalizedCurrentPath
-				: `/${normalizedCurrentPath}`;
-
-			// Special handling for root path
-			if (itemUrl === '/') {
-				return cleanPath === '/' || cleanPath === '';
-			}
-
-			// For other paths, check exact match or prefix match
-			return cleanPath === itemUrl || cleanPath.startsWith(`${itemUrl}/`);
-		},
-		[
-			currentPath,
-			basePath,
-		],
-	);
-
 	const sortNavItems = React.useCallback((itemA: SortNavItemInput, itemB: SortNavItemInput) => {
 		const orderA = itemA.order ?? Number.MAX_SAFE_INTEGER;
 		const orderB = itemB.order ?? Number.MAX_SAFE_INTEGER;
@@ -100,6 +131,16 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 		return orderA - orderB;
 	}, []);
 
+	const isItemViewable = React.useCallback(
+		(navItem: SidebarNavMenuItem) => {
+			if (!navItem.requiredPermissions) return true;
+			return hasPermissions(navItem.requiredPermissions);
+		},
+		[
+			hasPermissions,
+		],
+	);
+
 	const getSortedSections = React.useCallback(
 		(position: SidebarNavItemPosition) => {
 			const positionedItems = navItems.filter((item) => item.position === position);
@@ -108,23 +149,26 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 				.sort(sortNavItems)
 				.map((section) => {
 					if ('children' in section) {
+						// check each child for requiredPermissions
 						// sort nested nav items
-						// TODO: check each item of the section.children for requiredPermissions
-						const sortedChildren = (section.children ?? []).sort(sortNavItems);
+						const sortedAllowedChildren = (section.children ?? [])
+							.filter(isItemViewable)
+							.sort(sortNavItems);
 						return {
 							...section,
-							children: sortedChildren,
+							children: sortedAllowedChildren,
 						};
 					}
 					return section;
 				});
 
 			const nonEmptySections = sortedSections.filter((section) => {
+				// this filters out sections with no children
 				if ('children' in section) {
 					return section.children && section.children.length > 0;
 				}
 				// check single item for requiredPermissions
-				return section;
+				return isItemViewable(section as SidebarNavMenuItem);
 			});
 
 			return nonEmptySections;
@@ -132,8 +176,10 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 		[
 			navItems,
 			sortNavItems,
+			isItemViewable,
 		],
 	);
+
 	const topSections = React.useMemo(
 		() => getSortedSections('top'),
 		[
@@ -152,30 +198,32 @@ export function NavMenu({ navItems }: { navItems: Array<SidebarNavMenuSection | 
 			<SidebarGroup>
 				<SidebarMenu>
 					{topSections.map((item) =>
-						renderNavMenuSection(
+						renderNavMenuSection({
 							item,
 							isPathActive,
 							isSidebarCollapsed,
-							openTopSectionIds.has(item.id),
-							handleTopSectionToggle,
+							isOpen: openTopSectionIds.has(item.id),
+							onToggle: handleTopSectionToggle,
 							i18n,
-						),
+						}),
 					)}
 				</SidebarMenu>
 			</SidebarGroup>
 			{bottomSections.length ? (
 				<SidebarGroup className='mt-auto'>
-					<SidebarGroupLabel>Administration</SidebarGroupLabel>
+					<SidebarGroupLabel>
+						<Trans>Administration</Trans>
+					</SidebarGroupLabel>
 					<SidebarMenu>
 						{bottomSections.map((section) =>
-							renderNavMenuSection(
-								section,
+							renderNavMenuSection({
+								item: section,
 								isPathActive,
 								isSidebarCollapsed,
-								openBottomSectionId === section.id,
-								handleBottomSectionToggle,
+								isOpen: openBottomSectionId === section.id,
+								onToggle: handleBottomSectionToggle,
 								i18n,
-							),
+							}),
 						)}
 					</SidebarMenu>
 				</SidebarGroup>

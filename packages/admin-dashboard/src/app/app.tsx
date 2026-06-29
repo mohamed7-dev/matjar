@@ -1,6 +1,8 @@
+import { Toaster } from '@matjar/design-system/components/sonner';
 import { TooltipProvider } from '@matjar/design-system/components/tooltip';
 import { createRouter as createTanStackRouter, RouterProvider } from '@tanstack/react-router';
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { queryClient } from '@/infra/query/query-client.js';
 import { defaultLocale, dynamicActivate } from '@/lib/i18n.js';
 import { AuthProvider, useAuth } from '@/providers/auth-provider.js';
@@ -19,8 +21,9 @@ const processedBaseUrl = (() => {
 	return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized;
 })();
 
-const routerOptions: any = {
-	defaultPreload: 'intent' as const,
+const router = createTanStackRouter({
+	routeTree,
+	defaultPreload: 'intent',
 	scrollRestoration: true,
 	basepath: processedBaseUrl,
 	context: {
@@ -28,13 +31,8 @@ const routerOptions: any = {
 		queryClient,
 	},
 	defaultErrorComponent: ({ error }: { error: Error }) => (
-		<div className='text-destructive p-6'>An error occurred: {error.message}</div>
+		<div className='text-red-500 p-6'>An error occurred: {error.message}</div>
 	),
-};
-
-const router = createTanStackRouter({
-	...routerOptions,
-	routeTree,
 });
 
 function Providers({ children }: { children: React.ReactNode }) {
@@ -81,7 +79,7 @@ export function App() {
 	return (
 		<Providers>
 			<InnerApp />
-			{/* {createPortal(<Toaster />, document.body)} */}
+			{createPortal(<Toaster />, document.body)}
 		</Providers>
 	);
 }

@@ -2,6 +2,8 @@ import { cn } from "@matjar/design-system/lib/utils";
 import { HoverCard as HoverCardPrimitive } from "radix-ui";
 import type * as React from "react";
 
+// Neo-Brutalism
+
 function HoverCard({ ...props }: React.ComponentProps<typeof HoverCardPrimitive.Root>) {
 	return <HoverCardPrimitive.Root data-slot="hover-card" {...props} />;
 }
@@ -13,7 +15,7 @@ function HoverCardTrigger({ ...props }: React.ComponentProps<typeof HoverCardPri
 function HoverCardContent({
 	className,
 	align = "center",
-	sideOffset = 4,
+	sideOffset = 5,
 	...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Content>) {
 	return (
@@ -23,7 +25,7 @@ function HoverCardContent({
 				align={align}
 				sideOffset={sideOffset}
 				className={cn(
-					"z-50 w-72 origin-(--radix-hover-card-content-transform-origin) rounded-sm bg-primary p-4 font-medium text-sm text-primary-foreground border-2 border-border ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+					"z-50 w-72 origin-(--radix-hover-card-content-transform-origin) rounded-base border-2 border-border bg-primary p-4 text-sm font-base text-primary-foreground outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
 					className,
 				)}
 				{...props}

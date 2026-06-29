@@ -99,8 +99,8 @@ export class AdministratorService {
 		const repo = ctx
 			? this.ormService.getRepository(ctx, Administrator)
 			: this.ormService.dataSource.getRepository(Administrator);
-		return (
-			(await repo.findOne({
+		return await repo
+			.findOne({
 				relations: relations
 					? relations
 					: {
@@ -114,8 +114,8 @@ export class AdministratorService {
 					},
 					deletedAt: IsNull(),
 				},
-			})) ?? undefined
-		);
+			})
+			.then((result) => result ?? undefined);
 	}
 
 	public async createAdministrator(
@@ -185,8 +185,8 @@ export class AdministratorService {
 		}
 
 		if (input.roleIds) {
-			const isSuperAdmin = await this.isTheOnlySuperAdmin(ctx, input.id);
-			if (isSuperAdmin) {
+			const isSoleSuperAdmin = await this.isTheOnlySuperAdmin(ctx, input.id);
+			if (isSoleSuperAdmin) {
 				const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
 				if (!input.roleIds.some((roleId) => roleId === superAdminRole.id)) {
 					throw new InternalServerError('errors.super_admin-must-have-super_admin-role');
@@ -322,11 +322,12 @@ export class AdministratorService {
 			},
 		});
 		if (foundAdmin && (!excludeId || foundAdmin.id !== excludeId)) {
-			throw new UserInputError('errors.email-address-already-exists-for-administrator');
+			throw new UserInputError('errors.identifier_already_exists_for_admin');
 		}
 	}
 
 	private async checkAssignerCanAssignRoles(ctx: RequestContext, roleIds: string[]): Promise<void> {
+		// simple rule: if assigner has all the permissions, then he is able to assign them to other user
 		const roles = await this.ormService.getRepository(ctx, Role).find({
 			where: {
 				id: In(roleIds),
@@ -336,6 +337,7 @@ export class AdministratorService {
 			},
 		});
 		const userPermissionsMap = UserPermissionsMap.buildFromRoles(roles);
+
 		for (const userPermissionsItem of UserPermissionsMap.list(userPermissionsMap)) {
 			const hasAll = await this.roleService.userHasAllPermissionsOnMarketplace(
 				ctx,

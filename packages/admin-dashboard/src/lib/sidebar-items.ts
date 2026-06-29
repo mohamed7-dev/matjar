@@ -44,8 +44,7 @@ export const sidebarNavMenuItems: SidebarNavMenuConfig = {
 					path: '/products',
 					order: 100,
 					requiredPermissions: [
-						'ReadProduct',
-						'ReadCatalog',
+						'platform_catalog_read',
 					],
 				},
 				{
@@ -54,8 +53,8 @@ export const sidebarNavMenuItems: SidebarNavMenuConfig = {
 					path: '/assets',
 					order: 500,
 					requiredPermissions: [
-						'ReadAsset',
-						'ReadCatalog',
+						'platform_assets_read',
+						'platform_catalog_read',
 					],
 				},
 			],
@@ -68,14 +67,28 @@ export const sidebarNavMenuItems: SidebarNavMenuConfig = {
 			order: 100,
 			children: [
 				{
-					id: 'salesChannels',
-					title: /* i18n*/ 'SalesChannels',
-					path: '/sales-channels',
+					id: 'marketplaceRegions',
+					title: /* i18n*/ 'Marketplace Regions',
+					path: '/marketplace-regions',
 					order: 200,
 					requiredPermissions: [
-						'ReadChannel',
+						'platform_marketplace_region_read',
 					],
 				},
+				{
+                        id: 'administrators',
+                        title: /* i18n*/ 'Administrators',
+                        path: '/administrators',
+                        order: 300,
+                        requiredPermissions: ['platform_administrator_create'],
+                    },
+						{
+							id: 'roles',
+							title: /* i18n*/ 'Roles',
+							path: '/roles',
+							order: 400,
+							requiredPermissions: ['platform_administrator_read',"platform_role_create"],
+						},
 			],
 		},
 	],

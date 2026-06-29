@@ -1,7 +1,9 @@
 import { cn } from "@matjar/design-system/lib/utils";
-import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
+import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import type * as React from "react";
+
+// Neo-Brutalism
 
 function DropdownMenu({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
 	return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
@@ -18,7 +20,7 @@ function DropdownMenuTrigger({ ...props }: React.ComponentProps<typeof DropdownM
 function DropdownMenuContent({
 	className,
 	align = "start",
-	sideOffset = 4,
+	sideOffset = 5,
 	...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
 	return (
@@ -28,7 +30,7 @@ function DropdownMenuContent({
 				sideOffset={sideOffset}
 				align={align}
 				className={cn(
-					"z-50 max-h-(--radix-dropdown-menu-content-available-height) w-(--radix-dropdown-menu-trigger-width) min-w-48 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto border-2 border-border font-medium rounded-sm bg-primary p-1.5 text-primary-foreground duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:overflow-hidden data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+					"z-50 max-h-(--radix-dropdown-menu-content-available-height) w-(--radix-dropdown-menu-trigger-width) min-w-48 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto border-2 border-border rounded-base bg-primary p-1.5 text-primary-foreground duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:overflow-hidden data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
 					className,
 				)}
 				{...props}
@@ -44,16 +46,19 @@ function DropdownMenuGroup({ ...props }: React.ComponentProps<typeof DropdownMen
 function DropdownMenuItem({
 	className,
 	inset,
+	variant = "default",
 	...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
 	inset?: boolean;
+	variant?: "default";
 }) {
 	return (
 		<DropdownMenuPrimitive.Item
 			data-slot="dropdown-menu-item"
 			data-inset={inset}
+			data-variant={variant}
 			className={cn(
-				"relative gap-2 [&_svg]:pointer-events-none [&_svg]:w-4 [&_svg]:h-4 [&_svg]:shrink-0 flex cursor-default select-none items-center rounded-sm border-2 border-transparent data-[inset=true]:pl-8 bg-primary px-2 py-1.5 text-sm font-medium outline-hidden transition-colors focus:border-border data-disabled:pointer-events-none data-disabled:opacity-50",
+				"group/dropdown-menu-item relative flex cursor-default items-center gap-2.5 border-2 border-transparent rounded-base px-3 py-2 text-sm font-base tracking-wider uppercase outline-hidden select-none focus:border-border data-inset:ps-9.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 				className,
 			)}
 			{...props}
@@ -65,18 +70,26 @@ function DropdownMenuCheckboxItem({
 	className,
 	children,
 	checked,
+	inset,
 	...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem>) {
+}: React.ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem> & {
+	inset?: boolean;
+}) {
 	return (
 		<DropdownMenuPrimitive.CheckboxItem
+			data-slot="dropdown-menu-checkbox-item"
+			data-inset={inset}
 			className={cn(
-				"relative flex cursor-default select-none items-center rounded-sm border-2 border-transparent gap-2 py-1.5 pl-8 pr-2 text-sm font-medium text-primary-foreground outline-hidden transition-colors focus:border-border data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				"relative flex cursor-default items-center gap-2.5 rounded-base border-2 border-transparent py-2 pe-8 ps-3 text-sm font-base text-primary-foreground tracking-wider uppercase outline-hidden select-none focus:border-border data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 				className,
 			)}
 			checked={checked}
 			{...props}
 		>
-			<span className="absolute left-2 flex size-3.5 items-center justify-center">
+			<span
+				className="pointer-events-none absolute end-2 flex items-center justify-center"
+				data-slot="dropdown-menu-checkbox-item-indicator"
+			>
 				<DropdownMenuPrimitive.ItemIndicator>
 					<CheckIcon />
 				</DropdownMenuPrimitive.ItemIndicator>
@@ -93,19 +106,27 @@ function DropdownMenuRadioGroup({ ...props }: React.ComponentProps<typeof Dropdo
 function DropdownMenuRadioItem({
 	className,
 	children,
+	inset,
 	...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) {
+}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem> & {
+	inset?: boolean;
+}) {
 	return (
 		<DropdownMenuPrimitive.RadioItem
+			data-slot="dropdown-menu-radio-item"
+			data-inset={inset}
 			className={cn(
-				"relative flex cursor-default select-none items-center rounded-sm border-2 border-transparent gap-2 py-1.5 pl-8 pr-2 text-sm font-medium outline-hidden transition-colors focus:border-border data-disabled:pointer-events-none data-disabled:opacity-50",
+				"relative flex cursor-default items-center gap-2.5 rounded-base border-2 border-transparent py-2 pe-8 ps-3 text-sm font-base tracking-wider uppercase outline-hidden select-none focus:border-border data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 				className,
 			)}
 			{...props}
 		>
-			<span className="absolute left-2 flex size-3.5 items-center justify-center">
+			<span
+				className="pointer-events-none absolute end-2 flex items-center justify-center"
+				data-slot="dropdown-menu-radio-item-indicator"
+			>
 				<DropdownMenuPrimitive.ItemIndicator>
-					<CircleIcon className="size-2 fill-current" />
+					<CheckIcon className="size-2 fill-current" />
 				</DropdownMenuPrimitive.ItemIndicator>
 			</span>
 			{children}
@@ -124,7 +145,10 @@ function DropdownMenuLabel({
 		<DropdownMenuPrimitive.Label
 			data-slot="dropdown-menu-label"
 			data-inset={inset}
-			className={cn("px-2 py-1.5 text-sm font-bold data-[inset]:pl-8", className)}
+			className={cn(
+				"px-3 py-2 text-sm font-heading tracking-wider uppercase data-inset:ps-9.5",
+				className,
+			)}
 			{...props}
 		/>
 	);
@@ -135,15 +159,19 @@ function DropdownMenuSeparator({
 	...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
 	return (
-		<DropdownMenuPrimitive.Separator className={cn("-mx-1 my-1 h-0.5 bg-border", className)} {...props} />
+		<DropdownMenuPrimitive.Separator
+			data-slot="dropdown-menu-separator"
+			className={cn("-mx-1.5 my-1.5 h-0.5 bg-border", className)}
+			{...props}
+		/>
 	);
 }
 
-function DropdownMenuShortcut({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
+function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<"span">) {
 	return (
 		<span
 			data-slot="dropdown-menu-shortcut"
-			className={cn("ml-auto text-xs font-base tracking-widest", className)}
+			className={cn("ms-auto text-xs font-base tracking-widest", className)}
 			{...props}
 		/>
 	);
@@ -166,13 +194,13 @@ function DropdownMenuSubTrigger({
 			data-slot="dropdown-menu-sub-trigger"
 			data-inset={inset}
 			className={cn(
-				"flex cursor-default select-none items-center rounded-sm border-2 border-transparent bg-primary px-2 py-1.5 text-sm font-medium outline-hidden focus:border-border gap-2 data-[inset=true]:pl-8 [&_svg]:pointer-events-none [&_svg]:w-4 [&_svg]:h-4 [&_svg]:shrink-0",
+				"flex cursor-default items-center gap-2 bg-primary rounded-base border-2 border-transparent px-3 py-2 text-sm font-base tracking-wider uppercase outline-hidden select-none focus:border-border data-inset:ps-9.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 				className,
 			)}
 			{...props}
 		>
 			{children}
-			<ChevronRightIcon className="ml-auto" />
+			<ChevronRightIcon className="rtl:rotate-180 ms-auto" />
 		</DropdownMenuPrimitive.SubTrigger>
 	);
 }
@@ -185,7 +213,7 @@ function DropdownMenuSubContent({
 		<DropdownMenuPrimitive.SubContent
 			data-slot="dropdown-menu-sub-content"
 			className={cn(
-				"z-50 min-w-36 origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-sm bg-primary p-1.5 text-primary-foreground text-sm font-medium border-2 border-border duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+				"z-50 min-w-36 origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden border-2 border-border rounded-base bg-primary p-1.5 font-base text-primary-foreground duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
 				className,
 			)}
 			{...props}

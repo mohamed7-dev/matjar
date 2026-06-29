@@ -6,13 +6,12 @@ import { cn } from '@matjar/design-system/lib/utils';
 import { Link } from '@tanstack/react-router';
 import type { SidebarNavMenuSection } from '@/lib/sidebar-items.js';
 
-export function CollapsedNavMenuSection({
-	item,
-	isPathActive,
-}: Readonly<{
+interface CollapsedNavMenuSectionProps {
 	item: SidebarNavMenuSection;
 	isPathActive: (path: string) => boolean;
-}>) {
+}
+
+export function CollapsedNavMenuSection({ item, isPathActive }: CollapsedNavMenuSectionProps) {
 	const { i18n } = useLingui();
 	return (
 		<HoverCard>
@@ -25,11 +24,11 @@ export function CollapsedNavMenuSection({
 			<HoverCardContent
 				side='right'
 				align='start'
-				sideOffset={5}
+				sideOffset={7}
 				className='w-auto min-w-[8rem] p-1 space-y-1'
 			>
 				<p
-					className='px-2 py-1.5 text-sm font-bold'
+					className='px-2 py-1.5 text-base font-heading'
 					data-testid='sidebar-hover-title'
 				>
 					{i18n.t(item.title)}
@@ -40,7 +39,7 @@ export function CollapsedNavMenuSection({
 						key={subItem.id}
 						to={subItem.path}
 						className={cn(
-							'flex items-center rounded-sm px-2 py-1.5 text-sm border-transparent border-2 hover:border-border focus-visible:ring-2 focus-visible:ring-ring',
+							'flex items-center rounded-base px-2 py-1.5 text-sm border-transparent border-2 hover:border-border focus-visible:ring-2 focus-visible:ring-ring',
 							isPathActive(subItem.path) && 'border-border',
 						)}
 					>

@@ -1,7 +1,7 @@
 type Query {
 	activeAdministrator: Administrator
 	administrator(id: ID!): Administrator
-	administrators(options: AdministratorListOptions!): AdministratorList!
+	administrators(options: AdministratorListOptions): AdministratorList!
 }
 
 type Mutation {
